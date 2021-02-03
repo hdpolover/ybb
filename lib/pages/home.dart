@@ -7,7 +7,6 @@ import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/create_account.dart';
 import 'package:ybb/pages/profile.dart';
 import 'package:ybb/pages/search.dart';
-import 'package:ybb/pages/signupscreen.dart';
 import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/pages/news.dart';
 import 'package:google_sign_in/google_sign_in.dart';

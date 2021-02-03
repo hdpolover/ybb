@@ -8,7 +8,6 @@ import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/comments.dart';
 import 'package:ybb/pages/home.dart';
-import 'package:ybb/widgets/custom_image.dart';
 import 'package:ybb/widgets/progress.dart';
 
 class Post extends StatefulWidget {
