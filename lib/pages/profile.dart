@@ -229,10 +229,13 @@ class _ProfileState extends State<Profile> {
         .set({
       "type": "follow",
       "ownerId": widget.profileId,
-      "username": currentUser.username,
+      "displayName": currentUser.displayName,
       "userId": currentUserId,
       "userProfileImg": currentUser.photoUrl,
       "timestamp": timestamp,
+      "commentData": "",
+      "mediaUrl": "",
+      "postId": "",
     });
   }
 
