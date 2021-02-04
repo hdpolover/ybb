@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
@@ -18,7 +19,10 @@ class ActivityFeed extends StatefulWidget {
   _ActivityFeedState createState() => _ActivityFeedState();
 }
 
-class _ActivityFeedState extends State<ActivityFeed> {
+class _ActivityFeedState extends State<ActivityFeed>
+    with AutomaticKeepAliveClientMixin<ActivityFeed> {
+  List<ActivityFeedItem> feedItems = [];
+
   @override
   void initState() {
     super.initState();
@@ -37,19 +41,42 @@ class _ActivityFeedState extends State<ActivityFeed> {
         .limit(50)
         .get();
 
-    List<ActivityFeedItem> feedItems = [];
-    snapshot.docs.forEach(
-      (doc) {
-        feedItems.add(ActivityFeedItem.fromDocument(doc));
-      },
-    );
+    feedItems = [];
+    snapshot.docs.forEach((doc) {
+      feedItems.add(ActivityFeedItem.fromDocument(doc));
+    });
 
-    print(feedItems);
     return feedItems;
   }
 
+  buildNoFeed() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/images/no_comment.svg',
+            height: 170,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            "You are all caught up. Nothing to see here.",
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: defaultAppBar(
@@ -57,18 +84,24 @@ class _ActivityFeedState extends State<ActivityFeed> {
         titleText: "Activity Feed",
         removeBackButton: true,
       ),
-      body: Container(
-          child: FutureBuilder(
-        future: getActivityFeed(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return circularProgress();
-          }
-          return ListView(
-            children: snapshot.data,
-          );
-        },
-      )),
+      body: RefreshIndicator(
+        onRefresh: () => getActivityFeed(),
+        child: Container(
+            child: FutureBuilder(
+          future: getActivityFeed(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return circularProgress();
+            }
+
+            return feedItems.length == 0
+                ? buildNoFeed()
+                : ListView(
+                    children: snapshot.data,
+                  );
+          },
+        )),
+      ),
     );
   }
 }

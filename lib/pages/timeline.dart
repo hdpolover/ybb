@@ -18,7 +18,8 @@ class Timeline extends StatefulWidget {
   _TimelineState createState() => _TimelineState();
 }
 
-class _TimelineState extends State<Timeline> {
+class _TimelineState extends State<Timeline>
+    with AutomaticKeepAliveClientMixin<Timeline> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Post> posts;
   List<String> followingList = [];
@@ -26,8 +27,9 @@ class _TimelineState extends State<Timeline> {
   @override
   void initState() {
     super.initState();
-    getTimeline();
-    getFollowing();
+    //getTimeline();
+    //getFollowing();
+    getPosts();
   }
 
   Future<void> getPosts() async {
@@ -35,16 +37,22 @@ class _TimelineState extends State<Timeline> {
   }
 
   Future<void> getTimeline() async {
-    QuerySnapshot snapshot = await postsRef
-        .doc(widget.currentUser.id)
-        .collection('userPosts')
-        .orderBy('timestamp', descending: true)
-        .get();
+    print(followingList);
 
-    List<Post> posts =
-        snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
-    setState(() {
-      this.posts = posts;
+    List<Post> userPosts = [];
+    followingList.forEach((element) async {
+      QuerySnapshot snapshot = await postsRef
+          .doc(element)
+          .collection('userPosts')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      userPosts
+          .addAll(snapshot.docs.map((doc) => Post.fromDocument(doc)).toList());
+
+      setState(() {
+        this.posts = userPosts;
+      });
     });
   }
 
@@ -68,6 +76,11 @@ class _TimelineState extends State<Timeline> {
         children: posts,
       );
     }
+  }
+
+  refreshTimeline() async {
+    await getPosts();
+    await buildTimeline();
   }
 
   buildUsersToFollow() {
@@ -130,6 +143,8 @@ class _TimelineState extends State<Timeline> {
 
   @override
   Widget build(context) {
+    super.build(context);
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: header(
@@ -139,9 +154,11 @@ class _TimelineState extends State<Timeline> {
         removeBackButton: true,
       ),
       body: RefreshIndicator(
-        onRefresh: () => getTimeline(),
+        onRefresh: () => refreshTimeline(),
         child: buildTimeline(),
       ),
     );
   }
+
+  bool get wantKeepAlive => true;
 }

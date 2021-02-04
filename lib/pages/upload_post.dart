@@ -213,5 +213,7 @@ class _UploadPostState extends State<UploadPost>
     );
   }
 
+  ListView buildUploadLayout() {}
+
   bool get wantKeepAlive => true;
 }

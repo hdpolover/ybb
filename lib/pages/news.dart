@@ -15,7 +15,7 @@ class News extends StatefulWidget {
   _NewsState createState() => _NewsState();
 }
 
-class _NewsState extends State<News> {
+class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   List<NewsCategoryModel> newsCategories = new List<NewsCategoryModel>();
   List<ArticleModel> articles = new List<ArticleModel>();
 
@@ -41,56 +41,63 @@ class _NewsState extends State<News> {
     }
   }
 
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       appBar: defaultAppBar(context, titleText: "News", removeBackButton: true),
-      body: SingleChildScrollView(
-        child: _loading
-            ? Center(
-                child: circularProgress(),
-              )
-            : Container(
-                child: Column(
-                  children: <Widget>[
-                    //categories
-                    Container(
-                      padding: EdgeInsets.only(top: 5.0, left: 5.0),
-                      height: 55.0,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: newsCategories.length,
-                        itemBuilder: (context, index) {
-                          return CategoryTile(
-                            categoryName: newsCategories[index].categoryName,
-                            categoryImageUrl:
-                                newsCategories[index].categroyImageUrl,
-                          );
-                        },
+      body: RefreshIndicator(
+        onRefresh: () => getNews(),
+        child: SingleChildScrollView(
+          child: _loading
+              ? Center(
+                  child: circularProgress(),
+                )
+              : Container(
+                  child: Column(
+                    children: <Widget>[
+                      //categories
+                      Container(
+                        padding: EdgeInsets.only(top: 5.0, left: 5.0),
+                        height: 55.0,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: newsCategories.length,
+                          itemBuilder: (context, index) {
+                            return CategoryTile(
+                              categoryName: newsCategories[index].categoryName,
+                              categoryImageUrl:
+                                  newsCategories[index].categroyImageUrl,
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    //articles
-                    Container(
-                      child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        itemCount: articles.length,
-                        itemBuilder: (context, index) {
-                          return ArticleTile(
-                            newsImageUrl: articles[index].imageUrl,
-                            newsTitle: articles[index].title,
-                            newsDesc: articles[index].desc,
-                            newsUrl: articles[index].url,
-                            newsDate: articles[index].date,
-                          );
-                        },
-                      ),
-                    )
-                  ],
+                      //articles
+                      Container(
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          itemCount: articles.length,
+                          itemBuilder: (context, index) {
+                            return ArticleTile(
+                              newsImageUrl: articles[index].imageUrl,
+                              newsTitle: articles[index].title,
+                              newsDesc: articles[index].desc,
+                              newsUrl: articles[index].url,
+                              newsDate: articles[index].date,
+                            );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

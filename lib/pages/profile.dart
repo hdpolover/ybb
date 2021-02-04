@@ -18,7 +18,8 @@ class Profile extends StatefulWidget {
   _ProfileState createState() => _ProfileState();
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileState extends State<Profile>
+    with AutomaticKeepAliveClientMixin<Profile> {
   final String currentUserId = currentUser?.id;
   String postOrientation = "grid";
   bool isFollowing = false;
@@ -415,8 +416,12 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -444,16 +449,19 @@ class _ProfileState extends State<Profile> {
         ],
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: ListView(
-        children: <Widget>[
-          buildProfileHeader(),
-          Divider(),
-          buildProfileMenu(),
-          Divider(
-            height: 0.0,
-          ),
-          buildProfilePosts(),
-        ],
+      body: RefreshIndicator(
+        onRefresh: () => getProfilePosts(),
+        child: ListView(
+          children: <Widget>[
+            buildProfileHeader(),
+            Divider(),
+            buildProfileMenu(),
+            Divider(
+              height: 0.0,
+            ),
+            buildProfilePosts(),
+          ],
+        ),
       ),
     );
   }

@@ -25,8 +25,8 @@ class _SettingsState extends State<ProfileSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultAppBar(context,
-          titleText: "ProfileSettings", removeBackButton: true),
+      appBar:
+          defaultAppBar(context, titleText: "Settings", removeBackButton: true),
       body: Container(
         child: ListView(
           children: [

@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uuid/uuid.dart';
+import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/progress.dart';
@@ -31,6 +34,10 @@ class CommentsState extends State<Comments> {
   final String postOwnerId;
   final String postMediaUrl;
 
+  List<Comment> comments = [];
+
+  String commentId = Uuid().v4();
+
   CommentsState({
     this.postId,
     this.postOwnerId,
@@ -48,38 +55,71 @@ class CommentsState extends State<Comments> {
           if (!snapshot.hasData) {
             return circularProgress();
           }
-          List<Comment> comments = [];
+
+          comments = [];
           snapshot.data.documents.forEach((doc) {
             comments.add(Comment.fromDocument(doc));
           });
-          return ListView(
-            children: comments,
-          );
+
+          return comments.length == 0
+              ? buildNoComment()
+              : ListView(
+                  children: comments,
+                );
         });
   }
 
+  buildNoComment() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/images/no_comment.svg',
+            height: 170,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            "Be the first one to comment.",
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   addComment() {
-    commentsRef.doc(postId).collection("comments").add({
-      "username": currentUser.username,
+    commentsRef.doc(postId).collection("comments").doc(commentId).set({
+      "displayName": currentUser.displayName,
       "comment": commentController.text,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "avatarUrl": currentUser.photoUrl,
       "userId": currentUser.id,
+      "postId": postId,
+      "commentId": commentId,
     });
+
     bool isNotPostOwner = postOwnerId != currentUser.id;
     if (isNotPostOwner) {
       activityFeedRef.doc(postOwnerId).collection('feedItems').add({
         "type": "comment",
         "commentData": commentController.text,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
         "postId": postId,
         "userId": currentUser.id,
-        "username": currentUser.username,
+        "displayName": currentUser.displayName,
         "userProfileImg": currentUser.photoUrl,
         "mediaUrl": postMediaUrl,
       });
     }
     commentController.clear();
+
+    setState(() {
+      commentId = Uuid().v4();
+    });
   }
 
   @override
@@ -95,6 +135,9 @@ class CommentsState extends State<Comments> {
               controller: commentController,
               decoration: InputDecoration(labelText: "Write a comment..."),
             ),
+            leading: CircleAvatar(
+                backgroundImage:
+                    CachedNetworkImageProvider(currentUser.photoUrl)),
             trailing: OutlineButton(
               onPressed: addComment,
               borderSide: BorderSide.none,
@@ -108,27 +151,76 @@ class CommentsState extends State<Comments> {
 }
 
 class Comment extends StatelessWidget {
-  final String username;
+  final String displayName;
   final String userId;
   final String avatarUrl;
   final String comment;
   final Timestamp timestamp;
+  final String postId;
+  final String commentId;
 
   Comment({
-    this.username,
+    this.displayName,
     this.userId,
     this.avatarUrl,
     this.comment,
     this.timestamp,
+    this.postId,
+    this.commentId,
   });
 
   factory Comment.fromDocument(DocumentSnapshot doc) {
     return Comment(
-      username: doc['username'],
+      displayName: doc['displayName'],
       userId: doc['userId'],
       comment: doc['comment'],
       timestamp: doc['timestamp'],
       avatarUrl: doc['avatarUrl'],
+      commentId: doc['commentId'],
+      postId: doc['postId'],
+    );
+  }
+
+  deleteComment(parentContext) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(parentContext);
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Delete"),
+      onPressed: () {
+        commentsRef
+            .doc(postId)
+            .collection("comments")
+            .doc(commentId)
+            .get()
+            .then((doc) {
+          if (doc.exists) {
+            doc.reference.delete();
+          }
+        });
+
+        Navigator.pop(parentContext);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Delete comment"),
+      content: Text("Are you sure to delete your comment?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 
@@ -137,13 +229,36 @@ class Comment extends StatelessWidget {
     return Column(
       children: <Widget>[
         ListTile(
-          title: Text(comment),
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(avatarUrl),
+          onTap: () => userId == currentUser.id ? deleteComment(context) : {},
+          onLongPress: () =>
+              userId == currentUser.id ? deleteComment(context) : {},
+          title: GestureDetector(
+            onTap: () =>
+                showProfile(context, profileId: userId, username: displayName),
+            child: RichText(
+              text: TextSpan(
+                text: displayName + ' ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: comment, style: DefaultTextStyle.of(context).style),
+                ],
+              ),
+            ),
+          ),
+          leading: GestureDetector(
+            onTap: () =>
+                showProfile(context, profileId: userId, username: displayName),
+            child: CircleAvatar(
+              backgroundImage: CachedNetworkImageProvider(avatarUrl),
+            ),
           ),
           subtitle: Text(timeago.format(timestamp.toDate())),
         ),
-        Divider(),
+        //Divider(),
       ],
     );
   }

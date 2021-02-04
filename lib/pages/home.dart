@@ -94,6 +94,13 @@ class _HomeState extends State<Home> {
         ),
       );
 
+      // make new user their own follower (to include their posts in their timeline)
+      await followersRef
+          .doc(user.id)
+          .collection('userFollowers')
+          .doc(user.id)
+          .set({});
+
       doc = await usersRef.doc(user.id).get();
     }
 

@@ -81,6 +81,7 @@ class _PostState extends State<Post> {
   bool isLiked;
   int likeCount;
   Map likes;
+  bool isExtended;
 
   _PostState({
     this.postId,
@@ -91,6 +92,7 @@ class _PostState extends State<Post> {
     this.mediaUrl,
     this.likes,
     this.likeCount,
+    this.isExtended,
   });
 
   String convertDateTime(DateTime postedDate) {
@@ -164,7 +166,7 @@ class _PostState extends State<Post> {
       }
     });
     // delete uploaded image for thep ost
-    storageRef.child("post_$postId.jpg").delete();
+    storageRef.child("Posts").child("post_$postId.jpg").delete();
     // then delete all activity feed notifications
     QuerySnapshot activityFeedSnapshot = await activityFeedRef
         .doc(ownerId)
@@ -199,6 +201,7 @@ class _PostState extends State<Post> {
       setState(() {
         likeCount -= 1;
         isLiked = false;
+        isExtended = false;
         likes[currentUserId] = false;
       });
     } else if (!_isLiked) {
@@ -211,6 +214,7 @@ class _PostState extends State<Post> {
       setState(() {
         likeCount += 1;
         isLiked = true;
+        isExtended = true;
         likes[currentUserId] = true;
         showHeart = true;
       });
@@ -255,8 +259,23 @@ class _PostState extends State<Post> {
     }
   }
 
+  showExtendedPost() {
+    bool _isExtented = false;
+
+    if (_isExtented) {
+      setState(() {
+        isExtended = true;
+      });
+    } else if (!_isExtented) {
+      setState(() {
+        isExtended = true;
+      });
+    }
+  }
+
   buildPostImage() {
     return GestureDetector(
+      onTap: showExtendedPost,
       onDoubleTap: handleLikePost,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,6 +284,7 @@ class _PostState extends State<Post> {
             padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 10.0),
             alignment: Alignment.topLeft,
             child: Text(
+              //isExtended ? description : "manageDesc(description)",
               manageDesc(description),
               textAlign: TextAlign.start,
             ),
@@ -283,30 +303,59 @@ class _PostState extends State<Post> {
     }
   }
 
+  int comments = 0;
+  getCommentCount() async {
+    QuerySnapshot snapshot =
+        await commentsRef.doc(postId).collection('comments').get();
+
+    dynamic comments = snapshot.docs.map((doc) => doc.id).toList();
+
+    if (comments == null) {
+      return 0;
+    }
+    int commentCount = 0;
+    // if the key is explicitly set to true, add a like
+    comments.forEach((val) {
+      commentCount += 1;
+    });
+
+    comments = commentCount;
+    return commentCount;
+  }
+
   buildPostFooter() {
-    return Column(
+    return Row(
       children: <Widget>[
+        Padding(padding: EdgeInsets.only(left: 10.0)),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(top: 40.0)),
+            Padding(padding: EdgeInsets.only(top: 50.0)),
             GestureDetector(
               onTap: handleLikePost,
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.arrow_upward_outlined,
-                    size: 30.0,
-                  ),
-                  Padding(padding: EdgeInsets.only(right: 10.0)),
-                  Text(
-                    likeCount == 0 ? "UPVOTE" : "$likeCount Upvotes",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+              child: Container(
+                child: Row(
+                  children: [
+                    isLiked
+                        ? Icon(
+                            Icons.thumb_up,
+                            size: 30.0,
+                            color: Colors.blue,
+                          )
+                        : Icon(
+                            Icons.thumb_up_alt_outlined,
+                            size: 30.0,
+                          ),
+                    Padding(padding: EdgeInsets.only(right: 10.0)),
+                    Text(
+                      likeCount == 0 ? "" : "$likeCount",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Padding(padding: EdgeInsets.only(right: 20.0)),
@@ -317,45 +366,42 @@ class _PostState extends State<Post> {
                 ownerId: ownerId,
                 mediaUrl: mediaUrl,
               ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.chat,
-                    size: 28.0,
-                    color: Colors.blue[900],
-                  ),
-                  Padding(padding: EdgeInsets.only(right: 10.0)),
-                  Text(
-                    "$likeCount comments",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+              child: Container(
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.comment,
+                      size: 30.0,
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(left: 20.0),
-              child: Text(
-                "Username",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                    // Padding(padding: EdgeInsets.only(right: 10.0)),
+                    // Text(
+                    //   //getCommentCount() == 0 ? "COMMENT" : " comments",
+                    //   "Comment",
+                    //   style: TextStyle(
+                    //     color: Colors.black,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
             ),
-            Expanded(
-              child: Text("text"),
-            ),
           ],
         ),
-        SizedBox(height: 20.0),
+        Padding(padding: EdgeInsets.only(left: 50.0)),
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () => {},
+              child: Container(
+                child: Icon(
+                  Icons.bookmark_border_outlined,
+                  size: 30.0,
+                ),
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
@@ -363,14 +409,17 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     isLiked = (likes[currentUserId] == true);
+    isExtended = true;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        buildPostHeader(),
-        buildPostImage(),
-        buildPostFooter()
-      ],
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          buildPostHeader(),
+          buildPostImage(),
+          buildPostFooter()
+        ],
+      ),
     );
   }
 }
