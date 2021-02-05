@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ybb/models/article_model.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/create_account.dart';
@@ -23,6 +24,8 @@ final timelineRef = FirebaseFirestore.instance.collection('timeline');
 final DateTime timestamp = DateTime.now();
 User currentUser;
 
+List<ArticleModel> articlesFromHome = new List<ArticleModel>();
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -35,7 +38,7 @@ class _HomeState extends State<Home> {
   int pageIndex = 0;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     pageController = PageController();
     // Detects when user signed in

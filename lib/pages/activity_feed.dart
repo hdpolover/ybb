@@ -56,15 +56,18 @@ class _ActivityFeedState extends State<ActivityFeed>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SvgPicture.asset(
-            'assets/images/no_comment.svg',
+            'assets/images/no_notif.svg',
             height: 170,
           ),
           SizedBox(
-            height: 20,
+            height: 30,
           ),
           Text(
             "You are all caught up. Nothing to see here.",
             textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),

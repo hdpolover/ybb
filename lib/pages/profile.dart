@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/edit_profile.dart';
+import 'package:ybb/pages/follows.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/settings.dart';
+import 'package:ybb/pages/upload_post.dart';
 import 'package:ybb/widgets/post.dart';
 import 'package:ybb/widgets/progress.dart';
 
@@ -56,8 +58,17 @@ class _ProfileState extends State<Profile>
         .doc(widget.profileId)
         .collection('userFollowers')
         .get();
+
+    List<String> ids = snapshot.docs.map((doc) => doc.id).toList();
+
+    int fixCount = 0;
+    if (ids.contains(widget.profileId)) {
+      fixCount = ids.length - 1;
+    } else {
+      fixCount = ids.length;
+    }
     setState(() {
-      followerCount = snapshot.docs.length;
+      followerCount = fixCount;
     });
   }
 
@@ -71,7 +82,7 @@ class _ProfileState extends State<Profile>
     });
   }
 
-  getProfilePosts() async {
+  Future<Null> getProfilePosts() async {
     setState(() {
       isLoading = true;
     });
@@ -87,27 +98,42 @@ class _ProfileState extends State<Profile>
     });
   }
 
-  Column buildCountColumn(String label, int count) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          count.toString(),
-          style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-        ),
-        Container(
-          margin: EdgeInsets.only(top: 4.0),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 15.0,
-              fontWeight: FontWeight.w400,
+  Container buildCountColumn(String label, int count) {
+    return Container(
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Follows(
+                type: label,
+                userId: widget.profileId,
+              ),
             ),
-          ),
+          );
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              count.toString(),
+              style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 4.0),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -252,8 +278,6 @@ class _ProfileState extends State<Profile>
         return Column(
           children: [
             Card(
-              color: Colors.white,
-              elevation: 6.0,
               child: Container(
                 padding: EdgeInsets.all(10.0),
                 child: Column(
@@ -268,6 +292,31 @@ class _ProfileState extends State<Profile>
                     ),
                     Divider(),
                     Text(user.bio),
+                    SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Card(
+              child: Container(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Bio",
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Divider(),
+                    Text(user.bio),
+                    SizedBox(
+                      height: 10,
+                    ),
                   ],
                 ),
               ),
@@ -319,7 +368,9 @@ class _ProfileState extends State<Profile>
                           margin: EdgeInsets.only(left: 30.0, bottom: 5.0),
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            user.occupation,
+                            user.username.length > 15
+                                ? "@" + user.username.substring(0, 15) + "..."
+                                : "@" + user.username,
                           ),
                         ),
                         SizedBox(height: 30),
@@ -327,9 +378,17 @@ class _ProfileState extends State<Profile>
                           margin: EdgeInsets.only(left: 30.0, bottom: 5.0),
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Users location",
+                            user.occupation.length == 0 ? "" : user.occupation,
                           ),
                         ),
+                        SizedBox(height: 30),
+                        // Container(
+                        //   margin: EdgeInsets.only(left: 30.0, bottom: 5.0),
+                        //   alignment: Alignment.centerLeft,
+                        //   child: Text(
+                        //     "Users location",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -353,6 +412,67 @@ class _ProfileState extends State<Profile>
     );
   }
 
+  buildProfileOwnerNoPost() {
+    return Center(
+      heightFactor: 1.35,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SvgPicture.asset('assets/images/no_post.svg', height: 150.0),
+          Padding(
+            padding: EdgeInsets.only(top: 30.0),
+            child: Text(
+              "It seems like you have no posts yet. Make one now.",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: TextButton.icon(
+              icon: Icon(Icons.edit),
+              label: Text("Create a Post"),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UploadPost(
+                      currentUser: currentUser,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  buiildOtherProfileNoPost() {
+    return Center(
+      heightFactor: 1.8,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SvgPicture.asset('assets/images/no_post.svg', height: 150.0),
+          Padding(
+            padding: EdgeInsets.only(top: 30.0),
+            child: Text(
+              "This user doesn't seem to have any posts.",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   buildProfilePosts() {
     if (isLoading) {
       return circularProgress();
@@ -361,25 +481,9 @@ class _ProfileState extends State<Profile>
       return buildProfileDashboard();
     } else if (profileMenu == "posts") {
       if (posts.isEmpty) {
-        return Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SvgPicture.asset('assets/images/no_content.svg', height: 260.0),
-              Padding(
-                padding: EdgeInsets.only(top: 20.0),
-                child: Text(
-                  "No Posts",
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 40.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
+        return currentUserId == widget.profileId
+            ? buildProfileOwnerNoPost()
+            : buiildOtherProfileNoPost();
       } else {
         return Column(
           children: posts,
@@ -426,9 +530,7 @@ class _ProfileState extends State<Profile>
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          widget.username.length > 15
-              ? "@" + widget.username.substring(0, 15) + "..."
-              : "@" + widget.username,
+          "Profile",
           style: TextStyle(
             color: Colors.white,
             fontFamily: "Montserrat",
@@ -450,15 +552,13 @@ class _ProfileState extends State<Profile>
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: RefreshIndicator(
-        onRefresh: () => getProfilePosts(),
+        onRefresh: getProfilePosts,
         child: ListView(
           children: <Widget>[
             buildProfileHeader(),
             Divider(),
             buildProfileMenu(),
-            Divider(
-              height: 0.0,
-            ),
+            Divider(),
             buildProfilePosts(),
           ],
         ),

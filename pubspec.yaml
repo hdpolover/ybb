@@ -46,6 +46,7 @@ dependencies:
   timeago: ^2.0.29
   uuid: ^2.2.2
   webview_flutter: ^1.0.7
+  package_info_plus: 0.6.3
 
 dev_dependencies:
   flutter_test:
@@ -72,3 +73,7 @@ flutter:
     - assets/images/ybb_logo.png
     - assets/images/1.png
     - assets/images/no_comment.svg
+    - assets/images/no_notif.svg
+    - assets/images/no_search.svg
+    - assets/images/no_post.svg
+    - assets/images/no_search_result.svg

@@ -61,21 +61,50 @@ class _SearchState extends State<Search>
           shrinkWrap: true,
           children: <Widget>[
             SvgPicture.asset(
-              'assets/images/search.svg',
-              height: orientation == Orientation.portrait ? 300.0 : 200.0,
+              'assets/images/no_search.svg',
+              height: orientation == Orientation.portrait ? 200.0 : 150.0,
+            ),
+            SizedBox(
+              height: 15,
             ),
             Text(
-              "Find Users",
+              "Find people to broaden your network.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w600,
-                fontSize: 60.0,
+                color: Colors.black,
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  buildNoSearchResult() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/images/no_search_result.svg',
+            height: 170,
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: Text(
+              "Oops! We can't find anything on that keyword. Try something else.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -93,9 +122,12 @@ class _SearchState extends State<Search>
           UserResult searchResult = UserResult(user);
           searchResults.add(searchResult);
         });
-        return ListView(
-          children: searchResults,
-        );
+
+        return searchResults.length == 0
+            ? buildNoSearchResult()
+            : ListView(
+                children: searchResults,
+              );
       },
     );
   }

@@ -24,7 +24,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   @override
   void initState() {
     super.initState();
-    newsCategories = getNewsCategories();
+    //newsCategories = getNewsCategories();
     getNews();
   }
 
@@ -53,29 +53,27 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
         onRefresh: () => getNews(),
         child: SingleChildScrollView(
           child: _loading
-              ? Center(
-                  child: circularProgress(),
-                )
+              ? circularProgress()
               : Container(
                   child: Column(
                     children: <Widget>[
                       //categories
-                      Container(
-                        padding: EdgeInsets.only(top: 5.0, left: 5.0),
-                        height: 55.0,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: newsCategories.length,
-                          itemBuilder: (context, index) {
-                            return CategoryTile(
-                              categoryName: newsCategories[index].categoryName,
-                              categoryImageUrl:
-                                  newsCategories[index].categroyImageUrl,
-                            );
-                          },
-                        ),
-                      ),
+                      // Container(
+                      //   padding: EdgeInsets.only(top: 5.0, left: 5.0),
+                      //   height: 55.0,
+                      //   child: ListView.builder(
+                      //     shrinkWrap: true,
+                      //     scrollDirection: Axis.horizontal,
+                      //     itemCount: newsCategories.length,
+                      //     itemBuilder: (context, index) {
+                      //       return CategoryTile(
+                      //         categoryName: newsCategories[index].categoryName,
+                      //         categoryImageUrl:
+                      //             newsCategories[index].categroyImageUrl,
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
                       //articles
                       Container(
                         child: ListView.builder(

@@ -344,6 +344,7 @@ class _PostState extends State<Post> {
                           )
                         : Icon(
                             Icons.thumb_up_alt_outlined,
+                            color: Colors.grey,
                             size: 30.0,
                           ),
                     Padding(padding: EdgeInsets.only(right: 10.0)),
@@ -372,6 +373,7 @@ class _PostState extends State<Post> {
                     Icon(
                       Icons.comment,
                       size: 30.0,
+                      color: Colors.grey,
                     ),
                     // Padding(padding: EdgeInsets.only(right: 10.0)),
                     // Text(
@@ -396,6 +398,7 @@ class _PostState extends State<Post> {
               child: Container(
                 child: Icon(
                   Icons.bookmark_border_outlined,
+                  color: Colors.grey,
                   size: 30.0,
                 ),
               ),

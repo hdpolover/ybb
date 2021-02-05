@@ -24,11 +24,12 @@ class _TimelineState extends State<Timeline>
   List<Post> posts;
   List<String> followingList = [];
 
+  var refreshkey = GlobalKey<RefreshIndicatorState>();
+
   @override
   void initState() {
     super.initState();
-    //getTimeline();
-    //getFollowing();
+
     getPosts();
   }
 
@@ -37,8 +38,6 @@ class _TimelineState extends State<Timeline>
   }
 
   Future<void> getTimeline() async {
-    print(followingList);
-
     List<Post> userPosts = [];
     followingList.forEach((element) async {
       QuerySnapshot snapshot = await postsRef
@@ -78,7 +77,9 @@ class _TimelineState extends State<Timeline>
     }
   }
 
-  refreshTimeline() async {
+  Future<Null> refreshTimeline() async {
+    refreshkey.currentState?.show(atTop: true);
+
     await getPosts();
     await buildTimeline();
   }
@@ -91,6 +92,7 @@ class _TimelineState extends State<Timeline>
         if (!snapshot.hasData) {
           return circularProgress();
         }
+
         List<UserResult> userResults = [];
         snapshot.data.documents.forEach((doc) {
           User user = User.fromDocument(doc);
@@ -106,6 +108,7 @@ class _TimelineState extends State<Timeline>
             userResults.add(userResult);
           }
         });
+
         return Container(
           color: Theme.of(context).accentColor.withOpacity(0.2),
           child: Column(
@@ -154,7 +157,8 @@ class _TimelineState extends State<Timeline>
         removeBackButton: true,
       ),
       body: RefreshIndicator(
-        onRefresh: () => refreshTimeline(),
+        key: refreshkey,
+        onRefresh: refreshTimeline,
         child: buildTimeline(),
       ),
     );

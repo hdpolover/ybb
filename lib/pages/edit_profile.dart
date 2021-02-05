@@ -19,14 +19,17 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController displayNameController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   bool isLoading = false;
   User user;
   bool _displayNameValid = true;
+  bool _usernameValid = true;
   bool _bioValid = true;
 
   FocusNode focusNode;
   FocusNode focusNode1;
+  //FocusNode focusNode2;
 
   @override
   void initState() {
@@ -35,12 +38,14 @@ class _EditProfileState extends State<EditProfile> {
 
     focusNode = FocusNode();
     focusNode1 = FocusNode();
+    //focusNode2 = FocusNode();
   }
 
   @override
   void dispose() {
     focusNode.dispose();
     focusNode1.dispose();
+    //focusNode2.dispose();
 
     super.dispose();
   }
@@ -55,6 +60,7 @@ class _EditProfileState extends State<EditProfile> {
 
     displayNameController.text = user.displayName;
     bioController.text = user.bio;
+    usernameController.text = user.username;
 
     setState(() {
       isLoading = false;
@@ -84,6 +90,29 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
+  Column buildUsernameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 16.0),
+          child: Text(
+            "Username",
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        TextField(
+          //focusNode: focusNode2,
+          controller: usernameController,
+          decoration: InputDecoration(
+            hintText: user.username,
+            errorText: _usernameValid ? null : "Username is too short",
+          ),
+        ),
+      ],
+    );
+  }
+
   Column buildBioField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +128,7 @@ class _EditProfileState extends State<EditProfile> {
           focusNode: focusNode1,
           controller: bioController,
           decoration: InputDecoration(
-            hintText: "Update bio",
+            hintText: user.bio.length == 0 ? "Update bio" : user.bio,
             errorText: _bioValid ? null : "Bio is too long",
           ),
         ),
@@ -110,6 +139,7 @@ class _EditProfileState extends State<EditProfile> {
   updateProfileData() {
     focusNode.unfocus();
     focusNode1.unfocus();
+    //focusNode2.unfocus();
 
     setState(() {
       displayNameController.text.trim().length < 5 ||
@@ -117,15 +147,21 @@ class _EditProfileState extends State<EditProfile> {
           ? _displayNameValid = false
           : _displayNameValid = true;
 
+      usernameController.text.trim().length < 5 ||
+              usernameController.text.trim().isEmpty
+          ? _usernameValid = false
+          : _usernameValid = true;
+
       bioController.text.trim().length > 50
           ? _bioValid = false
           : _bioValid = true;
     });
 
-    if (_displayNameValid && _bioValid) {
+    if (_displayNameValid && _bioValid && _usernameValid) {
       usersRef.doc(widget.currentUserId).update({
         "displayName": displayNameController.text,
         "bio": bioController.text,
+        "username": usernameController.text,
       });
 
       SnackBar snackBar =
@@ -152,7 +188,7 @@ class _EditProfileState extends State<EditProfile> {
           style: TextStyle(
             color: Colors.white,
             fontFamily: "Montserrat",
-            fontSize: 25.0,
+            fontSize: 20.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -183,6 +219,7 @@ class _EditProfileState extends State<EditProfile> {
                         padding: EdgeInsets.all(16.0),
                         child: Column(
                           children: [
+                            buildUsernameField(),
                             buildDisplayNameField(),
                             buildBioField(),
                           ],
@@ -195,153 +232,4 @@ class _EditProfileState extends State<EditProfile> {
             ),
     );
   }
-
-  // Column buildDisplayNameField() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: <Widget>[
-  //       Padding(
-  //           padding: EdgeInsets.only(top: 12.0),
-  //           child: Text(
-  //             "Display Name",
-  //             style: TextStyle(color: Colors.grey),
-  //           )),
-  //       TextField(
-  //         controller: displayNameController,
-  //         decoration: InputDecoration(
-  //           hintText: "Update Display Name",
-  //           errorText: _displayNameValid ? null : "Display Name too short",
-  //         ),
-  //       )
-  //     ],
-  //   );
-  // }
-
-  // Column buildBioField() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: <Widget>[
-  //       Padding(
-  //         padding: EdgeInsets.only(top: 12.0),
-  //         child: Text(
-  //           "Bio",
-  //           style: TextStyle(color: Colors.grey),
-  //         ),
-  //       ),
-  //       TextField(
-  //         controller: bioController,
-  //         decoration: InputDecoration(
-  //           hintText: "Update Bio",
-  //           errorText: _bioValid ? null : "Bio too long",
-  //         ),
-  //       )
-  //     ],
-  //   );
-  // }
-
-  // updateProfileData() {
-  //   setState(() {
-  //     displayNameController.text.trim().length < 3 ||
-  //             displayNameController.text.isEmpty
-  //         ? _displayNameValid = false
-  //         : _displayNameValid = true;
-  //     bioController.text.trim().length > 100
-  //         ? _bioValid = false
-  //         : _bioValid = true;
-  //   });
-
-  //   if (_displayNameValid && _bioValid) {
-  //     usersRef.doc(widget.currentUserId).update({
-  //       "displayName": displayNameController.text,
-  //       "bio": bioController.text,
-  //     });
-  //     SnackBar snackbar = SnackBar(content: Text("Profile updated!"));
-  //     _scaffoldKey.currentState.showSnackBar(snackbar);
-  //   }
-  // }
-
-  // logout() async {
-  //   await googleSignIn.signOut();
-  //   Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
-  // }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     key: _scaffoldKey,
-  //     appBar: AppBar(
-  //       backgroundColor: Colors.white,
-  //       title: Text(
-  //         "Edit Profile",
-  //         style: TextStyle(
-  //           color: Colors.black,
-  //         ),
-  //       ),
-  //       actions: <Widget>[
-  //         IconButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           icon: Icon(
-  //             Icons.done,
-  //             size: 30.0,
-  //             color: Colors.green,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //     body: isLoading
-  //         ? circularProgress()
-  //         : ListView(
-  //             children: <Widget>[
-  //               Container(
-  //                 child: Column(
-  //                   children: <Widget>[
-  //                     Padding(
-  //                       padding: EdgeInsets.only(
-  //                         top: 16.0,
-  //                         bottom: 8.0,
-  //                       ),
-  //                       child: CircleAvatar(
-  //                         radius: 50.0,
-  //                         backgroundImage:
-  //                             CachedNetworkImageProvider(user.photoUrl),
-  //                       ),
-  //                     ),
-  //                     Padding(
-  //                       padding: EdgeInsets.all(16.0),
-  //                       child: Column(
-  //                         children: <Widget>[
-  //                           buildDisplayNameField(),
-  //                           buildBioField(),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                     RaisedButton(
-  //                       onPressed: updateProfileData,
-  //                       child: Text(
-  //                         "Update Profile",
-  //                         style: TextStyle(
-  //                           color: Theme.of(context).primaryColor,
-  //                           fontSize: 20.0,
-  //                           fontWeight: FontWeight.bold,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     Padding(
-  //                       padding: EdgeInsets.all(16.0),
-  //                       child: FlatButton.icon(
-  //                         onPressed: logout,
-  //                         icon: Icon(Icons.cancel, color: Colors.red),
-  //                         label: Text(
-  //                           "Logout",
-  //                           style: TextStyle(color: Colors.red, fontSize: 20.0),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //   );
-  // }
 }

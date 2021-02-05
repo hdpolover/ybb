@@ -40,20 +40,20 @@ AppBar header(context,
           );
         },
       ),
-      IconButton(
-        icon: Icon(
-          Icons.chat,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Messages(),
-            ),
-          );
-        },
-      ),
+      // IconButton(
+      //   icon: Icon(
+      //     Icons.chat,
+      //     color: Colors.white,
+      //   ),
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => Messages(),
+      //       ),
+      //     );
+      //   },
+      // ),
     ],
   );
 }
