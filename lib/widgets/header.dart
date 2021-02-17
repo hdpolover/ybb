@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ybb/models/user.dart';
-import 'package:ybb/pages/messages.dart';
 import 'package:ybb/pages/upload_post.dart';
 
 AppBar header(context,

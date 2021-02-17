@@ -4,32 +4,44 @@ import 'package:ybb/models/article_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 
+Future<List> fetchWpPosts() async {
+  final response = await http.get(
+      "https://youthbreaktheboundaries.com/wp-json/wp/v2/posts?_embed",
+      headers: {"Accept": "application/json"});
+
+  var convertDatatoJson = jsonDecode(response.body);
+
+  return convertDatatoJson;
+}
+
 class NewsData {
   List<ArticleModel> articles = [];
-  List<String> articleImageLinks = [];
 
   Future<void> getArticles() async {
-    String url = "https://youthbreaktheboundaries.com/wp-json/wp/v2/posts";
+    String url =
+        "https://youthbreaktheboundaries.com/wp-json/wp/v2/posts?_embed";
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
+
       jsonData.forEach((element) {
         ArticleModel articleModel = ArticleModel(
-          title: element['title']['rendered'],
-          desc: parse((element['excerpt']['rendered']).toString())
-              .documentElement
-              .text,
-          content: parse((element['content']['rendered']).toString())
-              .documentElement
-              .text,
-          date: element['date'],
-          url: element['link'],
-          featuredMedia: element['featured_media'].toString(),
-          imageUrl:
-              "https://youthbreaktheboundaries.com/wp-content/uploads/2021/02/Salinan-dari-Copy-of-Scholarship-at-Columbia-University-by-The-Obama-Foundation-2021-02-01T082915.403.png",
-        );
+            title: element['title']['rendered'],
+            desc: parse((element['excerpt']['rendered']).toString())
+                .documentElement
+                .text,
+            content: parse((element['content']['rendered']).toString())
+                .documentElement
+                .text,
+            date: element['date'],
+            url: element['link'],
+            imageUrl: element['_embedded']['wp:featuredmedia'] == null
+                ? "https://jooinn.com/images/sky-view-8.jpg"
+                : element['_embedded']['wp:featuredmedia'][0]['source_url']
+            //"https://youthbreaktheboundaries.com/wp-content/uploads/2021/02/Salinan-dari-Copy-of-Scholarship-at-Columbia-University-by-The-Obama-Foundation-2021-02-01T082915.403.png",
+            );
 
         articles.add(articleModel);
       });
@@ -38,26 +50,19 @@ class NewsData {
     }
   }
 
-  Future<void> getFeaturedMedia() async {
-    articles.forEach((element) async {
-      String fm = element.featuredMedia;
+  getFeaturedMedia() async {
+    dynamic link;
 
-      String url =
-          "https://youthbreaktheboundaries.com/wp-json/wp/v2/media?parent=$fm";
-      print(url);
+    String url =
+        "https://youthbreaktheboundaries.com/wp-json/wp/v2/posts?_embed";
 
-      final response = await http.get(url);
+    final response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
+    var jsonData = jsonDecode(response.body);
 
-        jsonData.forEach((element) {
-          articleImageLinks.add(element['title']['rendered']);
-          print(element['title']['rendered']);
-        });
-      } else {
-        throw Exception('Unexpected error occured!');
-      }
+    jsonData.forEach((element) {
+      link = element['_embedded']['wp:featuredmedia'][0]['source_url'];
+      print("1234//" + link);
     });
   }
 }

@@ -175,12 +175,15 @@ class _UploadPostState extends State<UploadPost>
       body: ListView(
         children: <Widget>[
           isUploading ? linearProgress() : Text(''),
-          Container(
-            child: TextField(
-              controller: descController,
-              decoration: InputDecoration(
-                hintText: "Write something here...",
-                border: InputBorder.none,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+            child: Container(
+              child: TextField(
+                controller: descController,
+                decoration: InputDecoration(
+                  hintText: "Write something here...",
+                  border: InputBorder.none,
+                ),
               ),
             ),
           ),
@@ -199,7 +202,7 @@ class _UploadPostState extends State<UploadPost>
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: _image == null
-                            ? AssetImage('assets/images/ybb_logo.png')
+                            ? AssetImage('assets/images/add_image_post.png')
                             : FileImage(_image),
                       ),
                     ),
@@ -212,8 +215,6 @@ class _UploadPostState extends State<UploadPost>
       ),
     );
   }
-
-  ListView buildUploadLayout() {}
 
   bool get wantKeepAlive => true;
 }

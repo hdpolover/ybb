@@ -2,10 +2,9 @@ class ArticleModel {
   String title;
   String desc;
   String content;
-  String imageUrl;
+  dynamic imageUrl;
   String url;
   String date;
-  String featuredMedia;
 
   ArticleModel({
     this.title,
@@ -14,6 +13,5 @@ class ArticleModel {
     this.imageUrl,
     this.url,
     this.date,
-    this.featuredMedia,
   });
 }

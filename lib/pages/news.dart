@@ -2,12 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:ybb/main.dart';
 import 'package:ybb/pages/news_detail.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/models/news_category_model.dart';
-import 'package:ybb/helpers/news_categories.dart';
 import 'package:ybb/models/article_model.dart';
-import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/widgets/progress.dart';
 
 class News extends StatefulWidget {
@@ -29,10 +28,10 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   }
 
   getNews() async {
-    NewsData newsData = NewsData();
-    await newsData.getArticles();
+    //NewsData newsData = NewsData();
+    //await newsData.getArticles();
 
-    articles = newsData.articles;
+    articles = articlesFromMain;
 
     if (mounted) {
       setState(() {
@@ -75,6 +74,44 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                       //   ),
                       // ),
                       //articles
+                      // FutureBuilder(
+                      //   future: fetchWpPosts(),
+                      //   builder: (context, snapshot) {
+                      //     if (snapshot.hasData) {
+                      //       return ListView.builder(
+                      //         scrollDirection: Axis.vertical,
+                      //         shrinkWrap: true,
+                      //         physics: ClampingScrollPhysics(),
+                      //         itemCount: snapshot.data.length,
+                      //         itemBuilder: (context, index) {
+                      //           Map wppost = snapshot.data[index];
+
+                      //           var imageurl;
+                      //           try {
+                      //             imageurl = wppost['_embedded']['wp:featuredmedia']
+                      //                 [0]['source_url'];
+                      //           } catch (e) {
+                      //             imageurl =
+                      //                 "https://jooinn.com/images/sky-view-8.jpg";
+                      //           }
+
+                      //           return ArticleTile(
+                      //             newsImageUrl: imageurl,
+                      //             newsTitle: wppost['title']['rendered'],
+                      //             newsDesc: parse(
+                      //                     (wppost['excerpt']['rendered']).toString())
+                      //                 .documentElement
+                      //                 .text,
+                      //             newsUrl: wppost['link'],
+                      //             newsDate: wppost['date'],
+                      //           );
+                      //         },
+                      //       );
+                      //     }
+                      //     return circularProgress();
+                      //   },
+                      // ),
+
                       Container(
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -196,13 +233,14 @@ class ArticleTile extends StatelessWidget {
             ),
             SizedBox(height: 5),
             Container(
+              margin: EdgeInsets.only(left: 10.0),
               child: Row(
                 children: [
                   Text(convertDateTime(DateTime.parse(newsDate)).toString())
                 ],
               ),
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 10),
             Container(
               margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Text(

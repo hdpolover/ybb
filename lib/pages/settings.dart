@@ -12,8 +12,6 @@ class ProfileSettings extends StatefulWidget {
 
 class _SettingsState extends State<ProfileSettings> {
   String _projectVersion = '';
-  String _buildNumber = '';
-  String _packageName = '';
   String _appName = '';
 
   @override
@@ -26,16 +24,12 @@ class _SettingsState extends State<ProfileSettings> {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
     String appName = packageInfo.appName;
-    String packageName = packageInfo.packageName;
     String projectVersion = packageInfo.version;
-    String buildNumber = packageInfo.buildNumber;
 
     if (!mounted) return;
 
     setState(() {
       _projectVersion = projectVersion;
-      _buildNumber = buildNumber;
-      _packageName = packageName;
       _appName = appName;
     });
   }
