@@ -80,3 +80,4 @@ flutter:
     - assets/images/no_search_result.svg
     - assets/images/add_image.svg
     - assets/images/add_image_post.png
+    - assets/images/loading_bg.svg

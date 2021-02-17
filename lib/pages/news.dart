@@ -2,7 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:ybb/helpers/news_categories.dart';
+import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/main.dart';
+import 'package:ybb/pages/news_category.dart';
 import 'package:ybb/pages/news_detail.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/models/news_category_model.dart';
@@ -23,14 +26,12 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   @override
   void initState() {
     super.initState();
-    //newsCategories = getNewsCategories();
+
+    newsCategories = getNewsCategories();
     getNews();
   }
 
   getNews() async {
-    //NewsData newsData = NewsData();
-    //await newsData.getArticles();
-
     articles = articlesFromMain;
 
     if (mounted) {
@@ -38,6 +39,15 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
         _loading = false;
       });
     }
+  }
+
+  Future<Null> getNewsAgain() async {
+    NewsData newsData = new NewsData();
+
+    articles = [];
+
+    await newsData.getArticles();
+    articles = newsData.articles;
   }
 
   bool get wantKeepAlive => true;
@@ -49,7 +59,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
     return Scaffold(
       appBar: defaultAppBar(context, titleText: "News", removeBackButton: true),
       body: RefreshIndicator(
-        onRefresh: () => getNews(),
+        onRefresh: getNewsAgain,
         child: SingleChildScrollView(
           child: _loading
               ? circularProgress()
@@ -57,61 +67,24 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                   child: Column(
                     children: <Widget>[
                       //categories
-                      // Container(
-                      //   padding: EdgeInsets.only(top: 5.0, left: 5.0),
-                      //   height: 55.0,
-                      //   child: ListView.builder(
-                      //     shrinkWrap: true,
-                      //     scrollDirection: Axis.horizontal,
-                      //     itemCount: newsCategories.length,
-                      //     itemBuilder: (context, index) {
-                      //       return CategoryTile(
-                      //         categoryName: newsCategories[index].categoryName,
-                      //         categoryImageUrl:
-                      //             newsCategories[index].categroyImageUrl,
-                      //       );
-                      //     },
-                      //   ),
-                      // ),
+                      Container(
+                        padding: EdgeInsets.only(top: 5.0, left: 5.0),
+                        height: 55.0,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: newsCategories.length,
+                          itemBuilder: (context, index) {
+                            return CategoryTile(
+                              categoryName: newsCategories[index].categoryName,
+                              categoryImageUrl:
+                                  newsCategories[index].categroyImageUrl,
+                              categoryIndex: newsCategories[index].categoryId,
+                            );
+                          },
+                        ),
+                      ),
                       //articles
-                      // FutureBuilder(
-                      //   future: fetchWpPosts(),
-                      //   builder: (context, snapshot) {
-                      //     if (snapshot.hasData) {
-                      //       return ListView.builder(
-                      //         scrollDirection: Axis.vertical,
-                      //         shrinkWrap: true,
-                      //         physics: ClampingScrollPhysics(),
-                      //         itemCount: snapshot.data.length,
-                      //         itemBuilder: (context, index) {
-                      //           Map wppost = snapshot.data[index];
-
-                      //           var imageurl;
-                      //           try {
-                      //             imageurl = wppost['_embedded']['wp:featuredmedia']
-                      //                 [0]['source_url'];
-                      //           } catch (e) {
-                      //             imageurl =
-                      //                 "https://jooinn.com/images/sky-view-8.jpg";
-                      //           }
-
-                      //           return ArticleTile(
-                      //             newsImageUrl: imageurl,
-                      //             newsTitle: wppost['title']['rendered'],
-                      //             newsDesc: parse(
-                      //                     (wppost['excerpt']['rendered']).toString())
-                      //                 .documentElement
-                      //                 .text,
-                      //             newsUrl: wppost['link'],
-                      //             newsDate: wppost['date'],
-                      //           );
-                      //         },
-                      //       );
-                      //     }
-                      //     return circularProgress();
-                      //   },
-                      // ),
-
                       Container(
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -120,6 +93,8 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                           itemCount: articles.length,
                           itemBuilder: (context, index) {
                             return ArticleTile(
+                              newsCategory:
+                                  convertNewsCategory(articles[index].category),
                               newsImageUrl: articles[index].imageUrl,
                               newsTitle: articles[index].title,
                               newsDesc: articles[index].desc,
@@ -138,15 +113,56 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   }
 }
 
+String convertNewsCategory(int index) {
+  switch (index) {
+    case 1:
+      return "Uncategorized";
+      break;
+    case 4:
+      return "News";
+      break;
+    case 5:
+      return "Degree";
+      break;
+    case 6:
+      return "Internship";
+      break;
+    case 7:
+      return "Fellowship";
+      break;
+    case 8:
+      return "Experience";
+      break;
+    case 9:
+      return "Registration";
+      break;
+    case 10:
+      return "Announcement";
+      break;
+    default:
+      return "Uncategorized";
+      break;
+  }
+}
+
 class CategoryTile extends StatelessWidget {
   final categoryName, categoryImageUrl;
+  final categoryIndex;
 
-  CategoryTile({this.categoryName, this.categoryImageUrl});
+  CategoryTile({this.categoryName, this.categoryImageUrl, this.categoryIndex});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NewsCategory(
+            categoryName: categoryName,
+            categoryIndex: categoryIndex,
+          ),
+        ),
+      ),
       child: Container(
         margin: EdgeInsets.only(right: 8.0),
         child: Stack(
@@ -188,14 +204,20 @@ String convertDateTime(DateTime postedDate) {
 }
 
 class ArticleTile extends StatelessWidget {
-  final String newsImageUrl, newsTitle, newsDesc, newsUrl, newsDate;
+  final String newsImageUrl,
+      newsTitle,
+      newsDesc,
+      newsUrl,
+      newsDate,
+      newsCategory;
 
   ArticleTile(
       {@required this.newsImageUrl,
       @required this.newsTitle,
       @required this.newsDesc,
       @required this.newsUrl,
-      @required this.newsDate});
+      @required this.newsDate,
+      @required this.newsCategory});
 
   @override
   Widget build(BuildContext context) {
@@ -204,9 +226,7 @@ class ArticleTile extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NewsDetail(
-              url: newsUrl,
-            ),
+            builder: (context) => NewsDetail(url: newsUrl),
           ),
         );
       },
@@ -224,7 +244,8 @@ class ArticleTile extends StatelessWidget {
             Container(
               margin: EdgeInsets.all(5),
               child: Text(
-                newsTitle,
+                newsTitle.trim(),
+                textAlign: TextAlign.start,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
@@ -232,13 +253,22 @@ class ArticleTile extends StatelessWidget {
               ),
             ),
             SizedBox(height: 5),
-            Container(
-              margin: EdgeInsets.only(left: 10.0),
-              child: Row(
-                children: [
-                  Text(convertDateTime(DateTime.parse(newsDate)).toString())
-                ],
-              ),
+            Row(
+              children: [
+                SizedBox(width: 10),
+                ActionChip(
+                  avatar: Icon(Icons.calendar_today_rounded),
+                  label: Text(
+                      convertDateTime(DateTime.parse(newsDate)).toString()),
+                  onPressed: () {},
+                ),
+                SizedBox(width: 10),
+                InputChip(
+                  avatar: Icon(Icons.folder_open),
+                  label: Text(newsCategory),
+                  onPressed: () {},
+                ),
+              ],
             ),
             SizedBox(height: 10),
             Container(

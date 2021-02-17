@@ -9,16 +9,20 @@ AppBar header(context,
     User currentUser}) {
   return AppBar(
     automaticallyImplyLeading: removeBackButton ? false : true,
-    title: Text(
-      isAppTitle ? "YBB" : titleText,
-      style: TextStyle(
-        color: Colors.white,
-        fontFamily: isAppTitle ? "Montserrat" : "",
-        fontSize: isAppTitle ? 25.0 : 22.0,
-        fontWeight: FontWeight.bold,
-      ),
-      overflow: TextOverflow.ellipsis,
+    leading: Padding(
+      padding: EdgeInsets.all(7),
+      child: Image(image: AssetImage('assets/images/ybb_logo.png')),
     ),
+    // title: Text(
+    //   isAppTitle ? "YBB" : titleText,
+    //   style: TextStyle(
+    //     color: Colors.white,
+    //     fontFamily: isAppTitle ? "Montserrat" : "",
+    //     fontSize: isAppTitle ? 25.0 : 22.0,
+    //     fontWeight: FontWeight.bold,
+    //   ),
+    //   overflow: TextOverflow.ellipsis,
+    // ),
     //centerTitle: true,
     backgroundColor: Colors.blue,
     elevation: 0,

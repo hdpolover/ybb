@@ -66,10 +66,10 @@ class _TimelineState extends State<Timeline>
   }
 
   buildTimeline() {
-    if (posts == null) {
+    if (posts == null || posts.isEmpty) {
       return circularProgress();
-    } else if (posts.isEmpty) {
-      return buildUsersToFollow();
+      // } else if (posts.isEmpty) {
+      //   return buildUsersToFollow();
     } else {
       return ListView(
         children: posts,
@@ -79,6 +79,8 @@ class _TimelineState extends State<Timeline>
 
   Future<Null> refreshTimeline() async {
     refreshkey.currentState?.show(atTop: true);
+
+    posts = [];
 
     await getPosts();
     await buildTimeline();

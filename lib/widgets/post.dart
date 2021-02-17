@@ -138,23 +138,25 @@ class _PostState extends State<Post> {
 
   handleDeletePost(BuildContext parentContext) {
     return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text("Remove this post?"),
-            children: <Widget>[
-              SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    deletePost();
-                  },
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.red),
-                  )),
-            ],
-          );
-        });
+      context: parentContext,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text("Remove this post?"),
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context);
+                deletePost();
+              },
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Note: To delete post, ownerId and currentUserId must be equal, so they can be used interchangeably

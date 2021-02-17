@@ -5,6 +5,7 @@ class ArticleModel {
   dynamic imageUrl;
   String url;
   String date;
+  int category;
 
   ArticleModel({
     this.title,
@@ -13,5 +14,6 @@ class ArticleModel {
     this.imageUrl,
     this.url,
     this.date,
+    this.category,
   });
 }
