@@ -7,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
-import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/widgets/progress.dart';
 import 'package:image/image.dart' as Im;
 
@@ -129,10 +128,16 @@ class _UploadPostState extends State<UploadPost>
       isUploading = true;
     });
 
-    await compressImage();
-    await uploadImageFile(_image);
+    String mediaUrl = "";
 
-    String mediaUrl = downloadUrl;
+    try {
+      await compressImage();
+      await uploadImageFile(_image);
+
+      mediaUrl = downloadUrl;
+    } catch (e) {
+      mediaUrl = "";
+    }
 
     createPostInFirestore(
       desc: descController.text,
@@ -146,16 +151,7 @@ class _UploadPostState extends State<UploadPost>
       postId = Uuid().v4();
     });
 
-    //Navigator.pop(context);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Timeline(
-          currentUser: currentUser,
-        ),
-      ),
-    );
+    Navigator.pop(context);
   }
 
   @override
@@ -165,7 +161,7 @@ class _UploadPostState extends State<UploadPost>
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back_ios),
           onPressed: clearImageAndBack,
         ),
         title: Text("Create New Post"),
@@ -190,6 +186,8 @@ class _UploadPostState extends State<UploadPost>
             child: Container(
               child: TextField(
                 controller: descController,
+                minLines: 3,
+                maxLines: 20,
                 decoration: InputDecoration(
                   hintText: "Write something here...",
                   border: InputBorder.none,

@@ -1,11 +1,16 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/progress.dart';
+import 'package:image/image.dart' as Im;
 
 class EditProfile extends StatefulWidget {
   final String currentUserId;
@@ -21,15 +26,24 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController displayNameController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
+  TextEditingController occupationController = TextEditingController();
+  TextEditingController interestController = TextEditingController();
+
   bool isLoading = false;
   User user;
   bool _displayNameValid = true;
   bool _usernameValid = true;
   bool _bioValid = true;
+  bool _occupationValid = true;
 
   FocusNode focusNode;
   FocusNode focusNode1;
   //FocusNode focusNode2;
+
+  String downloadUrl;
+
+  File _image;
+  final picker = ImagePicker();
 
   @override
   void initState() {
@@ -39,6 +53,88 @@ class _EditProfileState extends State<EditProfile> {
     focusNode = FocusNode();
     focusNode1 = FocusNode();
     //focusNode2 = FocusNode();
+  }
+
+  Future handleCamera() async {
+    Navigator.pop(context);
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future handleGallery() async {
+    Navigator.pop(context);
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  selectImage(parentContext) {
+    return showDialog(
+      context: parentContext,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text("Choose an image..."),
+          children: <Widget>[
+            SimpleDialogOption(
+              child: Text("Camera"),
+              onPressed: handleCamera,
+            ),
+            SimpleDialogOption(
+              child: Text("Gallery"),
+              onPressed: handleGallery,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  clearImageAndBack() {
+    setState(() {
+      _image = null;
+    });
+  }
+
+  compressImage() async {
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+
+    String id = widget.currentUserId;
+    Im.Image imageFile = Im.decodeImage(_image.readAsBytesSync());
+    final compressedImageFile = File('$path/profile_pic_$id.jpg')
+      ..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 70));
+
+    setState(() {
+      _image = compressedImageFile;
+    });
+  }
+
+  uploadImageFile(imageFile) async {
+    String id = widget.currentUserId;
+
+    Reference ref = storageRef
+        .child("Users")
+        .child(widget.currentUserId)
+        .child("profile_pic_$id.jpg");
+
+    await ref.putFile(imageFile).whenComplete(() async {
+      await ref.getDownloadURL().then((value) {
+        downloadUrl = value;
+      });
+    });
   }
 
   @override
@@ -61,6 +157,8 @@ class _EditProfileState extends State<EditProfile> {
     displayNameController.text = user.displayName;
     bioController.text = user.bio;
     usernameController.text = user.username;
+    occupationController.text = user.occupation;
+    interestController.text = user.interests;
 
     setState(() {
       isLoading = false;
@@ -90,6 +188,28 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
+  Column buildOccupationField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 16.0),
+          child: Text(
+            "Occupation",
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        TextField(
+          controller: occupationController,
+          decoration: InputDecoration(
+            hintText: "Update current occupation",
+            errorText: _occupationValid ? null : "Occupation is not valid",
+          ),
+        ),
+      ],
+    );
+  }
+
   Column buildUsernameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,6 +227,28 @@ class _EditProfileState extends State<EditProfile> {
           decoration: InputDecoration(
             hintText: user.username,
             errorText: _usernameValid ? null : "Username is too short",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column buildInterestField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 16.0),
+          child: Text(
+            "Interests",
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        TextField(
+          //focusNode: focusNode2,
+          controller: interestController,
+          decoration: InputDecoration(
+            hintText: user.interests,
           ),
         ),
       ],
@@ -136,10 +278,21 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  updateProfileData() {
+  updateProfileData() async {
     focusNode.unfocus();
     focusNode1.unfocus();
     //focusNode2.unfocus();
+
+    String mediaUrl = "";
+
+    try {
+      await compressImage();
+      await uploadImageFile(_image);
+
+      mediaUrl = downloadUrl;
+    } catch (e) {
+      mediaUrl = user.photoUrl;
+    }
 
     setState(() {
       displayNameController.text.trim().length < 5 ||
@@ -155,14 +308,23 @@ class _EditProfileState extends State<EditProfile> {
       bioController.text.trim().length > 50
           ? _bioValid = false
           : _bioValid = true;
+
+      occupationController.text.trim().length < 3
+          ? _occupationValid = false
+          : _occupationValid = true;
     });
 
-    if (_displayNameValid && _bioValid && _usernameValid) {
+    if (_displayNameValid && _bioValid && _usernameValid && _occupationValid) {
       usersRef.doc(widget.currentUserId).update({
         "displayName": displayNameController.text,
         "bio": bioController.text,
         "username": usernameController.text,
+        "occupation": occupationController.text,
+        "interests": interestController.text,
+        "photoUrl": mediaUrl,
       });
+
+      clearImageAndBack();
 
       SnackBar snackBar =
           SnackBar(content: Text("Profile successfully updated!"));
@@ -207,12 +369,18 @@ class _EditProfileState extends State<EditProfile> {
                 Container(
                   child: Column(
                     children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 16.9),
-                        child: CircleAvatar(
-                          radius: 50.0,
-                          backgroundImage:
-                              CachedNetworkImageProvider(user.photoUrl),
+                      GestureDetector(
+                        onTap: () {
+                          selectImage(context);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 16.9),
+                          child: CircleAvatar(
+                            radius: 50.0,
+                            backgroundImage: _image == null
+                                ? CachedNetworkImageProvider(user.photoUrl)
+                                : FileImage(_image),
+                          ),
                         ),
                       ),
                       Padding(
@@ -221,6 +389,8 @@ class _EditProfileState extends State<EditProfile> {
                           children: [
                             buildUsernameField(),
                             buildDisplayNameField(),
+                            buildOccupationField(),
+                            buildInterestField(),
                             buildBioField(),
                           ],
                         ),

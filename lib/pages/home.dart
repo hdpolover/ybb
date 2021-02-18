@@ -82,7 +82,7 @@ class _HomeState extends State<Home> {
           "bio": "",
           "timestamp": timestamp,
           "occupation": "",
-          "interests": {}
+          "interests": "",
         },
       );
 
@@ -90,7 +90,9 @@ class _HomeState extends State<Home> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CreateAccount(),
+          builder: (context) => CreateAccount(
+            currentUserId: user.id,
+          ),
         ),
       );
 
@@ -195,10 +197,11 @@ class _HomeState extends State<Home> {
             image: AssetImage('assets/images/1.png'),
             fit: BoxFit.cover,
           ),
-          gradient: LinearGradient(
-              colors: [Colors.blue[300], Colors.blue],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter),
+          color: Colors.white,
+          // gradient: LinearGradient(
+          //     colors: [Colors.blue[300], Colors.blue],
+          //     begin: Alignment.bottomCenter,
+          //     end: Alignment.topCenter),
         ),
         child: Center(
           child: Column(
@@ -214,7 +217,7 @@ class _HomeState extends State<Home> {
                   Text(
                     'Welcome Back',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 35,
                     ),
@@ -239,7 +242,7 @@ class _HomeState extends State<Home> {
                     Text(
                       "Youth Break the Boundaries",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -271,44 +274,6 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-
-    // return Scaffold(
-    //   body: Container(
-    //     decoration: BoxDecoration(
-    //       color: Theme.of(context).primaryColor,
-    //     ),
-    //     alignment: Alignment.center,
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       crossAxisAlignment: CrossAxisAlignment.center,
-    //       children: <Widget>[
-    //         Text(
-    //           'YBB',
-    //           style: TextStyle(
-    //             fontFamily: "Signatra",
-    //             fontSize: 90.0,
-    //             color: Colors.white,
-    //           ),
-    //         ),
-    //         GestureDetector(
-    //           onTap: login,
-    //           child: Container(
-    //             width: 260.0,
-    //             height: 60.0,
-    //             decoration: BoxDecoration(
-    //               image: DecorationImage(
-    //                 image: AssetImage(
-    //                   'assets/images/google_signin_button.png',
-    //                 ),
-    //                 fit: BoxFit.cover,
-    //               ),
-    //             ),
-    //           ),
-    //         )
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   @override

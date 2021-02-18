@@ -392,21 +392,6 @@ class _PostState extends State<Post> {
             ),
           ],
         ),
-        Padding(padding: EdgeInsets.only(left: 50.0)),
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () => {},
-              child: Container(
-                child: Icon(
-                  Icons.bookmark_border_outlined,
-                  color: Colors.grey,
-                  size: 30.0,
-                ),
-              ),
-            ),
-          ],
-        )
       ],
     );
   }

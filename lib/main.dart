@@ -44,22 +44,24 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new SplashScreen(
-        seconds: 3,
-        navigateAfterSeconds: new Home(),
-        navigateAfterFuture: loadFromFuture(),
-        title: new Text(
-          'Youth Break the Boundaries',
-          style: new TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20.0,
-            color: Colors.white,
-          ),
-        ),
-        image: Image(image: AssetImage('assets/images/ybb_logo.png')),
-        backgroundColor: Theme.of(context).primaryColor,
-        styleTextUnderTheLoader: new TextStyle(),
-        photoSize: 100.0,
-        loaderColor: Colors.white);
+      seconds: 3,
+      navigateAfterSeconds: new Home(),
+      navigateAfterFuture: loadFromFuture(),
+      // title: new Text(
+      //   'Youth Break the Boundaries',
+      //   style: new TextStyle(
+      //     fontWeight: FontWeight.bold,
+      //     fontSize: 20.0,
+      //     color: Colors.black,
+      //   ),
+      // ),
+      image: Image(image: AssetImage('assets/images/ybb_logo.png')),
+      backgroundColor: Colors.white,
+      styleTextUnderTheLoader: new TextStyle(),
+      photoSize: 100.0,
+      loaderColor: Theme.of(context).primaryColor,
+      loadingText: Text("Fetching data..."),
+    );
   }
 }
 

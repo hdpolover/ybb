@@ -4,8 +4,6 @@ import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 
 class ProfileSettings extends StatefulWidget {
-  ProfileSettings({Key key}) : super(key: key);
-
   @override
   _SettingsState createState() => _SettingsState();
 }
@@ -17,6 +15,7 @@ class _SettingsState extends State<ProfileSettings> {
   @override
   initState() {
     super.initState();
+
     initPlatformState();
   }
 
@@ -48,19 +47,15 @@ class _SettingsState extends State<ProfileSettings> {
 
   Container buildAppVersion() {
     return Container(
-      child: RichText(
-        text: TextSpan(
-          text: _projectVersion + ' ',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-          children: <TextSpan>[
-            TextSpan(text: _appName, style: DefaultTextStyle.of(context).style),
-          ],
-        ),
-      ),
-    );
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(_appName),
+        Text(" v "),
+        Text(_projectVersion),
+        SizedBox(height: 30),
+      ],
+    ));
   }
 
   @override

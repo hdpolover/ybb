@@ -34,6 +34,7 @@ dependencies:
   firebase_storage: ^5.2.0
   flutter_svg: ^0.18.0
   geolocator: ^6.1.9
+  geocoding: ^1.0.5
   google_sign_in: ^4.5.6
   html: ^0.14.0+4
   http: ^0.12.2
@@ -81,3 +82,5 @@ flutter:
     - assets/images/add_image.svg
     - assets/images/add_image_post.png
     - assets/images/loading_bg.svg
+    - assets/images/info.svg
+    - assets/images/info_data.svg

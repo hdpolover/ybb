@@ -31,6 +31,8 @@ class _ProfileState extends State<Profile>
   int followingCount = 0;
   List<Post> posts = [];
 
+  List<String> interests;
+
   String profileMenu = "dashboard";
 
   @override
@@ -48,6 +50,7 @@ class _ProfileState extends State<Profile>
         .collection('userFollowers')
         .doc(currentUserId)
         .get();
+
     setState(() {
       isFollowing = doc.exists;
     });
@@ -142,6 +145,12 @@ class _ProfileState extends State<Profile>
         context,
         MaterialPageRoute(
             builder: (context) => EditProfile(currentUserId: currentUserId)));
+  }
+
+  separateInterests(String t) {
+    setState(() {
+      interests = t.trim().split(',');
+    });
   }
 
   Container buildButton({String text, Function function}) {
@@ -278,6 +287,7 @@ class _ProfileState extends State<Profile>
         return Column(
           children: [
             Card(
+              elevation: 0.5,
               child: Container(
                 padding: EdgeInsets.all(10.0),
                 child: Column(
@@ -300,20 +310,21 @@ class _ProfileState extends State<Profile>
               ),
             ),
             Card(
+              elevation: 0.5,
               child: Container(
                 padding: EdgeInsets.all(10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Bio",
+                      "Interests",
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Divider(),
-                    Text(user.bio),
+                    Text(user.interests),
                     SizedBox(
                       height: 10,
                     ),
@@ -373,7 +384,7 @@ class _ProfileState extends State<Profile>
                                 : "@" + user.username,
                           ),
                         ),
-                        SizedBox(height: 30),
+                        SizedBox(height: 60),
                         Container(
                           margin: EdgeInsets.only(left: 30.0, bottom: 5.0),
                           alignment: Alignment.centerLeft,
@@ -381,14 +392,6 @@ class _ProfileState extends State<Profile>
                             user.occupation.length == 0 ? "" : user.occupation,
                           ),
                         ),
-                        SizedBox(height: 30),
-                        // Container(
-                        //   margin: EdgeInsets.only(left: 30.0, bottom: 5.0),
-                        //   alignment: Alignment.centerLeft,
-                        //   child: Text(
-                        //     "Users location",
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
