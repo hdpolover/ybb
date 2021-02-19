@@ -31,55 +31,44 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<Widget> loadFromFuture() async {
+  @override
+  void initState() {
+    super.initState();
+
+    loadNews();
+  }
+
+  loadNews() async {
     NewsData newsData = new NewsData();
 
     await newsData.getArticles();
 
     articlesFromMain = newsData.articles;
-
-    return Future.value(new Home());
   }
+
+  // Future<Widget> loadFromFuture() async {
+  //   NewsData newsData = new NewsData();
+
+  //   await newsData.getArticles();
+
+  //   articlesFromMain = newsData.articles;
+
+  //   return Future.value(new Home());
+  // }
 
   @override
   Widget build(BuildContext context) {
     return new SplashScreen(
       seconds: 3,
       navigateAfterSeconds: new Home(),
-      navigateAfterFuture: loadFromFuture(),
-      // title: new Text(
-      //   'Youth Break the Boundaries',
-      //   style: new TextStyle(
-      //     fontWeight: FontWeight.bold,
-      //     fontSize: 20.0,
-      //     color: Colors.black,
-      //   ),
-      // ),
-      image: Image(image: AssetImage('assets/images/ybb_logo.png')),
+      //navigateAfterFuture: loadFromFuture(),
+      image: Image(image: AssetImage('assets/images/ybb_black_full.png')),
       backgroundColor: Colors.white,
       styleTextUnderTheLoader: new TextStyle(),
-      photoSize: 100.0,
+      photoSize: 140.0,
+      useLoader: true,
       loaderColor: Theme.of(context).primaryColor,
-      loadingText: Text("Fetching data..."),
+      loadingText: Text("Loading..."),
     );
   }
 }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'YBB',
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(
-//         accentColor: Colors.blue[900],
-//         primarySwatch: Colors.blue,
-//         visualDensity: VisualDensity.adaptivePlatformDensity,
-//       ),
-//       home: AnimatedSplashScreen(
-//         splash: Image.asset('assets/images/ybb_logo.png'),
-//         nextScreen: Home(),
-//       ),
-//     );
-//   }
-// }

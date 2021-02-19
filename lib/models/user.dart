@@ -9,6 +9,7 @@ class User {
   final String bio;
   final String occupation;
   final String interests;
+  final DateTime timestamp;
 
   User({
     this.id,
@@ -19,6 +20,7 @@ class User {
     this.bio,
     this.occupation,
     this.interests,
+    this.timestamp,
   });
 
   factory User.fromDocument(DocumentSnapshot doc) {
@@ -31,6 +33,7 @@ class User {
       bio: doc['bio'],
       occupation: doc['occupation'],
       interests: doc['interests'],
+      timestamp: doc['timestamp'].toDate(),
     );
   }
 }

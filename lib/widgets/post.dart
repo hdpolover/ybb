@@ -138,25 +138,46 @@ class _PostState extends State<Post> {
 
   handleDeletePost(BuildContext parentContext) {
     return showDialog(
-      context: parentContext,
-      builder: (context) {
-        return SimpleDialog(
-          title: Text("Remove this post?"),
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context);
-                deletePost();
-              },
-              child: Text(
-                'Delete',
-                style: TextStyle(color: Colors.red),
+        context: parentContext,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Delete Post"),
+            content: Text(
+                "Are you sure to delete this post? This action cannot be undone."),
+            actions: [
+              FlatButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
-            ),
-          ],
-        );
-      },
-    );
+              FlatButton(
+                child: Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  deletePost();
+                },
+              ),
+            ],
+            // return SimpleDialog(
+            //   title: Text("Remove this post?"),
+            //   children: <Widget>[
+            //     SimpleDialogOption(
+            //       onPressed: () {
+            //         Navigator.pop(context);
+            //         deletePost();
+            //       },
+            //       child: Text(
+            //         'Delete',
+            //         style: TextStyle(color: Colors.red),
+            //       ),
+            //     ),
+            //   ],
+          );
+        });
   }
 
   // Note: To delete post, ownerId and currentUserId must be equal, so they can be used interchangeably

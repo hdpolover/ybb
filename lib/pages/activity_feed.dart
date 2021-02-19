@@ -159,11 +159,11 @@ class ActivityFeedItem extends StatelessWidget {
 
   configureMediaPreview() {
     if (type == 'like') {
-      activityItemText = "liked your post";
+      activityItemText = "liked your post.";
     } else if (type == 'follow') {
-      activityItemText = "started following you";
+      activityItemText = "started following you.";
     } else if (type == 'comment') {
-      activityItemText = 'replied: $commentData';
+      activityItemText = 'replied: "$commentData"';
     } else {
       activityItemText = "Error: Unknown type '$type'";
     }
@@ -179,8 +179,9 @@ class ActivityFeedItem extends StatelessWidget {
 
     return Card(
       //padding: EdgeInsets.only(bottom: 2.0),
+      elevation: 0,
       child: GestureDetector(
-        onTap: () => showProfile(context, profileId: userId, username: "dsdsd"),
+        onTap: () => showProfile(context, profileId: userId),
         child: Container(
           color: Colors.white54,
           child: ListTile(
@@ -218,13 +219,12 @@ class ActivityFeedItem extends StatelessWidget {
   }
 }
 
-showProfile(BuildContext context, {String profileId, String username}) {
+showProfile(BuildContext context, {String profileId}) {
   Navigator.push(
     context,
     MaterialPageRoute(
       builder: (context) => Profile(
         profileId: profileId,
-        username: username,
       ),
     ),
   );

@@ -68,6 +68,7 @@ flutter:
         - asset: assets/fonts/Montserrat-Regular.ttf
   assets:
     - assets/images/google_signin_button.png
+    - assets/images/placeholder_ybb_news.jpg
     - assets/images/upload.svg
     - assets/images/search.svg
     - assets/images/activity_feed.svg
@@ -84,3 +85,8 @@ flutter:
     - assets/images/loading_bg.svg
     - assets/images/info.svg
     - assets/images/info_data.svg
+    - assets/images/welcome.svg
+    - assets/images/ybb_black_full.png
+    - assets/images/ybb_putih_cropped.png
+    - assets/images/google_logo.png
+    - assets/images/google_signin_button.png

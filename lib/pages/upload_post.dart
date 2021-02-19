@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -24,8 +25,10 @@ class UploadPost extends StatefulWidget {
 class _UploadPostState extends State<UploadPost>
     with AutomaticKeepAliveClientMixin<UploadPost> {
   TextEditingController descController = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   String downloadUrl;
 
+  String text;
   File _image;
   final picker = ImagePicker();
 
@@ -151,7 +154,25 @@ class _UploadPostState extends State<UploadPost>
       postId = Uuid().v4();
     });
 
-    Navigator.pop(context);
+    SnackBar snackBar = SnackBar(content: Text("Posted successfully!"));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+
+    Timer(
+      Duration(seconds: 2),
+      () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  bool isNotFilled() {
+    return _image == null && text == null;
+  }
+
+  showError() {
+    SnackBar snackBar =
+        SnackBar(content: Text("Please fill out the fields first!"));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   @override
@@ -159,6 +180,7 @@ class _UploadPostState extends State<UploadPost>
     super.build(context);
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
@@ -167,7 +189,11 @@ class _UploadPostState extends State<UploadPost>
         title: Text("Create New Post"),
         actions: [
           FlatButton(
-            onPressed: isUploading ? null : () => handleSubmit(),
+            onPressed: isNotFilled()
+                ? showError
+                : isUploading
+                    ? null
+                    : () => handleSubmit(),
             child: Text(
               'POST',
               style: TextStyle(
@@ -186,7 +212,12 @@ class _UploadPostState extends State<UploadPost>
             child: Container(
               child: TextField(
                 controller: descController,
-                minLines: 3,
+                onChanged: (value) {
+                  setState(() {
+                    text = descController.text;
+                  });
+                },
+                minLines: 1,
                 maxLines: 20,
                 decoration: InputDecoration(
                   hintText: "Write something here...",
@@ -195,6 +226,7 @@ class _UploadPostState extends State<UploadPost>
               ),
             ),
           ),
+          Divider(),
           Container(
             height: 220.0,
             width: MediaQuery.of(context).size.width,
@@ -210,12 +242,22 @@ class _UploadPostState extends State<UploadPost>
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: _image == null
-                            ? AssetImage('assets/images/add_image_post.png')
+                            ? AssetImage(
+                                'assets/images/placeholder_ybb_news.jpg')
                             : FileImage(_image),
                       ),
                     ),
                   ),
                 ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              child: Text(
+                "*Click above image to add/change with another.",
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ),

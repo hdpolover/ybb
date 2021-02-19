@@ -233,8 +233,7 @@ class Comment extends StatelessWidget {
           onLongPress: () =>
               userId == currentUser.id ? deleteComment(context) : {},
           title: GestureDetector(
-            onTap: () =>
-                showProfile(context, profileId: userId, username: displayName),
+            onTap: () => showProfile(context, profileId: userId),
             child: RichText(
               text: TextSpan(
                 text: displayName + ' ',
@@ -250,8 +249,7 @@ class Comment extends StatelessWidget {
             ),
           ),
           leading: GestureDetector(
-            onTap: () =>
-                showProfile(context, profileId: userId, username: displayName),
+            onTap: () => showProfile(context, profileId: userId),
             child: CircleAvatar(
               backgroundImage: CachedNetworkImageProvider(avatarUrl),
             ),

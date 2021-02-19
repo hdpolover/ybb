@@ -31,7 +31,8 @@ class _ProfileState extends State<Profile>
   int followingCount = 0;
   List<Post> posts = [];
 
-  List<String> interests;
+  List<ActionChip> interestChips;
+  List<String> interestStringList;
 
   String profileMenu = "dashboard";
 
@@ -70,6 +71,7 @@ class _ProfileState extends State<Profile>
     } else {
       fixCount = ids.length;
     }
+
     setState(() {
       followerCount = fixCount;
     });
@@ -80,8 +82,18 @@ class _ProfileState extends State<Profile>
         .doc(widget.profileId)
         .collection('userFollowing')
         .get();
+
+    List<String> ids = snapshot.docs.map((doc) => doc.id).toList();
+
+    int fixCount = 0;
+    if (ids.contains(widget.profileId)) {
+      fixCount = ids.length - 1;
+    } else {
+      fixCount = ids.length;
+    }
+
     setState(() {
-      followingCount = snapshot.docs.length;
+      followingCount = fixCount;
     });
   }
 
@@ -145,12 +157,6 @@ class _ProfileState extends State<Profile>
         context,
         MaterialPageRoute(
             builder: (context) => EditProfile(currentUserId: currentUserId)));
-  }
-
-  separateInterests(String t) {
-    setState(() {
-      interests = t.trim().split(',');
-    });
   }
 
   Container buildButton({String text, Function function}) {
@@ -275,6 +281,23 @@ class _ProfileState extends State<Profile>
     });
   }
 
+  buildInterestChips(String text) {
+    List<String> list = text.split(",");
+    print(list);
+
+    ListView.builder(
+        itemCount: list.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+              leading: Icon(Icons.list),
+              trailing: Text(
+                "GFG",
+                style: TextStyle(color: Colors.green, fontSize: 15),
+              ),
+              title: Text("List item $index"));
+        });
+  }
+
   buildProfileDashboard() {
     return FutureBuilder(
       future: usersRef.doc(widget.profileId).get(),
@@ -282,6 +305,7 @@ class _ProfileState extends State<Profile>
         if (!snapshot.hasData) {
           return circularProgress();
         }
+
         User user = User.fromDocument(snapshot.data);
 
         return Column(
@@ -325,9 +349,7 @@ class _ProfileState extends State<Profile>
                     ),
                     Divider(),
                     Text(user.interests),
-                    SizedBox(
-                      height: 10,
-                    ),
+                    SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -531,6 +553,7 @@ class _ProfileState extends State<Profile>
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         automaticallyImplyLeading: false,
         title: Text(
           "Profile",

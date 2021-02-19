@@ -2,11 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:ybb/helpers/curve_painter.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/create_account.dart';
 import 'package:ybb/pages/profile.dart';
 import 'package:ybb/pages/search.dart';
+import 'package:ybb/pages/signup.dart';
 import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/pages/news.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -33,6 +36,10 @@ class _HomeState extends State<Home> {
   bool isAuth = false;
   PageController pageController;
   int pageIndex = 0;
+
+  bool _showPassword = false;
+  TextEditingController _emailController = new TextEditingController();
+  TextEditingController _passwordController = new TextEditingController();
 
   @override
   initState() {
@@ -90,9 +97,7 @@ class _HomeState extends State<Home> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CreateAccount(
-            currentUserId: user.id,
-          ),
+          builder: (context) => CreateAccount(currentUserId: user.id),
         ),
       );
 
@@ -101,6 +106,18 @@ class _HomeState extends State<Home> {
           .doc(user.id)
           .collection('userFollowers')
           .doc(user.id)
+          .set({});
+
+      await followersRef
+          .doc("104302720039797896575")
+          .collection('userFollowers')
+          .doc(user.id)
+          .set({});
+
+      await followingRef
+          .doc(user.id)
+          .collection('userFollowing')
+          .doc("104302720039797896575")
           .set({});
 
       doc = await usersRef.doc(user.id).get();
@@ -188,86 +205,62 @@ class _HomeState extends State<Home> {
     );
   }
 
+  void _togglevisibility() {
+    setState(() {
+      _showPassword = !_showPassword;
+    });
+  }
+
   Scaffold buildUnAuthScreen() {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/1.png'),
-            fit: BoxFit.cover,
-          ),
-          color: Colors.white,
-          // gradient: LinearGradient(
-          //     colors: [Colors.blue[300], Colors.blue],
-          //     begin: Alignment.bottomCenter,
-          //     end: Alignment.topCenter),
-        ),
+      body: CustomPaint(
+        painter: CurvePainter(),
         child: Center(
           child: Column(
             children: <Widget>[
-              SizedBox(
-                height: 200,
-              ),
-              Row(
-                children: <Widget>[
-                  SizedBox(
-                    width: 40,
-                  ),
-                  Text(
-                    'Welcome Back',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 35,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 100,
-              ),
+              SizedBox(height: 250),
               Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image(
-                      image: AssetImage('assets/images/ybb_logo.png'),
-                      height: 170,
-                      width: 170,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      "Youth Break the Boundaries",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                margin: EdgeInsets.only(left: 30),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Welcome Back',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: "Montserrat",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 40,
+                  ),
                 ),
               ),
-              SizedBox(
-                height: 100,
+              SizedBox(height: 180),
+              //SvgPicture.asset('assets/images/welcome.svg', height: 150),
+              Image(
+                image: AssetImage("assets/images/ybb_black_full.png"),
+                height: 120,
               ),
+              SizedBox(height: 100),
               Padding(
-                padding: const EdgeInsets.only(left: 25, right: 25),
-                child: ButtonTheme(
-                    buttonColor: Colors.white,
-                    minWidth: MediaQuery.of(context).size.width,
-                    height: 55,
-                    child: RaisedButton(
-                      onPressed: login,
+                padding: const EdgeInsets.only(left: 35, right: 35, bottom: 40),
+                child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
+                  padding: EdgeInsets.all(20),
+                  color: Theme.of(context).primaryColor,
+                  onPressed: login,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
                       child: Text(
-                        'Let\'s get started!',
-                        style: TextStyle(color: Colors.blue, fontSize: 22),
+                        "Let\'s get started!",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25)),
-                    )),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -275,6 +268,149 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
+  // Scaffold buildUnAuthScreen() {
+  //   return Scaffold(
+  //     resizeToAvoidBottomInset: false,
+  //     body: CustomPaint(
+  //       painter: CurvePainter(),
+  //       child: Center(
+  //         child: Column(
+  //           children: <Widget>[
+  //             SizedBox(height: 80),
+  //             Container(
+  //               margin: EdgeInsets.only(left: 30),
+  //               alignment: Alignment.centerLeft,
+  //               child: Text(
+  //                 'Welcome Back',
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontFamily: "Montserrat",
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: 35,
+  //                 ),
+  //               ),
+  //             ),
+  //             SizedBox(height: 30),
+  //             SvgPicture.asset('assets/images/welcome.svg', height: 130),
+  //             SizedBox(height: 10),
+  //             Padding(
+  //               padding: EdgeInsets.all(25),
+  //               child: Column(
+  //                 children: [
+  //                   TextFormField(
+  //                     keyboardType: TextInputType.emailAddress,
+  //                     controller: _emailController,
+  //                     decoration: InputDecoration(
+  //                       border: OutlineInputBorder(),
+  //                       labelText: "Email",
+  //                     ),
+  //                   ),
+  //                   SizedBox(height: 15),
+  //                   TextFormField(
+  //                     controller: _passwordController,
+  //                     obscureText: !_showPassword,
+  //                     cursorColor: Colors.red,
+  //                     decoration: InputDecoration(
+  //                       labelText: "Password",
+  //                       border: OutlineInputBorder(),
+  //                       suffixIcon: GestureDetector(
+  //                         onTap: () {
+  //                           _togglevisibility();
+  //                         },
+  //                         child: Icon(
+  //                           _showPassword
+  //                               ? Icons.visibility
+  //                               : Icons.visibility_off,
+  //                           color: Colors.blue,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             Padding(
+  //               padding: const EdgeInsets.only(left: 25, right: 25),
+  //               child: ButtonTheme(
+  //                   buttonColor: Theme.of(context).primaryColor,
+  //                   minWidth: MediaQuery.of(context).size.width,
+  //                   height: 50,
+  //                   child: RaisedButton(
+  //                       onPressed: login,
+  //                       child: Text(
+  //                         'Log in',
+  //                         style: TextStyle(color: Colors.white, fontSize: 18),
+  //                       ),
+  //                       shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(5)))),
+  //             ),
+  //             SizedBox(height: 20),
+  //             Divider(
+  //               indent: 20,
+  //               endIndent: 20,
+  //               thickness: 1,
+  //             ),
+  //             Padding(
+  //               padding: const EdgeInsets.only(left: 25, right: 25, top: 10),
+  //               child: Container(
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     Text(
+  //                       "Haven't registered yet?",
+  //                       style: TextStyle(
+  //                         fontSize: 16,
+  //                         color: Colors.black,
+  //                       ),
+  //                     ),
+  //                     GestureDetector(
+  //                       onTap: () => Navigator.push(
+  //                         context,
+  //                         MaterialPageRoute(
+  //                           builder: (context) => SignUp(),
+  //                         ),
+  //                       ),
+  //                       child: Container(
+  //                         child: Text(
+  //                           " Register here",
+  //                           style: TextStyle(
+  //                             fontSize: 16,
+  //                             color: Colors.blue,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //             Container(
+  //               margin: EdgeInsets.only(bottom: 20, top: 20),
+  //               child: Text(
+  //                 "OR",
+  //                 style: TextStyle(
+  //                   color: Colors.black,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //             ),
+  //             Padding(
+  //               padding: const EdgeInsets.only(left: 25, right: 25, bottom: 40),
+  //               child: GestureDetector(
+  //                 onTap: login,
+  //                 child: Image(
+  //                   image: AssetImage("assets/images/google_signin_button.png"),
+  //                   height: 50,
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

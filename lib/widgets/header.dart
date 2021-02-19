@@ -10,8 +10,8 @@ AppBar header(context,
   return AppBar(
     automaticallyImplyLeading: removeBackButton ? false : true,
     leading: Padding(
-      padding: EdgeInsets.all(7),
-      child: Image(image: AssetImage('assets/images/ybb_logo.png')),
+      padding: EdgeInsets.all(9),
+      child: Image(image: AssetImage('assets/images/ybb_putih_cropped.png')),
     ),
     // title: Text(
     //   isAppTitle ? "YBB" : titleText,

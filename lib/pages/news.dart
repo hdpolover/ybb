@@ -34,6 +34,10 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   getNews() async {
     articles = articlesFromMain;
 
+    if (articles == null || articles.isEmpty) {
+      getNewsAgain();
+    }
+
     if (mounted) {
       setState(() {
         _loading = false;

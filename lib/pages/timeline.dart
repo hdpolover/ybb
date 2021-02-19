@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/search.dart';
@@ -86,6 +87,31 @@ class _TimelineState extends State<Timeline>
     await buildTimeline();
   }
 
+  buildNoFeed() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/images/no_notif.svg',
+            height: 170,
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Text(
+            "Follow others to see what they're up to.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   buildUsersToFollow() {
     return StreamBuilder(
       stream:
@@ -112,13 +138,12 @@ class _TimelineState extends State<Timeline>
         });
 
         return Container(
-          color: Theme.of(context).accentColor.withOpacity(0.2),
           child: Column(
             children: <Widget>[
               Container(
                 padding: EdgeInsets.all(12.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Icon(
                       Icons.person_add,
@@ -129,16 +154,19 @@ class _TimelineState extends State<Timeline>
                       width: 8.0,
                     ),
                     Text(
-                      "Users to Follow",
+                      "People you might know",
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
-                        fontSize: 30.0,
+                        fontSize: 20.0,
                       ),
                     ),
                   ],
                 ),
               ),
               Column(children: userResults),
+              Divider(),
+              SizedBox(height: 50),
+              buildNoFeed(),
             ],
           ),
         );

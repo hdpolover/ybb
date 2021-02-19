@@ -4,6 +4,12 @@ AppBar defaultAppBar(context,
     {@required String titleText, removeBackButton = false}) {
   return AppBar(
     automaticallyImplyLeading: removeBackButton ? false : true,
+    leading: removeBackButton
+        ? Text('')
+        : IconButton(
+            icon: Icon(Icons.arrow_back_ios_rounded),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
     title: Text(
       titleText,
       style: TextStyle(

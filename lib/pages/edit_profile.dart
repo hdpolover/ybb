@@ -267,6 +267,8 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ),
         TextField(
+          maxLines: 10,
+          minLines: 1,
           focusNode: focusNode1,
           controller: bioController,
           decoration: InputDecoration(
@@ -305,7 +307,7 @@ class _EditProfileState extends State<EditProfile> {
           ? _usernameValid = false
           : _usernameValid = true;
 
-      bioController.text.trim().length > 50
+      bioController.text.trim().length > 200
           ? _bioValid = false
           : _bioValid = true;
 
