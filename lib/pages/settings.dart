@@ -8,17 +8,24 @@ import 'package:ybb/pages/settings/terms_cons.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 
 class ProfileSettings extends StatefulWidget {
+  final String appName, version;
+
+  ProfileSettings({this.appName, this.version});
+
   @override
   _SettingsState createState() => _SettingsState();
 }
 
 class _SettingsState extends State<ProfileSettings> {
-  String _projectVersion = '';
-  String _appName = '';
+  static String _projectVersion = '1.0.0';
+  static String _appName = 'YBB';
 
   @override
   initState() {
     super.initState();
+
+    _projectVersion = "1.0.0";
+    _appName = "YBB";
 
     initPlatformState();
   }
@@ -26,8 +33,16 @@ class _SettingsState extends State<ProfileSettings> {
   initPlatformState() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-    String appName = packageInfo.appName;
-    String projectVersion = packageInfo.version;
+    String appName = "";
+    String projectVersion = "";
+
+    try {
+      appName = packageInfo.appName;
+      projectVersion = packageInfo.version;
+    } catch (e) {
+      appName = "YBB";
+      projectVersion = "1.0.0";
+    }
 
     if (!mounted) return;
 
@@ -54,9 +69,9 @@ class _SettingsState extends State<ProfileSettings> {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(_appName),
+        Text(_appName == null ? widget.appName : _appName),
         Text(" v "),
-        Text(_projectVersion),
+        Text(_projectVersion == null ? widget.version : _projectVersion),
         SizedBox(height: 30),
       ],
     ));

@@ -570,7 +570,10 @@ class _ProfileState extends State<Profile>
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProfileSettings(),
+                builder: (context) => ProfileSettings(
+                  appName: "YBB",
+                  version: "1.0.0",
+                ),
               ),
             ),
           ),

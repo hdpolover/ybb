@@ -2,14 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:ybb/helpers/curve_painter.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/create_account.dart';
 import 'package:ybb/pages/profile.dart';
 import 'package:ybb/pages/search.dart';
-import 'package:ybb/pages/signup.dart';
 import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/pages/news.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -37,9 +35,9 @@ class _HomeState extends State<Home> {
   PageController pageController;
   int pageIndex = 0;
 
-  bool _showPassword = false;
-  TextEditingController _emailController = new TextEditingController();
-  TextEditingController _passwordController = new TextEditingController();
+  //bool _showPassword = false;
+  //TextEditingController _emailController = new TextEditingController();
+  //TextEditingController _passwordController = new TextEditingController();
 
   @override
   initState() {
@@ -205,11 +203,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _togglevisibility() {
-    setState(() {
-      _showPassword = !_showPassword;
-    });
-  }
+  // void _togglevisibility() {
+  //   setState(() {
+  //     _showPassword = !_showPassword;
+  //   });
+  // }
 
   Scaffold buildUnAuthScreen() {
     return Scaffold(
@@ -219,7 +217,7 @@ class _HomeState extends State<Home> {
         child: Center(
           child: Column(
             children: <Widget>[
-              SizedBox(height: 250),
+              SizedBox(height: MediaQuery.of(context).size.height / 5),
               Container(
                 margin: EdgeInsets.only(left: 30),
                 alignment: Alignment.centerLeft,
@@ -233,13 +231,13 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              SizedBox(height: 180),
+              SizedBox(height: MediaQuery.of(context).size.height / 4),
               //SvgPicture.asset('assets/images/welcome.svg', height: 150),
               Image(
                 image: AssetImage("assets/images/ybb_black_full.png"),
                 height: 120,
               ),
-              SizedBox(height: 100),
+              SizedBox(height: MediaQuery.of(context).size.height / 10),
               Padding(
                 padding: const EdgeInsets.only(left: 35, right: 35, bottom: 40),
                 child: RaisedButton(
