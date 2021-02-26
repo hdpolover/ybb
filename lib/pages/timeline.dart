@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
@@ -31,30 +32,44 @@ class _TimelineState extends State<Timeline>
   void initState() {
     super.initState();
 
-    getPosts();
+    getTimeline();
+    getFollowing();
   }
 
-  Future<void> getPosts() async {
-    getFollowing().then((value) => getTimeline());
-  }
-
-  Future<void> getTimeline() async {
-    List<Post> userPosts = [];
-    followingList.forEach((element) async {
-      QuerySnapshot snapshot = await postsRef
-          .doc(element)
-          .collection('userPosts')
-          .orderBy('timestamp', descending: true)
-          .get();
-
-      userPosts
-          .addAll(snapshot.docs.map((doc) => Post.fromDocument(doc)).toList());
-
-      setState(() {
-        this.posts = userPosts;
-      });
+  getTimeline() async {
+    QuerySnapshot snapshot = await timelineRef
+        .doc(widget.currentUser.id)
+        .collection('timelinePosts')
+        .orderBy('timestamp', descending: true)
+        .get();
+    List<Post> posts =
+        snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+    setState(() {
+      this.posts = posts;
     });
   }
+
+  // Future<void> getPosts() async {
+  //   getFollowing().then((value) => getTimeline());
+  // }
+
+  // Future<void> getTimeline() async {
+  //   List<Post> userPosts = [];
+  //   followingList.forEach((element) async {
+  //     QuerySnapshot snapshot = await postsRef
+  //         .doc(element)
+  //         .collection('userPosts')
+  //         .orderBy('timestamp', descending: true)
+  //         .get();
+
+  //     userPosts
+  //         .addAll(snapshot.docs.map((doc) => Post.fromDocument(doc)).toList());
+
+  //     setState(() {
+  //       this.posts = userPosts;
+  //     });
+  //   });
+  // }
 
   Future<void> getFollowing() async {
     QuerySnapshot snapshot = await followingRef
@@ -66,13 +81,38 @@ class _TimelineState extends State<Timeline>
     });
   }
 
+  buildProgressTimeline() {
+    return Column(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.4,
+        ),
+        circularProgress(),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.05,
+        ),
+        Text("Fecthing data..."),
+      ],
+    );
+  }
+
   buildTimeline() {
     if (posts == null) {
-      return circularProgress();
+      return buildProgressTimeline();
     } else if (posts.isEmpty) {
-      return buildUsersToFollow();
+      return buildNoFeed();
     } else {
-      return ListView(
+      // return ListView(
+      //   shrinkWrap: true,
+      //   children: posts,
+      // );
+      // return ListView.builder(
+      //   physics: AlwaysScrollableScrollPhysics(),
+      //   shrinkWrap: true,
+      //   itemCount: posts?.length,
+      //   itemBuilder: (context, item) => posts[item],
+      // );
+      return Column(
         children: posts,
       );
     }
@@ -81,18 +121,23 @@ class _TimelineState extends State<Timeline>
   Future<Null> refreshTimeline() async {
     refreshkey.currentState?.show(atTop: true);
 
-    posts = [];
+    setState(() {
+      posts = [];
+    });
 
-    await getPosts();
+    await getTimeline();
     await buildTimeline();
   }
 
   buildNoFeed() {
-    return Container(
-      alignment: Alignment.center,
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+          ),
           SvgPicture.asset(
             'assets/images/no_notif.svg',
             height: 170,
@@ -164,9 +209,7 @@ class _TimelineState extends State<Timeline>
                 ),
               ),
               Column(children: userResults),
-              Divider(),
-              SizedBox(height: 50),
-              buildNoFeed(),
+              //buildNoFeed(),
             ],
           ),
         );
@@ -186,10 +229,20 @@ class _TimelineState extends State<Timeline>
         currentUser: currentUser,
         removeBackButton: true,
       ),
+      resizeToAvoidBottomPadding: false,
       body: RefreshIndicator(
         key: refreshkey,
         onRefresh: refreshTimeline,
-        child: buildTimeline(),
+        child: SingleChildScrollView(
+          clipBehavior: Clip.none,
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              //buildUsersToFollow(),
+              buildTimeline(),
+            ],
+          ),
+        ),
       ),
     );
   }

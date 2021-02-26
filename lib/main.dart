@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    loadNews();
+    //loadNews();
   }
 
   loadNews() async {
@@ -46,22 +46,22 @@ class _MyAppState extends State<MyApp> {
     articlesFromMain = newsData.articles;
   }
 
-  // Future<Widget> loadFromFuture() async {
-  //   NewsData newsData = new NewsData();
+  Future<Widget> loadFromFuture() async {
+    NewsData newsData = new NewsData();
 
-  //   await newsData.getArticles();
+    await newsData.getArticles();
 
-  //   articlesFromMain = newsData.articles;
+    articlesFromMain = newsData.articles;
 
-  //   return Future.value(new Home());
-  // }
+    return Future.value(new Home());
+  }
 
   @override
   Widget build(BuildContext context) {
     return new SplashScreen(
       seconds: 3,
       navigateAfterSeconds: new Home(),
-      //navigateAfterFuture: loadFromFuture(),
+      navigateAfterFuture: loadFromFuture(),
       image: Image(image: AssetImage('assets/images/ybb_black_full.png')),
       backgroundColor: Colors.white,
       styleTextUnderTheLoader: new TextStyle(),

@@ -181,31 +181,38 @@ class ActivityFeedItem extends StatelessWidget {
       //padding: EdgeInsets.only(bottom: 2.0),
       elevation: 0,
       child: GestureDetector(
-        onTap: () => showProfile(context, profileId: userId),
+        //onTap: () => showPost(context),
+        onTap: () {},
         child: Container(
           color: Colors.white54,
           child: ListTile(
-            title: Container(
-              child: RichText(
-                overflow: TextOverflow.ellipsis,
-                text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: displayName,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+            title: GestureDetector(
+              onTap: () => showProfile(context, profileId: userId),
+              child: Container(
+                child: RichText(
+                  overflow: TextOverflow.ellipsis,
+                  text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.black,
                       ),
-                      TextSpan(
-                        text: ' $activityItemText',
-                      ),
-                    ]),
+                      children: [
+                        TextSpan(
+                          text: displayName,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                          text: ' $activityItemText',
+                        ),
+                      ]),
+                ),
               ),
             ),
-            leading: CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(userProfileImg),
+            leading: GestureDetector(
+              onTap: () => showProfile(context, profileId: userId),
+              child: CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(userProfileImg),
+              ),
             ),
             subtitle: Text(
               convertDateTime(timestamp),

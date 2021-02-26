@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:ybb/pages/search.dart';
 import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/pages/news.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'dart:io';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final storageRef = FirebaseStorage.instance.ref();
@@ -31,6 +33,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
   bool isAuth = false;
   PageController pageController;
   int pageIndex = 0;
@@ -63,11 +67,50 @@ class _HomeState extends State<Home> {
       setState(() {
         isAuth = true;
       });
+      configurePushNotifications();
     } else {
       setState(() {
         isAuth = false;
       });
     }
+  }
+
+  configurePushNotifications() {
+    final GoogleSignInAccount user = googleSignIn.currentUser;
+    if (Platform.isIOS) getIOSPermission();
+
+    _firebaseMessaging.getToken().then((token) {
+      print("firebase token: $token");
+      usersRef.doc(user.id).update({"androidNotificationToken": token});
+    });
+
+    _firebaseMessaging.configure(
+      //onLaunch: (Map<String, dynamic> message)  async {},
+      //onResume: (Map<String, dynamic> message)  async {},
+      onMessage: (Map<String, dynamic> message) async {
+        print("on message: $message\n");
+        final String recipientId = message['data']['recipient'];
+        final String body = message['notification']['body'];
+
+        if (recipientId == user.id) {
+          print("notif shown");
+          SnackBar snackBar = SnackBar(
+              content: Text(
+            body,
+            overflow: TextOverflow.ellipsis,
+          ));
+          _scaffoldKey.currentState.showSnackBar(snackBar);
+        }
+      },
+    );
+  }
+
+  getIOSPermission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(alert: true, badge: true, sound: true));
+    _firebaseMessaging.onIosSettingsRegistered.listen((event) {
+      print("setting registred: $event");
+    });
   }
 
   createUserInFirestore() async {

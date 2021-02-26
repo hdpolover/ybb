@@ -19,6 +19,7 @@ class PostScreen extends StatelessWidget {
           return circularProgress();
         }
         Post post = Post.fromDocument(snapshot.data);
+
         return Center(
           child: Scaffold(
             appBar: header(context, titleText: post.description),
