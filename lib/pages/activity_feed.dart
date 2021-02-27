@@ -9,6 +9,7 @@ import 'package:ybb/pages/post_screen.dart';
 import 'package:ybb/pages/profile.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/progress.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ActivityFeed extends StatefulWidget {
   final User currentUser;
@@ -163,7 +164,7 @@ class ActivityFeedItem extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => PostScreen(
           postId: postId,
-          userId: userId,
+          userId: currentUser.id,
         ),
       ),
     );
@@ -189,12 +190,12 @@ class ActivityFeedItem extends StatelessWidget {
   Widget build(BuildContext context) {
     configureMediaPreview();
 
-    return Card(
-      //padding: EdgeInsets.only(bottom: 2.0),
-      elevation: 0,
+    return Container(
       child: GestureDetector(
-        //onTap: () => showPost(context),
-        onTap: () {},
+        onTap: () => type == "follow"
+            ? showProfile(context, profileId: userId)
+            : showPost(context),
+        //onTap: () {},
         child: Container(
           color: Colors.white54,
           child: ListTile(
@@ -227,7 +228,7 @@ class ActivityFeedItem extends StatelessWidget {
               ),
             ),
             subtitle: Text(
-              convertDateTime(timestamp),
+              timeago.format(timestamp),
               overflow: TextOverflow.ellipsis,
             ),
             // trailing: mediaPreview,

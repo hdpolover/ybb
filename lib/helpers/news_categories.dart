@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:html/parser.dart';
-import 'package:ybb/models/article_model.dart';
-import 'package:ybb/models/news_category_model.dart';
+import 'package:ybb/models/article.dart';
+import 'package:ybb/models/news_category.dart';
 import 'package:http/http.dart' as http;
 
 List<NewsCategoryModel> getNewsCategories() {

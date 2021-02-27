@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:ybb/helpers/news_data.dart';
-import 'package:ybb/models/article_model.dart';
+import 'package:ybb/models/article.dart';
 import 'package:ybb/pages/home.dart';
 
 void main() async {

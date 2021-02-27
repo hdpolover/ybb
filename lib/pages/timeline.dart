@@ -112,8 +112,11 @@ class _TimelineState extends State<Timeline>
       //   itemCount: posts?.length,
       //   itemBuilder: (context, item) => posts[item],
       // );
-      return Column(
-        children: posts,
+      return Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          children: posts,
+        ),
       );
     }
   }

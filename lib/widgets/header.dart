@@ -9,22 +9,15 @@ AppBar header(context,
     User currentUser}) {
   return AppBar(
     automaticallyImplyLeading: removeBackButton ? false : true,
-    leading: Padding(
+    title: Padding(
       padding: EdgeInsets.all(9),
-      child: Image(image: AssetImage('assets/images/ybb_putih_cropped.png')),
+      child: Image(
+        image: AssetImage('assets/images/ybb_putih_cropped.png'),
+        height: 35,
+      ),
     ),
-    // title: Text(
-    //   isAppTitle ? "YBB" : titleText,
-    //   style: TextStyle(
-    //     color: Colors.white,
-    //     fontFamily: isAppTitle ? "Montserrat" : "",
-    //     fontSize: isAppTitle ? 25.0 : 22.0,
-    //     fontWeight: FontWeight.bold,
-    //   ),
-    //   overflow: TextOverflow.ellipsis,
-    // ),
-    //centerTitle: true,
-    backgroundColor: Colors.blue,
+    centerTitle: true,
+    backgroundColor: Theme.of(context).primaryColor,
     elevation: 0,
     actions: <Widget>[
       IconButton(
@@ -52,7 +45,9 @@ AppBar header(context,
       //     Navigator.push(
       //       context,
       //       MaterialPageRoute(
-      //         builder: (context) => Messages(),
+      //         builder: (context) => Messages(
+      //           userId: currentUser.id,
+      //         ),
       //       ),
       //     );
       //   },

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  final String id;
-  final String username;
+  String id;
+  String username;
   final String email;
-  final String photoUrl;
-  final String displayName;
+  String photoUrl;
+  String displayName;
   final String bio;
   final String occupation;
   final String interests;

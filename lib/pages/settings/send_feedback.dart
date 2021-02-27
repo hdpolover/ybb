@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'package:ybb/models/user.dart';
 import 'package:ybb/widgets/default_appbar.dart';
+import 'package:ybb/pages/home.dart';
 
 class SendFeedback extends StatefulWidget {
-  SendFeedback({Key key}) : super(key: key);
+  final User user;
+
+  SendFeedback({this.user});
 
   @override
   _SendFeedbackState createState() => _SendFeedbackState();
@@ -10,6 +15,12 @@ class SendFeedback extends StatefulWidget {
 
 class _SendFeedbackState extends State<SendFeedback> {
   TextEditingController feedback = new TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  String feedbackId = Uuid().v4();
+
+  final ybbEmail = "ybb.admn@gmail.com";
+  final subject = "YBB App Feedback";
 
   Widget buildFeedback() {
     return Padding(
@@ -40,7 +51,7 @@ class _SendFeedbackState extends State<SendFeedback> {
             textColor: Colors.white,
             height: 50.0,
             color: Theme.of(context).primaryColor,
-            onPressed: () {},
+            onPressed: send,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -60,6 +71,37 @@ class _SendFeedbackState extends State<SendFeedback> {
         ],
       ),
     );
+  }
+
+  send() {
+    feedbackRef.doc(feedbackId).set({
+      "feedback": feedback.text,
+      "timestamp": DateTime.now(),
+      "userId": currentUser.id,
+    });
+
+    setState(() {
+      feedbackId = Uuid().v4();
+    });
+
+    // final Email email = Email(
+    //   body: feedback.text,
+    //   subject: subject,
+    //   recipients: [ybbEmail],
+    // );
+
+    // String platformResponse;
+
+    // try {
+    //   await FlutterEmailSender.send(email);
+    //   platformResponse = 'success';
+    // } catch (error) {
+    //   platformResponse = error.toString();
+    // }
+
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text("Feedback succesfully submitted!"),
+    ));
   }
 
   @override

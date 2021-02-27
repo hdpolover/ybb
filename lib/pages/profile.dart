@@ -114,42 +114,22 @@ class _ProfileState extends State<Profile>
     });
   }
 
-  Container buildCountColumn(String label, int count) {
-    return Container(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Follows(
-                type: label,
-                userId: widget.profileId,
-              ),
-            ),
-          );
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              count.toString(),
-              style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 4.0),
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ],
+  Column buildCountColumn(String label, int count) {
+    return Column(
+      children: <Widget>[
+        Text(
+          count.toString(),
+          style: TextStyle(
+              color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
         ),
-      ),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 12,
+          ),
+        ),
+      ],
     );
   }
 
@@ -160,32 +140,62 @@ class _ProfileState extends State<Profile>
             builder: (context) => EditProfile(currentUserId: currentUserId)));
   }
 
-  Container buildButton({String text, Function function}) {
-    return Container(
-      padding: EdgeInsets.only(top: 5.0),
-      child: FlatButton(
-        onPressed: function,
-        child: Container(
-          width: double.infinity,
-          height: 35.0,
-          child: Text(
-            text,
-            style: TextStyle(
-              color: isFollowing ? Colors.black : Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+  GestureDetector buildButton({String text, Function function}) {
+    return GestureDetector(
+      onTap: function,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.4,
+        decoration: BoxDecoration(
+          color: isFollowing && currentUserId != widget.profileId
+              ? Colors.white
+              : null,
+          border: Border.all(
+            color: Colors.white,
           ),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isFollowing ? Colors.white : Colors.blue,
-            border: Border.all(
-              color: isFollowing ? Colors.grey : Colors.blue,
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                  color: isFollowing && currentUserId != widget.profileId
+                      ? Colors.blue
+                      : Colors.white,
+                  fontSize: 12),
             ),
-            borderRadius: BorderRadius.circular(5.0),
           ),
         ),
       ),
     );
+    // return Padding(
+    //   padding: const EdgeInsets.all(3),
+    //   child: Container(
+    //     child: FlatButton(
+    //       onPressed: function,
+    //       child: Container(
+    //         width: MediaQuery.of(context).size.width * 0.365,
+    //         height: 40.0,
+    //         child: Text(
+    //           text,
+    //           style: TextStyle(
+    //             color: isFollowing ? Colors.black : Colors.white,
+    //             fontWeight: FontWeight.bold,
+    //           ),
+    //         ),
+    //         alignment: Alignment.center,
+    //         decoration: BoxDecoration(
+    //           color: isFollowing ? Colors.white : Colors.blue,
+    //           border: Border.all(
+    //             color: isFollowing ? Colors.grey : Colors.blue,
+    //           ),
+    //           borderRadius: BorderRadius.circular(8.0),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 
   buildProfileButton() {
@@ -193,17 +203,17 @@ class _ProfileState extends State<Profile>
     bool isProfileOwner = currentUserId == widget.profileId;
     if (isProfileOwner) {
       return buildButton(
-        text: "Edit Profile",
+        text: "EDIT PROFILE",
         function: editProfile,
       );
     } else if (isFollowing) {
       return buildButton(
-        text: "Unfollow",
+        text: "UNFOLLOW",
         function: handleUnfollowUser,
       );
     } else if (!isFollowing) {
       return buildButton(
-        text: "Follow",
+        text: "FOLLOW",
         function: handleFollowUser,
       );
     }
@@ -311,48 +321,63 @@ class _ProfileState extends State<Profile>
 
         return Column(
           children: [
-            Card(
-              elevation: 0.5,
-              child: Container(
-                padding: EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Bio",
-                      style: TextStyle(
-                        fontSize: 20.0,
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Bio",
+                    style: TextStyle(
+                        color: Colors.grey[900],
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
-                      ),
+                        letterSpacing: 1.5),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      user.bio,
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey[800],
+                          letterSpacing: .7),
                     ),
-                    Divider(),
-                    Text(user.bio),
-                    SizedBox(
-                      height: 10,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            Card(
-              elevation: 0.5,
-              child: Container(
-                padding: EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Interests",
-                      style: TextStyle(
-                        fontSize: 20.0,
+            SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Interests",
+                    style: TextStyle(
+                        color: Colors.grey[900],
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
-                      ),
+                        letterSpacing: 1.5),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      user.interests,
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey[800],
+                          letterSpacing: .7),
                     ),
-                    Divider(),
-                    Text(user.interests),
-                    SizedBox(height: 10),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -371,68 +396,51 @@ class _ProfileState extends State<Profile>
 
         User user = User.fromDocument(snapshot.data);
 
-        return Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  CircleAvatar(
-                    radius: 60.0,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+        return Row(
+          children: <Widget>[
+            CircleAvatar(
+              radius: 40.0,
+              backgroundColor: Colors.grey,
+              backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.07,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  user.displayName.length > 20
+                      ? user.displayName.substring(0, 21) + "..."
+                      : user.displayName,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: MediaQuery.of(context).size.width * 0.05,
+                      fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.01,
+                ),
+                Text(
+                  "@" + user.username,
+                  style: TextStyle(
+                    color: Colors.white60,
+                    fontSize: 12,
                   ),
-                  SizedBox(width: 10.0),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.only(left: 30.0, bottom: 5.0),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            user.displayName,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(left: 30.0, bottom: 5.0),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            user.username.length > 15
-                                ? "@" + user.username.substring(0, 15) + "..."
-                                : "@" + user.username,
-                          ),
-                        ),
-                        SizedBox(height: 60),
-                        Container(
-                          margin: EdgeInsets.only(left: 30.0, bottom: 5.0),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            user.occupation.length == 0 ? "" : user.occupation,
-                          ),
-                        ),
-                      ],
-                    ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.03,
+                ),
+                Text(
+                  user.occupation,
+                  style: TextStyle(
+                    color: Colors.white60,
+                    fontSize: 12,
                   ),
-                ],
-              ),
-              SizedBox(height: 15.0),
-              buildProfileButton(),
-              SizedBox(height: 15.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  buildCountColumn("followers", followerCount),
-                  buildCountColumn("followings", followingCount),
-                ],
-              )
-            ],
-          ),
+                ),
+              ],
+            )
+          ],
         );
       },
     );
@@ -511,8 +519,11 @@ class _ProfileState extends State<Profile>
             ? buildProfileOwnerNoPost()
             : buiildOtherProfileNoPost();
       } else {
-        return Column(
-          children: posts,
+        return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: posts,
+          ),
         );
       }
     }
@@ -528,19 +539,55 @@ class _ProfileState extends State<Profile>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        IconButton(
+        FlatButton(
+          textColor: Colors.grey,
+          height: 50.0,
           onPressed: () => showProfileMenu("dashboard"),
-          icon: Icon(Icons.dashboard),
-          color: profileMenu == "dashboard"
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.dashboard,
+                  color: profileMenu == "dashboard"
+                      ? Colors.white
+                      : Colors.white60,
+                ),
+              ),
+              Text(
+                'Dashboard',
+                style: TextStyle(
+                  color: profileMenu == "dashboard"
+                      ? Colors.white
+                      : Colors.white60,
+                ),
+              )
+            ],
+          ),
         ),
-        IconButton(
-          icon: Icon(Icons.portrait_sharp),
+        FlatButton(
+          textColor: Colors.grey,
+          height: 50.0,
           onPressed: () => showProfileMenu("posts"),
-          color: profileMenu == "posts"
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.archive,
+                  color: profileMenu == "posts" ? Colors.white : Colors.white60,
+                ),
+              ),
+              Text(
+                'Posts',
+                style: TextStyle(
+                  color: profileMenu == "posts" ? Colors.white : Colors.white60,
+                ),
+              )
+            ],
+          ),
         ),
       ],
     );
@@ -562,49 +609,116 @@ class _ProfileState extends State<Profile>
     super.build(context);
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text(
-          "Profile",
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: "Montserrat",
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: <Widget>[
-          currentUserId == widget.profileId
-              ? IconButton(
-                  icon: Icon(Icons.settings),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProfileSettings(
-                        appName: "YBB",
-                        version: "1.0.0",
-                      ),
-                    ),
+      backgroundColor: Color(0xffF8F8FA),
+      body: Stack(
+        overflow: Overflow.visible,
+        children: <Widget>[
+          Container(
+            color: Theme.of(context).primaryColor,
+            height: MediaQuery.of(context).size.height * 0.4,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  left: 30.0,
+                  right: 30.0,
+                  top: MediaQuery.of(context).size.height * 0.12),
+              child: Column(
+                children: <Widget>[
+                  buildProfileHeader(),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.04,
                   ),
-                )
-              : Text(""),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      buildCountColumn("followers", followerCount),
+                      buildCountColumn("following", followingCount),
+                      buildProfileButton(),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                  buildProfileMenu(),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding:
+                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.38),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30.0),
+                    topLeft: Radius.circular(30.0),
+                  )),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: 10,
+                          top: MediaQuery.of(context).size.height * 0.02),
+                      child: buildProfilePosts(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
         ],
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: RefreshIndicator(
-        key: refreshkey,
-        onRefresh: refreshProfile,
-        child: ListView(
-          children: <Widget>[
-            buildProfileHeader(),
-            Divider(),
-            buildProfileMenu(),
-            Divider(),
-            buildProfilePosts(),
-          ],
-        ),
       ),
     );
+
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     elevation: 0,
+    //     automaticallyImplyLeading: false,
+    //     title: Text(
+    //       "Profile",
+    //       style: TextStyle(
+    //         color: Colors.black,
+    //         fontFamily: "Montserrat",
+    //         fontSize: 20.0,
+    //         fontWeight: FontWeight.bold,
+    //       ),
+    //     ),
+    //     actions: <Widget>[
+    //       currentUserId == widget.profileId
+    //           ? IconButton(
+    //               icon: Icon(
+    //                 Icons.settings,
+    //                 color: Colors.black,
+    //               ),
+    //               onPressed: () => Navigator.push(
+    //                 context,
+    //                 MaterialPageRoute(
+    //                   builder: (context) => ProfileSettings(
+    //                     appName: "YBB",
+    //                     version: "1.0.0",
+    //                   ),
+    //                 ),
+    //               ),
+    //             )
+    //           : Text(""),
+    //     ],
+    //     backgroundColor: Colors.white,
+    //   ),
+    //   body: RefreshIndicator(
+    //     key: refreshkey,
+    //     onRefresh: refreshProfile,
+    //     child: ListView(
+    //       children: <Widget>[
+    //         buildProfileHeader(),
+    //         Divider(),
+    //         buildProfileMenu(),
+    //         Divider(),
+    //         buildProfilePosts(),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }

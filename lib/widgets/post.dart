@@ -9,6 +9,7 @@ import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/comments.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/progress.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class Post extends StatefulWidget {
   final String postId;
@@ -109,29 +110,84 @@ class _PostState extends State<Post> {
 
         User user = User.fromDocument(snapshot.data);
         bool isPostOwner = currentUserId == ownerId;
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-            backgroundColor: Colors.grey,
-          ),
-          title: GestureDetector(
-            onTap: () => showProfile(context, profileId: user.id),
-            child: Text(
-              user.displayName,
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          subtitle: Text(convertDateTime(timestamp)),
-          trailing: isPostOwner
-              ? IconButton(
-                  onPressed: () => handleDeletePost(context),
-                  icon: Icon(Icons.more_vert),
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () => showProfile(context, profileId: user.id),
+                  child: CircleAvatar(
+                    backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+                    backgroundColor: Colors.grey,
+                    radius: 23,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: () => showProfile(context, profileId: user.id),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        user.displayName,
+                        style: TextStyle(
+                            color: Colors.grey[900],
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1),
+                      ),
+                      SizedBox(
+                        height: 3,
+                      ),
+                      Text(
+                        //convertDateTime(timestamp),
+                        timeago.format(timestamp),
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 )
-              : Text(''),
+              ],
+            ),
+            isPostOwner
+                ? IconButton(
+                    icon: Icon(
+                      Icons.more_vert,
+                      size: 30,
+                      color: Colors.grey[600],
+                    ),
+                    onPressed: () => handleDeletePost(context),
+                  )
+                : Text(''),
+          ],
         );
+        // return ListTile(
+        //   leading: CircleAvatar(
+        //     backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+        //     backgroundColor: Colors.grey,
+        //   ),
+        //   title: GestureDetector(
+        //     onTap: () => showProfile(context, profileId: user.id),
+        //     child: Text(
+        //       user.displayName,
+        //       style: TextStyle(
+        //         color: Colors.black,
+        //         fontWeight: FontWeight.bold,
+        //       ),
+        //     ),
+        //   ),
+        //   subtitle: Text(convertDateTime(timestamp)),
+        //   trailing: isPostOwner
+        //       ? IconButton(
+        //           onPressed: () => handleDeletePost(context),
+        //           icon: Icon(Icons.more_vert),
+        //         )
+        //       : Text(''),
+        // );
       },
     );
   }
@@ -282,37 +338,45 @@ class _PostState extends State<Post> {
     }
   }
 
-  showExtendedPost() {
-    bool _isExtented = false;
-
-    if (_isExtented) {
-      setState(() {
-        isExtended = true;
-      });
-    } else if (!_isExtented) {
-      setState(() {
-        isExtended = true;
-      });
-    }
+  buildLikeAndComment() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text(
+          "$likeCount likes",
+          style: TextStyle(color: Colors.grey[600]),
+        ),
+        Text(
+          "500 comments",
+          style: TextStyle(color: Colors.grey[600]),
+        )
+      ],
+    );
   }
 
   buildPostImage() {
     return GestureDetector(
-      onTap: showExtendedPost,
+      onTap: () {},
       onDoubleTap: handleLikePost,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 10.0),
+            padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
             alignment: Alignment.topLeft,
             child: Text(
-              //isExtended ? description : "manageDesc(description)",
               manageDesc(description),
-              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey[800],
+                  height: 1.5,
+                  letterSpacing: .7),
             ),
           ),
-          CachedNetworkImage(imageUrl: mediaUrl),
+          CachedNetworkImage(
+            imageUrl: mediaUrl,
+            fit: BoxFit.cover,
+          ),
         ],
       ),
     );
@@ -320,7 +384,8 @@ class _PostState extends State<Post> {
 
   String manageDesc(String desc) {
     if (desc.trim().length > 400) {
-      return desc.substring(0, 400) + "...";
+      //return desc.substring(0, 400) + "...";
+      return desc;
     } else {
       return desc;
     }
@@ -349,40 +414,47 @@ class _PostState extends State<Post> {
   buildPostFooter() {
     return Row(
       children: <Widget>[
-        Padding(padding: EdgeInsets.only(left: 10.0)),
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(top: 50.0)),
             GestureDetector(
               onTap: handleLikePost,
               child: Container(
-                child: Row(
-                  children: [
-                    isLiked
-                        ? Icon(
-                            Icons.thumb_up,
-                            size: 30.0,
-                            color: Colors.blue,
-                          )
-                        : Icon(
-                            Icons.thumb_up_alt_outlined,
-                            color: Colors.grey,
-                            size: 30.0,
-                          ),
-                    Padding(padding: EdgeInsets.only(right: 10.0)),
-                    Text(
-                      likeCount == 0 ? "" : "$likeCount",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[200]),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      isLiked
+                          ? Icon(
+                              Icons.thumb_up,
+                              size: 30.0,
+                              color: Colors.blue,
+                            )
+                          : Icon(
+                              Icons.thumb_up_alt_outlined,
+                              color: Colors.grey,
+                              size: 30.0,
+                            ),
+                      SizedBox(
+                        width: 5,
                       ),
-                    ),
-                  ],
+                      Text(
+                        "Like",
+                        style: TextStyle(
+                            color: isLiked ? Colors.blue : Colors.grey),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-            Padding(padding: EdgeInsets.only(right: 20.0)),
+            SizedBox(width: MediaQuery.of(context).size.width * 0.03),
             GestureDetector(
               onTap: () => showComments(
                 context,
@@ -391,23 +463,25 @@ class _PostState extends State<Post> {
                 mediaUrl: mediaUrl,
               ),
               child: Container(
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.comment,
-                      size: 30.0,
-                      color: Colors.grey,
-                    ),
-                    // Padding(padding: EdgeInsets.only(right: 10.0)),
-                    // Text(
-                    //   //getCommentCount() == 0 ? "COMMENT" : " comments",
-                    //   "Comment",
-                    //   style: TextStyle(
-                    //     color: Colors.black,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-                  ],
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[200]),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.chat, color: Colors.grey, size: 30),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        "Comment",
+                        style: TextStyle(color: Colors.grey),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -422,12 +496,17 @@ class _PostState extends State<Post> {
     isLiked = (likes[currentUserId] == true);
     isExtended = true;
 
-    return Card(
+    return Container(
+      margin: EdgeInsets.only(bottom: 25),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPostHeader(),
+          SizedBox(height: 10),
           buildPostImage(),
+          SizedBox(height: 20),
+          buildLikeAndComment(),
+          SizedBox(height: 15),
           buildPostFooter()
         ],
       ),

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:ybb/models/article_model.dart';
+import 'package:ybb/models/article.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 

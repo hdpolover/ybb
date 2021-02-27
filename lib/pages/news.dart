@@ -8,8 +8,8 @@ import 'package:ybb/main.dart';
 import 'package:ybb/pages/news_category.dart';
 import 'package:ybb/pages/news_detail.dart';
 import 'package:ybb/widgets/default_appbar.dart';
-import 'package:ybb/models/news_category_model.dart';
-import 'package:ybb/models/article_model.dart';
+import 'package:ybb/models/news_category.dart';
+import 'package:ybb/models/article.dart';
 import 'package:ybb/widgets/progress.dart';
 
 class News extends StatefulWidget {

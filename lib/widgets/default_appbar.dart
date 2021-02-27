@@ -7,7 +7,10 @@ AppBar defaultAppBar(context,
     leading: removeBackButton
         ? Text('')
         : IconButton(
-            icon: Icon(Icons.arrow_back_ios_rounded),
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: Colors.black,
+            ),
             onPressed: () => Navigator.of(context).pop(),
           ),
     title: Text(
@@ -21,6 +24,6 @@ AppBar defaultAppBar(context,
     ),
     elevation: 0,
     centerTitle: true,
-    backgroundColor: Colors.blue,
+    backgroundColor: Theme.of(context).primaryColor,
   );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ybb/helpers/news_categories.dart';
-import 'package:ybb/models/article_model.dart';
+import 'package:ybb/models/article.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/progress.dart';
 
