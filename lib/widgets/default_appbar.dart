@@ -9,7 +9,7 @@ AppBar defaultAppBar(context,
         : IconButton(
             icon: Icon(
               Icons.arrow_back_ios_rounded,
-              color: Colors.black,
+              color: Colors.white,
             ),
             onPressed: () => Navigator.of(context).pop(),
           ),
