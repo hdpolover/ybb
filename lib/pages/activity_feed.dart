@@ -21,6 +21,7 @@ class ActivityFeed extends StatefulWidget {
 
 class _ActivityFeedState extends State<ActivityFeed>
     with AutomaticKeepAliveClientMixin<ActivityFeed> {
+  var refreshkey = GlobalKey<RefreshIndicatorState>();
   List<ActivityFeedItem> feedItems = [];
 
   @override
@@ -47,6 +48,16 @@ class _ActivityFeedState extends State<ActivityFeed>
     });
 
     return feedItems;
+  }
+
+  Future<Null> refreshActivityFeed() async {
+    refreshkey.currentState?.show(atTop: true);
+
+    setState(() {
+      feedItems = [];
+    });
+
+    await getActivityFeed();
   }
 
   buildNoFeed() {
@@ -88,7 +99,8 @@ class _ActivityFeedState extends State<ActivityFeed>
         removeBackButton: true,
       ),
       body: RefreshIndicator(
-        onRefresh: () => getActivityFeed(),
+        key: refreshkey,
+        onRefresh: refreshActivityFeed,
         child: Container(
             child: FutureBuilder(
           future: getActivityFeed(),

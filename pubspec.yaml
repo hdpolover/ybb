@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -33,8 +33,8 @@ dependencies:
   firebase_messaging: ^7.0.3
   firebase_storage: ^5.2.0
   flutter_svg: ^0.18.0
-  geolocator: ^6.1.9
   geocoding: ^1.0.5
+  geolocator: ^6.1.9
   google_sign_in: ^4.5.6
   html: ^0.14.0+4
   http: ^0.12.2
@@ -42,13 +42,14 @@ dependencies:
   image_picker: ^0.6.7+14
   imagebutton: ^0.0.6
   intl: ^0.16.1
+  package_info_plus: ^0.6.3
   path_provider: ^0.5.0+1
+  shimmer: ^1.1.2
   simple_animations: ^2.4.0
+  splashscreen: ^1.3.5
   timeago: ^2.0.29
   uuid: ^2.2.2
   webview_flutter: ^1.0.7
-  package_info_plus: ^0.6.3
-  splashscreen: ^1.3.5
 
 dev_dependencies:
   flutter_test:
@@ -56,9 +57,9 @@ dev_dependencies:
   flutter_launcher_icons: ^0.8.0
 
 flutter_icons:
-  android: "launcher_icon"
+  android: 'launcher_icon'
   ios: true
-  image_path: "assets/images/ybb_logo.png"
+  image_path: 'assets/images/ybb_logo.png'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

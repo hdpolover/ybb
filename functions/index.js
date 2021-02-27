@@ -182,7 +182,7 @@ exports.onCreateActivityFeedItem = functions.firestore
       //switch body value based off of notif type
       switch (activityFeedItem.type) {
         case 'comment':
-          body = `${activityFeedItem.username} replied: ${activityFeedItem.commentData}`
+          body = `${activityFeedItem.username} replied: "${activityFeedItem.commentData}"`
           break
         case 'like':
           body = `${activityFeedItem.username} liked your post`
@@ -196,7 +196,7 @@ exports.onCreateActivityFeedItem = functions.firestore
 
       //create message for push notif
       const message = {
-        notification: { title: 'Hello', body: body },
+        notification: { body },
         token: androidNotificationToken,
         data: { recipient: userId }
       }

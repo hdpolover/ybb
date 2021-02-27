@@ -100,7 +100,7 @@ class NewsCategoriesData {
             date: element['date'],
             url: element['link'],
             imageUrl: element['_embedded']['wp:featuredmedia'] == null
-                ? "https://jooinn.com/images/sky-view-8.jpg"
+                ? "https://i.postimg.cc/SK25RYGY/placeholder-ybb-news.jpg"
                 : element['_embedded']['wp:featuredmedia'][0]['source_url'],
             category: element['categories'][0]
             //"https://youthbreaktheboundaries.com/wp-content/uploads/2021/02/Salinan-dari-Copy-of-Scholarship-at-Columbia-University-by-The-Obama-Foundation-2021-02-01T082915.403.png",

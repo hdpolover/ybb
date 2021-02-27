@@ -22,6 +22,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile>
     with AutomaticKeepAliveClientMixin<Profile> {
+  var refreshkey = GlobalKey<RefreshIndicatorState>();
   final String currentUserId = currentUser?.id;
   String postOrientation = "grid";
   bool isFollowing = false;
@@ -545,6 +546,15 @@ class _ProfileState extends State<Profile>
     );
   }
 
+  Future<Null> refreshProfile() async {
+    refreshkey.currentState?.show(atTop: true);
+
+    await getFollowers();
+    await getFollowing();
+    await checkIfFollowing();
+    await buildProfileHeader();
+  }
+
   bool get wantKeepAlive => true;
 
   @override
@@ -565,23 +575,26 @@ class _ProfileState extends State<Profile>
           ),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProfileSettings(
-                  appName: "YBB",
-                  version: "1.0.0",
-                ),
-              ),
-            ),
-          ),
+          currentUserId == widget.profileId
+              ? IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfileSettings(
+                        appName: "YBB",
+                        version: "1.0.0",
+                      ),
+                    ),
+                  ),
+                )
+              : Text(""),
         ],
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: RefreshIndicator(
-        onRefresh: getProfilePosts,
+        key: refreshkey,
+        onRefresh: refreshProfile,
         child: ListView(
           children: <Widget>[
             buildProfileHeader(),
