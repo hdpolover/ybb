@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/progress.dart';
@@ -186,7 +187,10 @@ class _UploadPostState extends State<UploadPost>
           icon: Icon(Icons.arrow_back_ios),
           onPressed: clearImageAndBack,
         ),
-        title: Text("Create New Post"),
+        title: Text(
+          "Create New Post",
+          style: appBarTextStyle,
+        ),
         actions: [
           FlatButton(
             onPressed: isNotFilled()
@@ -198,6 +202,7 @@ class _UploadPostState extends State<UploadPost>
               'POST',
               style: TextStyle(
                 color: Colors.white,
+                fontFamily: "OpenSans",
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -221,6 +226,7 @@ class _UploadPostState extends State<UploadPost>
                 maxLines: 20,
                 decoration: InputDecoration(
                   hintText: "Write something here...",
+                  hintStyle: commonTextStyle,
                   border: InputBorder.none,
                 ),
               ),
@@ -256,8 +262,12 @@ class _UploadPostState extends State<UploadPost>
             padding: const EdgeInsets.all(8.0),
             child: Container(
               child: Text(
-                "*Click above image to add/change with another.",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                "*Click above image to add/change with another",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontFamily: "OpenSans",
+                ),
               ),
             ),
           ),

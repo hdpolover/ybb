@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -202,6 +203,13 @@ class _HomeState extends State<Home> {
     );
   }
 
+  GlobalKey _bottomNavigationKey = GlobalKey();
+  bool homeSelected = true;
+  bool newsSelected = false;
+  bool searchSelected = false;
+  bool activitySelected = false;
+  bool profileSelected = false;
+
   Scaffold buildAuthScreen() {
     return Scaffold(
       key: _scaffoldKey,
@@ -218,32 +226,124 @@ class _HomeState extends State<Home> {
         onPageChanged: onPageChanged,
         physics: NeverScrollableScrollPhysics(),
       ),
-      bottomNavigationBar: CupertinoTabBar(
-          currentIndex: pageIndex,
-          onTap: onTap,
-          activeColor: Theme.of(context).primaryColor,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_filled),
-              label: "Home",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.whatshot),
-              label: "News",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: "Search",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_active),
-              label: "Activity",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: "Profile",
-            ),
-          ]),
+      bottomNavigationBar: CurvedNavigationBar(
+        onTap: (index) {
+          onTap(index);
+          setState(
+            () {
+              switch (index) {
+                case 0:
+                  homeSelected = true;
+                  newsSelected = false;
+                  searchSelected = false;
+                  activitySelected = false;
+                  profileSelected = false;
+                  break;
+                case 1:
+                  homeSelected = false;
+                  newsSelected = true;
+                  searchSelected = false;
+                  activitySelected = false;
+                  profileSelected = false;
+                  break;
+                case 2:
+                  homeSelected = false;
+                  newsSelected = false;
+                  searchSelected = true;
+                  activitySelected = false;
+                  profileSelected = false;
+                  break;
+                case 3:
+                  homeSelected = false;
+                  newsSelected = false;
+                  searchSelected = false;
+                  activitySelected = true;
+                  profileSelected = false;
+                  break;
+                case 4:
+                  homeSelected = false;
+                  newsSelected = false;
+                  searchSelected = false;
+                  activitySelected = false;
+                  profileSelected = true;
+                  break;
+                default:
+                  homeSelected = true;
+                  newsSelected = false;
+                  searchSelected = false;
+                  activitySelected = false;
+                  profileSelected = false;
+                  break;
+              }
+            },
+          );
+        },
+        height: MediaQuery.of(context).size.height * 0.06,
+        color: Colors.white,
+        buttonBackgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
+        key: _bottomNavigationKey,
+        animationCurve: Curves.easeInOut,
+        animationDuration: Duration(milliseconds: 400),
+        letIndexChange: (index) => true,
+        items: [
+          Icon(
+            Icons.home,
+            size: 25,
+            color: homeSelected ? Theme.of(context).primaryColor : Colors.grey,
+          ),
+          Icon(
+            Icons.whatshot,
+            size: 25,
+            color: newsSelected ? Theme.of(context).primaryColor : Colors.grey,
+          ),
+          Icon(
+            Icons.search,
+            size: 25,
+            color:
+                searchSelected ? Theme.of(context).primaryColor : Colors.grey,
+          ),
+          Icon(
+            Icons.notifications,
+            size: 25,
+            color:
+                activitySelected ? Theme.of(context).primaryColor : Colors.grey,
+          ),
+          Icon(
+            Icons.person_pin,
+            size: 25,
+            color:
+                profileSelected ? Theme.of(context).primaryColor : Colors.grey,
+          ),
+        ],
+      ),
+      // bottomNavigationBar: CupertinoTabBar(
+      //   currentIndex: pageIndex,
+      //   onTap: onTap,
+      //   activeColor: Theme.of(context).primaryColor,
+      //   items: [
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home_filled),
+      //       label: "Home",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.whatshot),
+      //       label: "News",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.search),
+      //       label: "Search",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.notifications_active),
+      //       label: "Activity",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.person),
+      //       label: "Profile",
+      //     ),
+      //   ],
+      // ),
     );
   }
 

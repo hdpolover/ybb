@@ -347,6 +347,7 @@ class _EditProfileState extends State<EditProfile> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        elevation: 0,
         title: Text(
           "Edit Profile",
           style: TextStyle(
@@ -375,14 +376,23 @@ class _EditProfileState extends State<EditProfile> {
                         onTap: () {
                           selectImage(context);
                         },
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 16.9),
-                          child: CircleAvatar(
-                            radius: 50.0,
-                            backgroundImage: _image == null
-                                ? CachedNetworkImageProvider(user.photoUrl)
-                                : FileImage(_image),
-                          ),
+                        child: Stack(
+                          alignment: AlignmentDirectional.bottomEnd,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 16.9),
+                              child: CircleAvatar(
+                                radius: 50.0,
+                                backgroundImage: _image == null
+                                    ? CachedNetworkImageProvider(user.photoUrl)
+                                    : FileImage(_image),
+                              ),
+                            ),
+                            Icon(
+                              Icons.photo_camera,
+                              color: Colors.grey,
+                            ),
+                          ],
                         ),
                       ),
                       Padding(

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/post_screen.dart';
@@ -69,7 +70,7 @@ class _ActivityFeedState extends State<ActivityFeed>
         children: [
           SvgPicture.asset(
             'assets/images/no_notif.svg',
-            height: 170,
+            height: MediaQuery.of(context).size.width * 0.2,
           ),
           SizedBox(
             height: 30,
@@ -78,7 +79,7 @@ class _ActivityFeedState extends State<ActivityFeed>
             "You are all caught up. Nothing to see here.",
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
+              fontFamily: fontName,
             ),
           ),
         ],
@@ -172,9 +173,9 @@ class ActivityFeedItem extends StatelessWidget {
 
   configureMediaPreview() {
     if (type == 'like') {
-      activityItemText = "liked your post.";
+      activityItemText = "liked your post";
     } else if (type == 'follow') {
-      activityItemText = "started following you.";
+      activityItemText = "started following you";
     } else if (type == 'comment') {
       activityItemText = 'replied: "$commentData"';
     } else {
@@ -208,14 +209,21 @@ class ActivityFeedItem extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Colors.black,
+                        fontFamily: fontName,
                       ),
                       children: [
                         TextSpan(
                           text: displayName,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: fontName,
+                          ),
                         ),
                         TextSpan(
                           text: ' $activityItemText',
+                          style: TextStyle(
+                            fontFamily: fontName,
+                          ),
                         ),
                       ]),
                 ),
@@ -229,6 +237,9 @@ class ActivityFeedItem extends StatelessWidget {
             ),
             subtitle: Text(
               timeago.format(timestamp),
+              style: TextStyle(
+                fontFamily: fontName,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
             // trailing: mediaPreview,

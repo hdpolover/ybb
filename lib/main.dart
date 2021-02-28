@@ -14,7 +14,7 @@ void main() async {
       title: 'YBB',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        accentColor: Colors.blue[900],
+        accentColor: Colors.blue[200],
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
@@ -65,10 +65,9 @@ class _MyAppState extends State<MyApp> {
       image: Image(image: AssetImage('assets/images/ybb_black_full.png')),
       backgroundColor: Colors.white,
       styleTextUnderTheLoader: new TextStyle(),
-      photoSize: 140.0,
+      photoSize: MediaQuery.of(context).size.width * 0.35,
       useLoader: true,
       loaderColor: Theme.of(context).primaryColor,
-      loadingText: Text("Loading..."),
     );
   }
 }

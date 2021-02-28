@@ -2,9 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/edit_profile.dart';
-import 'package:ybb/pages/follows.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/settings.dart';
 import 'package:ybb/pages/upload_post.dart';
@@ -35,15 +35,35 @@ class _ProfileState extends State<Profile>
   List<ActionChip> interestChips;
   List<String> interestStringList;
 
+  bool removeBackButton;
+  bool removeSettingButton;
+
   String profileMenu = "dashboard";
 
   @override
   void initState() {
     super.initState();
+
+    manageAppbar();
+
     getProfilePosts();
     getFollowers();
     getFollowing();
     checkIfFollowing();
+  }
+
+  manageAppbar() {
+    if (currentUserId == widget.profileId) {
+      setState(() {
+        removeBackButton = true;
+        removeSettingButton = false;
+      });
+    } else {
+      setState(() {
+        removeBackButton = false;
+        removeSettingButton = true;
+      });
+    }
   }
 
   checkIfFollowing() async {
@@ -111,6 +131,7 @@ class _ProfileState extends State<Profile>
       isLoading = false;
       postCount = snapshot.docs.length;
       posts = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+      print(postCount);
     });
   }
 
@@ -120,13 +141,18 @@ class _ProfileState extends State<Profile>
         Text(
           count.toString(),
           style: TextStyle(
-              color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            fontFamily: fontName,
+          ),
         ),
         Text(
           label,
           style: TextStyle(
             color: Colors.white70,
             fontSize: 12,
+            fontFamily: fontName,
           ),
         ),
       ],
@@ -160,42 +186,17 @@ class _ProfileState extends State<Profile>
             child: Text(
               text,
               style: TextStyle(
-                  color: isFollowing && currentUserId != widget.profileId
-                      ? Colors.blue
-                      : Colors.white,
-                  fontSize: 12),
+                color: isFollowing && currentUserId != widget.profileId
+                    ? Colors.blue
+                    : Colors.white,
+                fontSize: 12,
+                fontFamily: fontName,
+              ),
             ),
           ),
         ),
       ),
     );
-    // return Padding(
-    //   padding: const EdgeInsets.all(3),
-    //   child: Container(
-    //     child: FlatButton(
-    //       onPressed: function,
-    //       child: Container(
-    //         width: MediaQuery.of(context).size.width * 0.365,
-    //         height: 40.0,
-    //         child: Text(
-    //           text,
-    //           style: TextStyle(
-    //             color: isFollowing ? Colors.black : Colors.white,
-    //             fontWeight: FontWeight.bold,
-    //           ),
-    //         ),
-    //         alignment: Alignment.center,
-    //         decoration: BoxDecoration(
-    //           color: isFollowing ? Colors.white : Colors.blue,
-    //           border: Border.all(
-    //             color: isFollowing ? Colors.grey : Colors.blue,
-    //           ),
-    //           borderRadius: BorderRadius.circular(8.0),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 
   buildProfileButton() {
@@ -292,23 +293,6 @@ class _ProfileState extends State<Profile>
     });
   }
 
-  buildInterestChips(String text) {
-    List<String> list = text.split(",");
-    print(list);
-
-    ListView.builder(
-        itemCount: list.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-              leading: Icon(Icons.list),
-              trailing: Text(
-                "GFG",
-                style: TextStyle(color: Colors.green, fontSize: 15),
-              ),
-              title: Text("List item $index"));
-        });
-  }
-
   buildProfileDashboard() {
     return FutureBuilder(
       future: usersRef.doc(widget.profileId).get(),
@@ -328,23 +312,72 @@ class _ProfileState extends State<Profile>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Bio",
+                    "About",
                     style: TextStyle(
                         color: Colors.grey[900],
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      user.displayName,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey[800],
+                        letterSpacing: .7,
+                        fontFamily: fontName,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      user.occupation,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey[800],
+                        letterSpacing: .7,
+                        fontFamily: fontName,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Bio",
+                    style: TextStyle(
+                      color: Colors.grey[900],
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                      fontFamily: fontName,
+                    ),
+                  ),
+                  SizedBox(height: 10),
                   Container(
                     padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
                     alignment: Alignment.topLeft,
                     child: Text(
                       user.bio,
                       style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey[800],
-                          letterSpacing: .7),
+                        fontSize: 15,
+                        color: Colors.grey[800],
+                        letterSpacing: .7,
+                        fontFamily: fontName,
+                      ),
                     ),
                   ),
                 ],
@@ -360,26 +393,31 @@ class _ProfileState extends State<Profile>
                   Text(
                     "Interests",
                     style: TextStyle(
-                        color: Colors.grey[900],
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5),
+                      color: Colors.grey[900],
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                      fontFamily: fontName,
+                    ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
                   Container(
                     padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
                     alignment: Alignment.topLeft,
                     child: Text(
                       user.interests,
                       style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey[800],
-                          letterSpacing: .7),
+                        fontSize: 15,
+                        color: Colors.grey[800],
+                        letterSpacing: .7,
+                        fontFamily: fontName,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.2),
           ],
         );
       },
@@ -411,12 +449,14 @@ class _ProfileState extends State<Profile>
               children: <Widget>[
                 Text(
                   user.displayName.length > 20
-                      ? user.displayName.substring(0, 21) + "..."
+                      ? user.displayName.substring(0, 23) + "..."
                       : user.displayName,
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: MediaQuery.of(context).size.width * 0.05,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: MediaQuery.of(context).size.width * 0.045,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: fontName,
+                  ),
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.01,
@@ -426,16 +466,20 @@ class _ProfileState extends State<Profile>
                   style: TextStyle(
                     color: Colors.white60,
                     fontSize: 12,
+                    fontFamily: fontName,
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.03,
+                  height: MediaQuery.of(context).size.height * 0.035,
                 ),
                 Text(
-                  user.occupation,
+                  user.occupation.length > 30
+                      ? user.occupation.substring(0, 30) + "..."
+                      : user.occupation,
                   style: TextStyle(
-                    color: Colors.white60,
+                    color: Colors.white,
                     fontSize: 12,
+                    fontFamily: fontName,
                   ),
                 ),
               ],
@@ -452,22 +496,34 @@ class _ProfileState extends State<Profile>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SvgPicture.asset('assets/images/no_post.svg', height: 150.0),
+          SvgPicture.asset(
+            'assets/images/no_post.svg',
+            height: MediaQuery.of(context).size.height * 0.2,
+          ),
           Padding(
-            padding: EdgeInsets.only(top: 30.0),
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).size.height * 0.05,
+            ),
             child: Text(
               "It seems like you have no posts yet. Make one now.",
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
+                fontFamily: fontName,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).size.height * 0.05,
+              bottom: MediaQuery.of(context).size.height * 0.02,
+            ),
             child: TextButton.icon(
               icon: Icon(Icons.edit),
-              label: Text("Create a Post"),
+              label: Text(
+                "Create a post",
+                style: commonTextStyle,
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -487,19 +543,25 @@ class _ProfileState extends State<Profile>
 
   buiildOtherProfileNoPost() {
     return Center(
-      heightFactor: 1.8,
+      heightFactor: 2,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SvgPicture.asset('assets/images/no_post.svg', height: 150.0),
+          SvgPicture.asset(
+            'assets/images/no_post.svg',
+            height: MediaQuery.of(context).size.height * 0.2,
+          ),
           Padding(
-            padding: EdgeInsets.only(top: 30.0),
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).size.height * 0.05,
+              bottom: MediaQuery.of(context).size.height * 0.02,
+            ),
             child: Text(
               "This user doesn't seem to have any posts.",
               style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: fontName),
             ),
           ),
         ],
@@ -541,7 +603,6 @@ class _ProfileState extends State<Profile>
       children: [
         FlatButton(
           textColor: Colors.grey,
-          height: 50.0,
           onPressed: () => showProfileMenu("dashboard"),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -561,6 +622,8 @@ class _ProfileState extends State<Profile>
                   color: profileMenu == "dashboard"
                       ? Colors.white
                       : Colors.white60,
+                  fontFamily: fontName,
+                  letterSpacing: .7,
                 ),
               )
             ],
@@ -568,7 +631,6 @@ class _ProfileState extends State<Profile>
         ),
         FlatButton(
           textColor: Colors.grey,
-          height: 50.0,
           onPressed: () => showProfileMenu("posts"),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -581,9 +643,11 @@ class _ProfileState extends State<Profile>
                 ),
               ),
               Text(
-                'Posts',
+                postCount.toString() + ' Posts',
                 style: TextStyle(
                   color: profileMenu == "posts" ? Colors.white : Colors.white60,
+                  fontFamily: fontName,
+                  letterSpacing: .7,
                 ),
               )
             ],
@@ -604,121 +668,116 @@ class _ProfileState extends State<Profile>
 
   bool get wantKeepAlive => true;
 
+  buildAppbar() {
+    return AppBar(
+      automaticallyImplyLeading: true,
+      elevation: 0,
+      leading: removeBackButton
+          ? Text('')
+          : IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: Colors.white,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+      actions: <Widget>[
+        removeSettingButton
+            ? Text('')
+            : IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfileSettings(
+                        appName: "YBB",
+                        version: "1.0.0",
+                      ),
+                    ),
+                  );
+                },
+              ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     return Scaffold(
       backgroundColor: Color(0xffF8F8FA),
-      body: Stack(
-        overflow: Overflow.visible,
-        children: <Widget>[
-          Container(
-            color: Theme.of(context).primaryColor,
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: Padding(
-              padding: EdgeInsets.only(
-                  left: 30.0,
-                  right: 30.0,
-                  top: MediaQuery.of(context).size.height * 0.12),
-              child: Column(
-                children: <Widget>[
-                  buildProfileHeader(),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.04,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      appBar: buildAppbar(),
+      body: RefreshIndicator(
+        key: refreshkey,
+        onRefresh: refreshProfile,
+        child: SingleChildScrollView(
+          child: Stack(
+            overflow: Overflow.visible,
+            children: <Widget>[
+              Container(
+                color: Theme.of(context).primaryColor,
+                height: MediaQuery.of(context).size.height * 0.35,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      left: 30.0,
+                      right: 30.0,
+                      top: MediaQuery.of(context).size.height * 0.01),
+                  child: Column(
                     children: <Widget>[
-                      buildCountColumn("followers", followerCount),
-                      buildCountColumn("following", followingCount),
-                      buildProfileButton(),
+                      buildProfileHeader(),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.045,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          buildCountColumn("followers", followerCount),
+                          buildCountColumn("following", followingCount),
+                          buildProfileButton(),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.03,
+                      ),
+                      buildProfileMenu(),
                     ],
                   ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                  buildProfileMenu(),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding:
-                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.38),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(30.0),
-                    topLeft: Radius.circular(30.0),
-                  )),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: 10,
-                          top: MediaQuery.of(context).size.height * 0.02),
-                      child: buildProfilePosts(),
-                    ),
-                  ],
                 ),
               ),
-            ),
-          )
-        ],
+              Padding(
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.3),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(30.0),
+                        topLeft: Radius.circular(30.0),
+                      )),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 10,
+                              top: MediaQuery.of(context).size.height * 0.02),
+                          child: buildProfilePosts(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
-
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     elevation: 0,
-    //     automaticallyImplyLeading: false,
-    //     title: Text(
-    //       "Profile",
-    //       style: TextStyle(
-    //         color: Colors.black,
-    //         fontFamily: "Montserrat",
-    //         fontSize: 20.0,
-    //         fontWeight: FontWeight.bold,
-    //       ),
-    //     ),
-    //     actions: <Widget>[
-    //       currentUserId == widget.profileId
-    //           ? IconButton(
-    //               icon: Icon(
-    //                 Icons.settings,
-    //                 color: Colors.black,
-    //               ),
-    //               onPressed: () => Navigator.push(
-    //                 context,
-    //                 MaterialPageRoute(
-    //                   builder: (context) => ProfileSettings(
-    //                     appName: "YBB",
-    //                     version: "1.0.0",
-    //                   ),
-    //                 ),
-    //               ),
-    //             )
-    //           : Text(""),
-    //     ],
-    //     backgroundColor: Colors.white,
-    //   ),
-    //   body: RefreshIndicator(
-    //     key: refreshkey,
-    //     onRefresh: refreshProfile,
-    //     child: ListView(
-    //       children: <Widget>[
-    //         buildProfileHeader(),
-    //         Divider(),
-    //         buildProfileMenu(),
-    //         Divider(),
-    //         buildProfilePosts(),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 }

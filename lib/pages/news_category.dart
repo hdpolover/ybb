@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ybb/helpers/news_categories.dart';
+import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/models/article.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/progress.dart';
@@ -19,6 +20,7 @@ class NewsCategory extends StatefulWidget {
 class _NewsCategoryState extends State<NewsCategory>
     with AutomaticKeepAliveClientMixin<NewsCategory> {
   List<ArticleModel> articles = new List<ArticleModel>();
+  var refreshkey = GlobalKey<RefreshIndicatorState>();
 
   bool _loading = true;
 
@@ -42,6 +44,17 @@ class _NewsCategoryState extends State<NewsCategory>
     }
   }
 
+  Future<Null> refresh() async {
+    refreshkey.currentState?.show(atTop: true);
+
+    NewsCategoriesData newsCategoriesData = new NewsCategoriesData();
+
+    articles = [];
+
+    await newsCategoriesData.getArticles(widget.categoryIndex);
+    articles = newsCategoriesData.articles;
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -49,13 +62,15 @@ class _NewsCategoryState extends State<NewsCategory>
     return Scaffold(
       appBar: defaultAppBar(context, titleText: widget.categoryName),
       body: RefreshIndicator(
-        onRefresh: () => getNews(),
+        key: refreshkey,
+        onRefresh: refresh,
         child: SingleChildScrollView(
           child: _loading
               ? circularProgress()
               :
               //articles
-              Container(
+              Padding(
+                  padding: EdgeInsets.all(15),
                   child: ListView.builder(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
@@ -69,6 +84,7 @@ class _NewsCategoryState extends State<NewsCategory>
                         newsTitle: articles[index].title,
                         newsDesc: articles[index].desc,
                         newsUrl: articles[index].url,
+                        newsContent: articles[index].content,
                         newsDate: articles[index].date,
                       );
                     },

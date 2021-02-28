@@ -20,6 +20,7 @@ class News extends StatefulWidget {
 class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   List<NewsCategoryModel> newsCategories = new List<NewsCategoryModel>();
   List<ArticleModel> articles = new List<ArticleModel>();
+  var refreshkey = GlobalKey<RefreshIndicatorState>();
 
   bool _loading = true;
 
@@ -46,6 +47,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   }
 
   Future<Null> getNewsAgain() async {
+    refreshkey.currentState?.show(atTop: true);
     NewsData newsData = new NewsData();
 
     articles = [];
@@ -63,6 +65,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
     return Scaffold(
       appBar: defaultAppBar(context, titleText: "News", removeBackButton: true),
       body: RefreshIndicator(
+        key: refreshkey,
         onRefresh: getNewsAgain,
         child: SingleChildScrollView(
           child: _loading
@@ -73,7 +76,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                       //categories
                       Container(
                         padding: EdgeInsets.only(top: 5.0, left: 5.0),
-                        height: 55.0,
+                        height: MediaQuery.of(context).size.height * 0.06,
                         child: ListView.builder(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
@@ -89,7 +92,8 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                         ),
                       ),
                       //articles
-                      Container(
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
@@ -103,6 +107,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                               newsTitle: articles[index].title,
                               newsDesc: articles[index].desc,
                               newsUrl: articles[index].url,
+                              newsContent: articles[index].content,
                               newsDate: articles[index].date,
                             );
                           },
@@ -174,16 +179,16 @@ class CategoryTile extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(6.0),
               child: CachedNetworkImage(
-                width: 120.0,
-                height: 60.0,
+                width: MediaQuery.of(context).size.width * 0.35,
+                height: MediaQuery.of(context).size.height * 0.06,
                 fit: BoxFit.cover,
                 imageUrl: categoryImageUrl,
               ),
             ),
             Container(
               alignment: Alignment.center,
-              height: 60.0,
-              width: 120.0,
+              height: MediaQuery.of(context).size.height * 0.06,
+              width: MediaQuery.of(context).size.width * 0.35,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6.0),
                 color: Colors.black26,
@@ -191,9 +196,12 @@ class CategoryTile extends StatelessWidget {
               child: Text(
                 categoryName,
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w500),
+                  color: Colors.white,
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "OpenSans",
+                  letterSpacing: 1,
+                ),
               ),
             )
           ],
@@ -211,6 +219,7 @@ class ArticleTile extends StatelessWidget {
   final String newsImageUrl,
       newsTitle,
       newsDesc,
+      newsContent,
       newsUrl,
       newsDate,
       newsCategory;
@@ -220,6 +229,7 @@ class ArticleTile extends StatelessWidget {
       @required this.newsTitle,
       @required this.newsDesc,
       @required this.newsUrl,
+      @required this.newsContent,
       @required this.newsDate,
       @required this.newsCategory});
 
@@ -230,18 +240,26 @@ class ArticleTile extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NewsDetail(url: newsUrl),
+            builder: (context) => NewsDetail(
+              title: newsTitle,
+              url: newsUrl,
+              date: newsDate,
+              category: newsCategory,
+              content: newsContent,
+              imageUrl: newsImageUrl,
+            ),
           ),
         );
       },
-      child: Card(
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             CachedNetworkImage(
               imageUrl: newsImageUrl,
               width: MediaQuery.of(context).size.width,
-              height: 180.0,
+              height: MediaQuery.of(context).size.height * 0.25,
               fit: BoxFit.fill,
             ),
             SizedBox(height: 5),
@@ -251,6 +269,7 @@ class ArticleTile extends StatelessWidget {
                 newsTitle.trim(),
                 textAlign: TextAlign.start,
                 style: TextStyle(
+                  fontFamily: 'OpenSans',
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
                 ),
@@ -259,18 +278,47 @@ class ArticleTile extends StatelessWidget {
             SizedBox(height: 5),
             Row(
               children: [
-                SizedBox(width: 10),
-                ActionChip(
-                  avatar: Icon(Icons.calendar_today_rounded),
-                  label: Text(
-                      convertDateTime(DateTime.parse(newsDate)).toString()),
-                  onPressed: () {},
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.calendar_today,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        convertDateTime(DateTime.parse(newsDate)).toString(),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: "OpenSans",
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-                SizedBox(width: 10),
-                InputChip(
-                  avatar: Icon(Icons.folder_open),
-                  label: Text(newsCategory),
-                  onPressed: () {},
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.folder_open_outlined,
+                        color: Colors.black,
+                        size: 22,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        newsCategory,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: "OpenSans",
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -281,6 +329,7 @@ class ArticleTile extends StatelessWidget {
                 newsDesc,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
+                  fontFamily: 'OpenSans',
                   color: Colors.grey,
                 ),
               ),

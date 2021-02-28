@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uuid/uuid.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
@@ -77,7 +78,7 @@ class CommentsState extends State<Comments> {
         children: [
           SvgPicture.asset(
             'assets/images/no_comment.svg',
-            height: 170,
+            height: MediaQuery.of(context).size.height * 0.2,
           ),
           SizedBox(
             height: 20,
@@ -85,6 +86,10 @@ class CommentsState extends State<Comments> {
           Text(
             "Be the first one to comment.",
             textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: fontName,
+              letterSpacing: .7,
+            ),
           ),
         ],
       ),
@@ -128,12 +133,19 @@ class CommentsState extends State<Comments> {
       appBar: defaultAppBar(context, titleText: "Comments"),
       body: Column(
         children: <Widget>[
-          Expanded(child: buildComments()),
+          Expanded(
+            child: buildComments(),
+          ),
           Divider(),
           ListTile(
             title: TextFormField(
               controller: commentController,
-              decoration: InputDecoration(labelText: "Write a comment..."),
+              decoration: InputDecoration(
+                labelText: "Write a comment...",
+                hintStyle: TextStyle(
+                  fontFamily: fontName,
+                ),
+              ),
             ),
             leading: CircleAvatar(
                 backgroundImage:
@@ -141,7 +153,13 @@ class CommentsState extends State<Comments> {
             trailing: OutlineButton(
               onPressed: addComment,
               borderSide: BorderSide.none,
-              child: Text("Post"),
+              child: Text(
+                "POST",
+                style: TextStyle(
+                  fontFamily: fontName,
+                  color: Colors.black,
+                ),
+              ),
             ),
           ),
         ],
@@ -184,13 +202,19 @@ class Comment extends StatelessWidget {
   deleteComment(parentContext) {
     // set up the buttons
     Widget cancelButton = FlatButton(
-      child: Text("Cancel"),
+      child: Text(
+        "Cancel",
+        style: commonTextStyle,
+      ),
       onPressed: () {
         Navigator.pop(parentContext);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Delete"),
+      child: Text(
+        "Delete",
+        style: TextStyle(color: Colors.red, fontFamily: fontName),
+      ),
       onPressed: () {
         commentsRef
             .doc(postId)
@@ -208,8 +232,14 @@ class Comment extends StatelessWidget {
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Delete comment"),
-      content: Text("Are you sure to delete your comment?"),
+      title: Text(
+        "Delete comment",
+        style: commonTextStyle,
+      ),
+      content: Text(
+        "Are you sure to delete your comment?",
+        style: commonTextStyle,
+      ),
       actions: [
         cancelButton,
         continueButton,
@@ -240,10 +270,16 @@ class Comment extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
+                  fontFamily: fontName,
                 ),
                 children: <TextSpan>[
                   TextSpan(
-                      text: comment, style: DefaultTextStyle.of(context).style),
+                    text: comment,
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontFamily: fontName,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -254,7 +290,12 @@ class Comment extends StatelessWidget {
               backgroundImage: CachedNetworkImageProvider(avatarUrl),
             ),
           ),
-          subtitle: Text(timeago.format(timestamp.toDate())),
+          subtitle: Text(
+            timeago.format(timestamp.toDate()),
+            style: TextStyle(
+              fontFamily: fontName,
+            ),
+          ),
         ),
         //Divider(),
       ],

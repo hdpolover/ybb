@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
@@ -34,22 +35,29 @@ class _SearchState extends State<Search>
       elevation: 0,
       automaticallyImplyLeading: false,
       backgroundColor: Colors.blue,
-      title: TextFormField(
-        controller: searchController,
-        decoration: InputDecoration(
-          fillColor: Colors.white,
-          hintText: "Search...",
-          filled: true,
-          prefixIcon: Icon(
-            Icons.search,
-            size: 28.0,
-          ),
-          suffixIcon: IconButton(
-            icon: Icon(Icons.clear),
-            onPressed: clearSearch,
+      title: Expanded(
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.045,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50), color: Colors.grey[200]),
+          child: TextFormField(
+            controller: searchController,
+            decoration: InputDecoration(
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.grey,
+              ),
+              border: InputBorder.none,
+              hintStyle: TextStyle(color: Colors.grey),
+              hintText: "Search",
+              suffixIcon: IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: clearSearch,
+              ),
+            ),
+            onFieldSubmitted: handleSearch,
           ),
         ),
-        onFieldSubmitted: handleSearch,
       ),
     );
   }
@@ -73,6 +81,7 @@ class _SearchState extends State<Search>
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black,
+                fontFamily: fontName,
               ),
             ),
           ],
@@ -89,7 +98,7 @@ class _SearchState extends State<Search>
         children: [
           SvgPicture.asset(
             'assets/images/no_search_result.svg',
-            height: 170,
+            height: MediaQuery.of(context).size.height * 0.2,
           ),
           SizedBox(
             height: 30,
@@ -101,7 +110,7 @@ class _SearchState extends State<Search>
               "Oops! We can't find anything on that keyword. Try something else.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
+                fontFamily: fontName,
               ),
             ),
           ),
@@ -117,6 +126,7 @@ class _SearchState extends State<Search>
         if (!snapshot.hasData) {
           return circularProgress();
         }
+
         List<UserResult> searchResults = [];
         snapshot.data.documents.forEach((doc) {
           User user = User.fromDocument(doc);
@@ -171,11 +181,15 @@ class UserResult extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
+                  fontFamily: fontName,
                 ),
               ),
               subtitle: Text(
-                user.username,
-                style: TextStyle(color: Colors.black),
+                "@" + user.username,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: fontName,
+                ),
               ),
             ),
           ),

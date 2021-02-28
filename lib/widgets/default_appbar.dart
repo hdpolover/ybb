@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ybb/helpers/constants.dart';
 
 AppBar defaultAppBar(context,
     {@required String titleText, removeBackButton = false}) {
@@ -15,12 +16,7 @@ AppBar defaultAppBar(context,
           ),
     title: Text(
       titleText,
-      style: TextStyle(
-        color: Colors.white,
-        fontFamily: "Montserrat",
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
-      ),
+      style: appBarTextStyle,
     ),
     elevation: 0,
     centerTitle: true,

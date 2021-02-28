@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/comments.dart';
@@ -59,15 +60,14 @@ class Post extends StatefulWidget {
 
   @override
   _PostState createState() => _PostState(
-        postId: this.postId,
-        ownerId: this.ownerId,
-        displayName: this.displayName,
-        description: this.description,
-        timestamp: this.timestamp,
-        mediaUrl: this.mediaUrl,
-        likes: this.likes,
-        likeCount: getLikeCount(this.likes),
-      );
+      postId: this.postId,
+      ownerId: this.ownerId,
+      displayName: this.displayName,
+      description: this.description,
+      timestamp: this.timestamp,
+      mediaUrl: this.mediaUrl,
+      likes: this.likes,
+      likeCount: getLikeCount(this.likes));
 }
 
 class _PostState extends State<Post> {
@@ -78,23 +78,22 @@ class _PostState extends State<Post> {
   final String description;
   final DateTime timestamp;
   final String mediaUrl;
+
   bool showHeart = false;
   bool isLiked;
   int likeCount;
+  int commentCount = 0;
   Map likes;
-  bool isExtended;
 
-  _PostState({
-    this.postId,
-    this.ownerId,
-    this.displayName,
-    this.description,
-    this.timestamp,
-    this.mediaUrl,
-    this.likes,
-    this.likeCount,
-    this.isExtended,
-  });
+  _PostState(
+      {this.postId,
+      this.ownerId,
+      this.displayName,
+      this.description,
+      this.timestamp,
+      this.mediaUrl,
+      this.likes,
+      this.likeCount});
 
   String convertDateTime(DateTime postedDate) {
     return DateFormat.yMMMd().add_jm().format(postedDate);
@@ -135,10 +134,12 @@ class _PostState extends State<Post> {
                       Text(
                         user.displayName,
                         style: TextStyle(
-                            color: Colors.grey[900],
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1),
+                          color: Colors.grey[900],
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: fontName,
+                          letterSpacing: 1,
+                        ),
                       ),
                       SizedBox(
                         height: 3,
@@ -146,7 +147,10 @@ class _PostState extends State<Post> {
                       Text(
                         //convertDateTime(timestamp),
                         timeago.format(timestamp),
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontFamily: fontName,
+                        ),
                       ),
                     ],
                   ),
@@ -154,40 +158,50 @@ class _PostState extends State<Post> {
               ],
             ),
             isPostOwner
-                ? IconButton(
-                    icon: Icon(
-                      Icons.more_vert,
-                      size: 30,
-                      color: Colors.grey[600],
-                    ),
-                    onPressed: () => handleDeletePost(context),
+                ? PopupMenuButton(
+                    onSelected: (value) {
+                      switch (value) {
+                        case 0:
+                          handleDeletePost(context);
+                          break;
+                        default:
+                          break;
+                      }
+                    },
+                    icon: Icon(Icons.more_vert),
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem(
+                        child: Text(
+                          'Delete',
+                          style: TextStyle(
+                            fontFamily: fontName,
+                          ),
+                        ),
+                        value: 0,
+                      ),
+                      // PopupMenuItem(
+                      //   child: Text(
+                      //     'Share',
+                      //     style: TextStyle(
+                      //       fontFamily: fontName,
+                      //     ),
+                      //   ),
+                      //   value: 1,
+                      // ),
+                    ],
                   )
-                : Text(''),
+                :
+                // ? IconButton(
+                //     icon: Icon(
+                //       Icons.more_vert,
+                //       size: 30,
+                //       color: Colors.grey[600],
+                //     ),
+                //     onPressed: () => buildMorePopUp(context),
+                //   )
+                Text(''),
           ],
         );
-        // return ListTile(
-        //   leading: CircleAvatar(
-        //     backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-        //     backgroundColor: Colors.grey,
-        //   ),
-        //   title: GestureDetector(
-        //     onTap: () => showProfile(context, profileId: user.id),
-        //     child: Text(
-        //       user.displayName,
-        //       style: TextStyle(
-        //         color: Colors.black,
-        //         fontWeight: FontWeight.bold,
-        //       ),
-        //     ),
-        //   ),
-        //   subtitle: Text(convertDateTime(timestamp)),
-        //   trailing: isPostOwner
-        //       ? IconButton(
-        //           onPressed: () => handleDeletePost(context),
-        //           icon: Icon(Icons.more_vert),
-        //         )
-        //       : Text(''),
-        // );
       },
     );
   }
@@ -197,12 +211,26 @@ class _PostState extends State<Post> {
         context: parentContext,
         builder: (context) {
           return AlertDialog(
-            title: Text("Delete Post"),
+            title: Text(
+              "Delete Post",
+              style: TextStyle(
+                fontFamily: fontName,
+              ),
+            ),
             content: Text(
-                "Are you sure to delete this post? This action cannot be undone."),
+              "Are you sure to delete this post? This action cannot be undone.",
+              style: TextStyle(
+                fontFamily: fontName,
+              ),
+            ),
             actions: [
               FlatButton(
-                child: Text("Cancel"),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(
+                    fontFamily: fontName,
+                  ),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -210,7 +238,10 @@ class _PostState extends State<Post> {
               FlatButton(
                 child: Text(
                   "Delete",
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontFamily: fontName,
+                  ),
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -218,20 +249,6 @@ class _PostState extends State<Post> {
                 },
               ),
             ],
-            // return SimpleDialog(
-            //   title: Text("Remove this post?"),
-            //   children: <Widget>[
-            //     SimpleDialogOption(
-            //       onPressed: () {
-            //         Navigator.pop(context);
-            //         deletePost();
-            //       },
-            //       child: Text(
-            //         'Delete',
-            //         style: TextStyle(color: Colors.red),
-            //       ),
-            //     ),
-            //   ],
           );
         });
   }
@@ -280,7 +297,6 @@ class _PostState extends State<Post> {
       setState(() {
         likeCount -= 1;
         isLiked = false;
-        isExtended = false;
         likes[currentUserId] = false;
       });
     } else if (!_isLiked) {
@@ -293,7 +309,6 @@ class _PostState extends State<Post> {
       setState(() {
         likeCount += 1;
         isLiked = true;
-        isExtended = true;
         likes[currentUserId] = true;
         showHeart = true;
       });
@@ -338,18 +353,45 @@ class _PostState extends State<Post> {
     }
   }
 
+  List<Comment> commentList = [];
+  int count = 0;
+
   buildLikeAndComment() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Text(
           "$likeCount likes",
-          style: TextStyle(color: Colors.grey[600]),
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontFamily: fontName,
+          ),
         ),
-        Text(
-          "500 comments",
-          style: TextStyle(color: Colors.grey[600]),
-        )
+        // FutureBuilder(
+        //   future: commentsRef.doc(postId).collection('comments').get(),
+        //   builder: (context, snapshot) {
+        //     if (!snapshot.hasData) {
+        //       return circularProgress();
+        //     }
+
+        //     commentList = [];
+        //     count = 0;
+        //     Comment comment = Comment.fromDocument(snapshot.data);
+
+        //     commentList.add(comment);
+        //     print(commentList.length);
+
+        //     count = commentList.length;
+
+        //     return Text(
+        //       "$count comments",
+        //       style: TextStyle(
+        //         color: Colors.grey[600],
+        //         fontFamily: "OpenSans",
+        //       ),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
@@ -365,12 +407,14 @@ class _PostState extends State<Post> {
             padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
             alignment: Alignment.topLeft,
             child: Text(
-              manageDesc(description),
+              description,
               style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey[800],
-                  height: 1.5,
-                  letterSpacing: .7),
+                fontSize: 15,
+                color: Colors.grey[800],
+                height: 1.3,
+                letterSpacing: .7,
+                fontFamily: fontName,
+              ),
             ),
           ),
           CachedNetworkImage(
@@ -380,35 +424,6 @@ class _PostState extends State<Post> {
         ],
       ),
     );
-  }
-
-  String manageDesc(String desc) {
-    if (desc.trim().length > 400) {
-      //return desc.substring(0, 400) + "...";
-      return desc;
-    } else {
-      return desc;
-    }
-  }
-
-  int comments = 0;
-  getCommentCount() async {
-    QuerySnapshot snapshot =
-        await commentsRef.doc(postId).collection('comments').get();
-
-    dynamic comments = snapshot.docs.map((doc) => doc.id).toList();
-
-    if (comments == null) {
-      return 0;
-    }
-    int commentCount = 0;
-    // if the key is explicitly set to true, add a like
-    comments.forEach((val) {
-      commentCount += 1;
-    });
-
-    comments = commentCount;
-    return commentCount;
   }
 
   buildPostFooter() {
@@ -433,13 +448,13 @@ class _PostState extends State<Post> {
                       isLiked
                           ? Icon(
                               Icons.thumb_up,
-                              size: 30.0,
+                              size: 25.0,
                               color: Colors.blue,
                             )
                           : Icon(
                               Icons.thumb_up_alt_outlined,
                               color: Colors.grey,
-                              size: 30.0,
+                              size: 25.0,
                             ),
                       SizedBox(
                         width: 5,
@@ -447,7 +462,9 @@ class _PostState extends State<Post> {
                       Text(
                         "Like",
                         style: TextStyle(
-                            color: isLiked ? Colors.blue : Colors.grey),
+                          color: isLiked ? Colors.blue : Colors.grey,
+                          fontFamily: fontName,
+                        ),
                       )
                     ],
                   ),
@@ -472,13 +489,20 @@ class _PostState extends State<Post> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Icon(Icons.chat, color: Colors.grey, size: 30),
+                      Icon(
+                        Icons.chat,
+                        color: Colors.grey,
+                        size: 25,
+                      ),
                       SizedBox(
                         width: 5,
                       ),
                       Text(
                         "Comment",
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontFamily: fontName,
+                        ),
                       )
                     ],
                   ),
@@ -494,7 +518,6 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     isLiked = (likes[currentUserId] == true);
-    isExtended = true;
 
     return Container(
       margin: EdgeInsets.only(bottom: 25),
@@ -523,4 +546,16 @@ showComments(BuildContext context,
       postMediaUrl: mediaUrl,
     );
   }));
+}
+
+class Comment {
+  dynamic commentId;
+
+  Comment({this.commentId});
+
+  factory Comment.fromDocument(QuerySnapshot doc) {
+    return Comment(
+      commentId: doc,
+    );
+  }
 }
