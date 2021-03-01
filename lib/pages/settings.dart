@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/pages/settings/about_app.dart';
 import 'package:ybb/pages/settings/my_account.dart';
 import 'package:ybb/pages/settings/privacy_policies.dart';
 import 'package:ybb/pages/settings/send_feedback.dart';
@@ -69,10 +71,19 @@ class _SettingsState extends State<ProfileSettings> {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(_appName == null ? widget.appName : _appName),
-        Text(" v "),
-        Text(_projectVersion == null ? widget.version : _projectVersion),
-        SizedBox(height: 30),
+        Text(
+          _appName == null ? widget.appName : _appName,
+          style: TextStyle(fontFamily: fontName),
+        ),
+        Text(
+          " v",
+          style: TextStyle(fontFamily: fontName),
+        ),
+        Text(
+          _projectVersion == null ? widget.version : _projectVersion,
+          style: TextStyle(fontFamily: fontName),
+        ),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.1),
       ],
     ));
   }
@@ -111,6 +122,17 @@ class _SettingsState extends State<ProfileSettings> {
           ),
         );
         break;
+      case 5:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AboutApp(
+              appName: widget.appName,
+              appVersion: widget.version,
+            ),
+          ),
+        );
+        break;
       default:
         logout();
         break;
@@ -129,7 +151,10 @@ class _SettingsState extends State<ProfileSettings> {
             children: [
               icon,
               SizedBox(width: 10),
-              Text(text),
+              Text(
+                text,
+                style: TextStyle(fontFamily: fontName),
+              ),
             ],
           ),
         ),
@@ -149,11 +174,13 @@ class _SettingsState extends State<ProfileSettings> {
         children: [
           buildSettingList(
               Icon(Icons.account_circle_outlined), "My Account", 1),
-          buildSettingList(Icon(Icons.feedback_outlined), "Send Feedback", 2),
+          buildSettingList(
+              Icon(Icons.announcement_outlined), "Send Feedback", 2),
           buildSettingList(
               Icon(Icons.privacy_tip_outlined), "Privacy Policies", 3),
           buildSettingList(
               Icon(Icons.library_books), "Terms and Conditions", 4),
+          buildSettingList(Icon(Icons.device_unknown), "About App", 5),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: FlatButton(
@@ -165,7 +192,7 @@ class _SettingsState extends State<ProfileSettings> {
                   children: [
                     Icon(Icons.exit_to_app),
                     SizedBox(width: 10),
-                    Text("Sign out"),
+                    Text("Sign out", style: TextStyle(fontFamily: fontName)),
                   ],
                 ),
               ),

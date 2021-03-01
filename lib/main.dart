@@ -38,13 +38,15 @@ class _MyAppState extends State<MyApp> {
     //loadNews();
   }
 
-  loadNews() async {
-    NewsData newsData = new NewsData();
+  // loadNews() async {
+  //   NewsData newsData = new NewsData();
 
-    await newsData.getArticles();
+  //   await newsData.getFollowing();
+  //   followingListFromMain = newsData.followingList;
 
-    articlesFromMain = newsData.articles;
-  }
+  //   await newsData.getArticles();
+  //   articlesFromMain = newsData.articles;
+  // }
 
   Future<Widget> loadFromFuture() async {
     NewsData newsData = new NewsData();

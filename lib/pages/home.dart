@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/curve_painter.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
@@ -82,7 +83,6 @@ class _HomeState extends State<Home> {
     if (Platform.isIOS) getIOSPermission();
 
     _firebaseMessaging.getToken().then((token) {
-      print("firebase token: $token");
       usersRef.doc(user.id).update({"androidNotificationToken": token});
     });
 
@@ -90,12 +90,10 @@ class _HomeState extends State<Home> {
       //onLaunch: (Map<String, dynamic> message)  async {},
       //onResume: (Map<String, dynamic> message)  async {},
       onMessage: (Map<String, dynamic> message) async {
-        print("on message: $message\n");
         final String recipientId = message['data']['recipient'];
         final String body = message['notification']['body'];
 
         if (recipientId == user.id) {
-          print("notif shown");
           SnackBar snackBar = SnackBar(
               content: Text(
             body,
@@ -310,7 +308,7 @@ class _HomeState extends State<Home> {
                 activitySelected ? Theme.of(context).primaryColor : Colors.grey,
           ),
           Icon(
-            Icons.person_pin,
+            Icons.account_circle,
             size: 25,
             color:
                 profileSelected ? Theme.of(context).primaryColor : Colors.grey,
@@ -363,15 +361,18 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               SizedBox(height: MediaQuery.of(context).size.height / 5),
               Container(
-                margin: EdgeInsets.only(left: 30),
+                margin: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * 0.1),
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Welcome Back',
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: "Montserrat",
+                    letterSpacing: 1.5,
+                    height: 1.2,
+                    fontFamily: fontName,
                     fontWeight: FontWeight.bold,
-                    fontSize: 40,
+                    fontSize: MediaQuery.of(context).size.height * 0.05,
                   ),
                 ),
               ),
@@ -379,7 +380,7 @@ class _HomeState extends State<Home> {
               //SvgPicture.asset('assets/images/welcome.svg', height: 150),
               Image(
                 image: AssetImage("assets/images/ybb_black_full.png"),
-                height: 120,
+                height: MediaQuery.of(context).size.height * 0.13,
               ),
               SizedBox(height: MediaQuery.of(context).size.height / 10),
               Padding(
@@ -397,6 +398,7 @@ class _HomeState extends State<Home> {
                         "Let\'s get started!",
                         style: TextStyle(
                           color: Colors.white,
+                          fontFamily: fontName,
                           fontSize: 20,
                         ),
                       ),

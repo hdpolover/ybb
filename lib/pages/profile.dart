@@ -131,7 +131,6 @@ class _ProfileState extends State<Profile>
       isLoading = false;
       postCount = snapshot.docs.length;
       posts = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
-      print(postCount);
     });
   }
 
@@ -246,6 +245,7 @@ class _ProfileState extends State<Profile>
         doc.reference.delete();
       }
     });
+
     // delete activity feed item for them
     activityFeedRef
         .doc(widget.profileId)
@@ -290,6 +290,7 @@ class _ProfileState extends State<Profile>
       "commentData": "",
       "mediaUrl": "",
       "postId": "",
+      "feedId": currentUserId,
     });
   }
 
@@ -737,7 +738,7 @@ class _ProfileState extends State<Profile>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           buildCountColumn("followers", followerCount),
-                          buildCountColumn("following", followingCount),
+                          buildCountColumn("followings", followingCount),
                           buildProfileButton(),
                         ],
                       ),

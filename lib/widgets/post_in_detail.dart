@@ -7,12 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
-import 'package:ybb/pages/comments.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/progress.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class Post extends StatefulWidget {
+class PostInDetail extends StatefulWidget {
   final String postId;
   final String ownerId;
   final String description;
@@ -20,7 +19,7 @@ class Post extends StatefulWidget {
   final String mediaUrl;
   final dynamic likes;
 
-  Post({
+  PostInDetail({
     this.postId,
     this.ownerId,
     this.description,
@@ -29,8 +28,8 @@ class Post extends StatefulWidget {
     this.likes,
   });
 
-  factory Post.fromDocument(DocumentSnapshot doc) {
-    return Post(
+  factory PostInDetail.fromDocument(DocumentSnapshot doc) {
+    return PostInDetail(
       postId: doc['postId'],
       ownerId: doc['ownerId'],
       description: doc['description'],
@@ -56,7 +55,7 @@ class Post extends StatefulWidget {
   }
 
   @override
-  _PostState createState() => _PostState(
+  _PostInDetailState createState() => _PostInDetailState(
       postId: this.postId,
       ownerId: this.ownerId,
       description: this.description,
@@ -66,7 +65,7 @@ class Post extends StatefulWidget {
       likeCount: getLikeCount(this.likes));
 }
 
-class _PostState extends State<Post> {
+class _PostInDetailState extends State<PostInDetail> {
   final String currentUserId = currentUser?.id;
   final String postId;
   final String ownerId;
@@ -80,7 +79,7 @@ class _PostState extends State<Post> {
   int commentCount = 0;
   Map likes;
 
-  _PostState(
+  _PostInDetailState(
       {this.postId,
       this.ownerId,
       this.description,
@@ -88,13 +87,6 @@ class _PostState extends State<Post> {
       this.mediaUrl,
       this.likes,
       this.likeCount});
-
-  @override
-  void initState() {
-    super.initState();
-
-    getCommentCount();
-  }
 
   String convertDateTime(DateTime postedDate) {
     return DateFormat.yMMMd().add_jm().format(postedDate);
@@ -200,49 +192,50 @@ class _PostState extends State<Post> {
 
   handleDeletePost(BuildContext parentContext) {
     return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              "Delete Post",
-              style: TextStyle(
-                fontFamily: fontName,
-              ),
+      context: parentContext,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Delete Post",
+            style: TextStyle(
+              fontFamily: fontName,
             ),
-            content: Text(
-              "Are you sure to delete this post? This action cannot be undone.",
-              style: TextStyle(
-                fontFamily: fontName,
-              ),
+          ),
+          content: Text(
+            "Are you sure to delete this post? This action cannot be undone.",
+            style: TextStyle(
+              fontFamily: fontName,
             ),
-            actions: [
-              FlatButton(
-                child: Text(
-                  "Cancel",
-                  style: TextStyle(
-                    fontFamily: fontName,
-                  ),
+          ),
+          actions: [
+            FlatButton(
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  fontFamily: fontName,
                 ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
               ),
-              FlatButton(
-                child: Text(
-                  "Delete",
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontFamily: fontName,
-                  ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text(
+                "Delete",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontFamily: fontName,
                 ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  deletePost();
-                },
               ),
-            ],
-          );
-        });
+              onPressed: () {
+                Navigator.of(context).pop();
+                deletePost();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Note: To delete post, ownerId and currentUserId must be equal, so they can be used interchangeably
@@ -322,7 +315,6 @@ class _PostState extends State<Post> {
         "postId": postId,
         "timestamp": timestamp,
         "commentData": "",
-        "feedId": postId,
       });
     }
   }
@@ -343,38 +335,15 @@ class _PostState extends State<Post> {
     }
   }
 
-  Future<Null> getCommentCount() async {
-    QuerySnapshot snapshot =
-        await commentsRef.doc(postId).collection('comments').get();
-
-    setState(() {
-      commentCount = snapshot.docs.length;
-    });
-  }
-
   buildLikeAndComment() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Text(
-          likeCount < 2 || likeCount == null
-              ? "$likeCount like"
-              : "$likeCount likes",
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontFamily: fontName,
-          ),
-        ),
-        Text(
-          commentCount < 2 || commentCount == null
-              ? "$commentCount comment"
-              : "$commentCount comments",
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontFamily: "OpenSans",
-          ),
-        ),
-      ],
+    return Text(
+      likeCount < 2 || likeCount == null
+          ? "$likeCount like"
+          : "$likeCount likes",
+      style: TextStyle(
+        color: Colors.grey[600],
+        fontFamily: fontName,
+      ),
     );
   }
 
@@ -455,12 +424,7 @@ class _PostState extends State<Post> {
             ),
             SizedBox(width: MediaQuery.of(context).size.width * 0.03),
             GestureDetector(
-              onTap: () => showComments(
-                context,
-                postId: postId,
-                ownerId: ownerId,
-                mediaUrl: mediaUrl,
-              ),
+              onTap: () {},
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                 decoration: BoxDecoration(
@@ -517,15 +481,4 @@ class _PostState extends State<Post> {
       ),
     );
   }
-}
-
-showComments(BuildContext context,
-    {String postId, String ownerId, String mediaUrl}) {
-  Navigator.push(context, MaterialPageRoute(builder: (context) {
-    return Comments(
-      postId: postId,
-      postOwnerId: ownerId,
-      postMediaUrl: mediaUrl,
-    );
-  }));
 }

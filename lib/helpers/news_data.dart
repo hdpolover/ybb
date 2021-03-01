@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ybb/models/article.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
+import 'package:ybb/pages/home.dart';
 
 // Future<List> fetchWpPosts() async {
 //   final response = await http.get(
@@ -16,6 +18,16 @@ import 'package:html/parser.dart';
 
 class NewsData {
   List<ArticleModel> articles = [];
+  List<String> followingList = [];
+
+  Future<void> getFollowing() async {
+    QuerySnapshot snapshot = await followingRef
+        .doc(currentUser.id)
+        .collection('userFollowing')
+        .get();
+
+    followingList = snapshot.docs.map((doc) => doc.id).toList();
+  }
 
   Future<void> getArticles() async {
     String url =

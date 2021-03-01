@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
@@ -40,6 +41,8 @@ class _MyAccountState extends State<MyAccount> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
+                  fontFamily: fontName,
+                  letterSpacing: 1.5,
                 ),
               ),
               SizedBox(height: 20.0),
@@ -54,10 +57,15 @@ class _MyAccountState extends State<MyAccount> {
                       "Display name",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontFamily: fontName,
                       ),
                     ),
                     Spacer(),
-                    Text(user.displayName),
+                    Text(
+                      user.displayName,
+                      style: TextStyle(
+                          fontFamily: fontName, color: Colors.black54),
+                    ),
                   ],
                 ),
               ),
@@ -72,10 +80,15 @@ class _MyAccountState extends State<MyAccount> {
                       "Username",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontFamily: fontName,
                       ),
                     ),
                     Spacer(),
-                    Text("@" + user.username),
+                    Text(
+                      "@" + user.username,
+                      style: TextStyle(
+                          fontFamily: fontName, color: Colors.black54),
+                    ),
                   ],
                 ),
               ),
@@ -90,10 +103,15 @@ class _MyAccountState extends State<MyAccount> {
                       "Email",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontFamily: fontName,
                       ),
                     ),
                     Spacer(),
-                    Text(user.email),
+                    Text(
+                      user.email,
+                      style: TextStyle(
+                          fontFamily: fontName, color: Colors.black54),
+                    ),
                   ],
                 ),
               ),
@@ -108,10 +126,15 @@ class _MyAccountState extends State<MyAccount> {
                       "Registered on",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontFamily: fontName,
                       ),
                     ),
                     Spacer(),
-                    Text(convertDateTime(user.timestamp)),
+                    Text(
+                      convertDateTime(user.timestamp),
+                      style: TextStyle(
+                          fontFamily: fontName, color: Colors.black54),
+                    ),
                   ],
                 ),
               ),

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:ybb/helpers/constants.dart';
+import 'package:ybb/models/commenter.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/post_screen.dart';
 import 'package:ybb/pages/profile.dart';
-import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/progress.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -24,7 +24,9 @@ class ActivityFeed extends StatefulWidget {
 class _ActivityFeedState extends State<ActivityFeed>
     with AutomaticKeepAliveClientMixin<ActivityFeed> {
   var refreshkey = GlobalKey<RefreshIndicatorState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<ActivityFeedItem> feedItems = [];
+  List<String> feedIds = [];
 
   @override
   void initState() {
@@ -46,7 +48,10 @@ class _ActivityFeedState extends State<ActivityFeed>
 
     feedItems = [];
     snapshot.docs.forEach((doc) {
-      feedItems.add(ActivityFeedItem.fromDocument(doc));
+      ActivityFeedItem item = ActivityFeedItem.fromDocument(doc);
+      feedIds.add(item.feedId);
+
+      feedItems.add(item);
     });
 
     return feedItems;
@@ -70,7 +75,7 @@ class _ActivityFeedState extends State<ActivityFeed>
         children: [
           SvgPicture.asset(
             'assets/images/no_notif.svg',
-            height: MediaQuery.of(context).size.width * 0.2,
+            height: MediaQuery.of(context).size.width * 0.3,
           ),
           SizedBox(
             height: 30,
@@ -89,17 +94,113 @@ class _ActivityFeedState extends State<ActivityFeed>
 
   bool get wantKeepAlive => true;
 
+  buildAppbar() {
+    return AppBar(
+      centerTitle: true,
+      automaticallyImplyLeading: false,
+      title: Text(
+        "Activity Feed",
+        style: appBarTextStyle,
+      ),
+      elevation: 0,
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(
+            Icons.delete,
+            color: feedItems == null || feedItems.isEmpty
+                ? Colors.white30
+                : Colors.white,
+          ),
+          onPressed: feedItems == null || feedItems.isEmpty
+              ? null
+              : () => handleDeletePost(context),
+        ),
+      ],
+    );
+  }
+
+  handleDeletePost(BuildContext parentContext) {
+    return showDialog(
+      context: parentContext,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Clear Activity Feed",
+            style: TextStyle(
+              fontFamily: fontName,
+            ),
+          ),
+          content: Text(
+            "Are you sure to clear your Activity Feed? This action cannot be undone.",
+            style: TextStyle(
+              fontFamily: fontName,
+            ),
+          ),
+          actions: [
+            FlatButton(
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  fontFamily: fontName,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text(
+                "Delete",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontFamily: fontName,
+                ),
+              ),
+              onPressed: () {
+                deleteFeed();
+
+                SnackBar snackBar =
+                    SnackBar(content: Text("Activity feed deleted"));
+                _scaffoldKey.currentState.showSnackBar(snackBar);
+
+                Navigator.of(context).pop();
+
+                buildNoFeed();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  deleteFeed() {
+    feedIds.forEach(
+      (element) {
+        activityFeedRef
+            .doc(currentUser.id)
+            .collection("feedItems")
+            .doc(element)
+            .get()
+            .then(
+          (doc) {
+            if (doc.exists) {
+              doc.reference.delete();
+            }
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
-      appBar: defaultAppBar(
-        context,
-        titleText: "Activity Feed",
-        removeBackButton: true,
-      ),
+      appBar: buildAppbar(),
       body: RefreshIndicator(
         key: refreshkey,
         onRefresh: refreshActivityFeed,
@@ -126,36 +227,30 @@ class _ActivityFeedState extends State<ActivityFeed>
 String activityItemText;
 
 class ActivityFeedItem extends StatelessWidget {
-  final String displayName;
   final String userId;
   final String type; // 'like', 'follow', 'comment'
-  final String mediaUrl;
   final String postId;
-  final String userProfileImg;
   final String commentData;
   final DateTime timestamp;
+  final String feedId;
 
   ActivityFeedItem({
-    this.displayName,
     this.userId,
     this.type,
-    this.mediaUrl,
     this.postId,
-    this.userProfileImg,
     this.commentData,
     this.timestamp,
+    this.feedId,
   });
 
   factory ActivityFeedItem.fromDocument(DocumentSnapshot doc) {
     return ActivityFeedItem(
-      displayName: doc['displayName'],
       userId: doc['userId'],
       type: doc['type'],
       postId: doc['postId'],
-      userProfileImg: doc['userProfileImg'],
       commentData: doc['commentData'],
       timestamp: doc['timestamp'].toDate(),
-      mediaUrl: doc['mediaUrl'],
+      feedId: doc['feedId'],
     );
   }
 
@@ -163,7 +258,7 @@ class ActivityFeedItem extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PostScreen(
+        builder: (context) => PostDetail(
           postId: postId,
           userId: currentUser.id,
         ),
@@ -177,10 +272,53 @@ class ActivityFeedItem extends StatelessWidget {
     } else if (type == 'follow') {
       activityItemText = "started following you";
     } else if (type == 'comment') {
-      activityItemText = 'replied: "$commentData"';
+      activityItemText = 'commented: "$commentData" on your post';
     } else {
       activityItemText = "Error: Unknown type '$type'";
     }
+  }
+
+  buildUserPhoto(context) {
+    return FutureBuilder(
+      future: usersRef.doc(userId).get(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return circularProgress();
+        }
+
+        Commenter commenter = Commenter.fromDocument(snapshot.data);
+
+        return GestureDetector(
+          onTap: () => showProfile(context, profileId: userId),
+          child: CircleAvatar(
+            radius: MediaQuery.of(context).size.width * 0.07,
+            backgroundImage: CachedNetworkImageProvider(commenter.photoUrl),
+          ),
+        );
+      },
+    );
+  }
+
+  buildUserName() {
+    return FutureBuilder(
+      future: usersRef.doc(userId).get(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return circularProgress();
+        }
+
+        Commenter commenter = Commenter.fromDocument(snapshot.data);
+
+        return Text(
+          commenter.displayName,
+          style: TextStyle(
+            fontFamily: fontName,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+        );
+      },
+    );
   }
 
   String convertDateTime(DateTime postedDate) {
@@ -192,49 +330,35 @@ class ActivityFeedItem extends StatelessWidget {
     configureMediaPreview();
 
     return Container(
+      margin: EdgeInsets.only(top: 5),
       child: GestureDetector(
         onTap: () => type == "follow"
             ? showProfile(context, profileId: userId)
             : showPost(context),
-        //onTap: () {},
         child: Container(
           color: Colors.white54,
           child: ListTile(
             title: GestureDetector(
               onTap: () => showProfile(context, profileId: userId),
-              child: Container(
-                child: RichText(
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildUserName(),
+                  RichText(
+                    overflow: TextOverflow.visible,
+                    text: TextSpan(
+                      text: activityItemText,
                       style: TextStyle(
-                        fontSize: 14.0,
                         color: Colors.black,
                         fontFamily: fontName,
                       ),
-                      children: [
-                        TextSpan(
-                          text: displayName,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: fontName,
-                          ),
-                        ),
-                        TextSpan(
-                          text: ' $activityItemText',
-                          style: TextStyle(
-                            fontFamily: fontName,
-                          ),
-                        ),
-                      ]),
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            leading: GestureDetector(
-              onTap: () => showProfile(context, profileId: userId),
-              child: CircleAvatar(
-                backgroundImage: CachedNetworkImageProvider(userProfileImg),
-              ),
-            ),
+            leading: buildUserPhoto(context),
             subtitle: Text(
               timeago.format(timestamp),
               style: TextStyle(

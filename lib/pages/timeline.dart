@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/search.dart';
@@ -9,7 +10,7 @@ import 'package:ybb/widgets/header.dart';
 import 'package:ybb/widgets/post.dart';
 import 'package:ybb/widgets/progress.dart';
 
-final usersRef = FirebaseFirestore.instance.collection('users');
+List<String> idFollowing = [];
 
 class Timeline extends StatefulWidget {
   final User currentUser;
@@ -23,8 +24,8 @@ class Timeline extends StatefulWidget {
 class _TimelineState extends State<Timeline>
     with AutomaticKeepAliveClientMixin<Timeline> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Post> posts;
   List<String> followingList = [];
+  List<Post> posts;
 
   var refreshkey = GlobalKey<RefreshIndicatorState>();
 
@@ -32,8 +33,19 @@ class _TimelineState extends State<Timeline>
   void initState() {
     super.initState();
 
+    getIdFollowing();
     getTimeline();
-    getFollowing();
+    //getFollowing();
+  }
+
+  getIdFollowing() async {
+    NewsData newsData = new NewsData();
+
+    await newsData.getFollowing();
+    setState(() {
+      idFollowing = newsData.followingList;
+      followingList = newsData.followingList;
+    });
   }
 
   getTimeline() async {

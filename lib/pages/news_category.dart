@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/news_categories.dart';
-import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/models/article.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/progress.dart';
@@ -66,7 +66,22 @@ class _NewsCategoryState extends State<NewsCategory>
         onRefresh: refresh,
         child: SingleChildScrollView(
           child: _loading
-              ? circularProgress()
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                    ),
+                    circularProgress(),
+                    SizedBox(height: 20),
+                    Text(
+                      "Fetching articles...",
+                      style:
+                          TextStyle(fontFamily: fontName, color: Colors.black),
+                    ),
+                  ],
+                )
               :
               //articles
               Padding(
