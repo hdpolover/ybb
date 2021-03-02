@@ -223,7 +223,7 @@ class _UploadPostState extends State<UploadPost>
                   });
                 },
                 minLines: 1,
-                maxLines: 20,
+                maxLines: 30,
                 decoration: InputDecoration(
                   hintText: "Write something here...",
                   hintStyle: commonTextStyle,

@@ -7,7 +7,7 @@ import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/timeline.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/user_suggestion_shimmer_layout.dart';
 
 class Search extends StatefulWidget {
   @override
@@ -24,27 +24,79 @@ class _SearchState extends State<Search>
   List<String> followingList;
 
   bool isAllUsersFollowed = true;
+  bool isSearchTapped = false;
+
+  FocusNode focusNode;
+
+  var queryResultSet = [];
+  var tempSearchStore = [];
 
   @override
   void initState() {
     super.initState();
 
+    focusNode = FocusNode();
     followingList = idFollowing;
   }
 
-  handleSearch(String query) {
-    Future<QuerySnapshot> users =
-        usersRef.where("displayName", isGreaterThanOrEqualTo: query).get();
+  @override
+  void dispose() {
+    focusNode.dispose();
+
+    super.dispose();
+  }
+
+  displayNameSearch(String str) {
+    if (str.length == 0) {
+      setState(() {
+        queryResultSet = [];
+        tempSearchStore = [];
+      });
+    }
+
+    if (queryResultSet.length == 0 && str.length == 1) {
+      usersRef
+          .where('dnSearchKey', isEqualTo: str.substring(0, 1).toUpperCase())
+          .get()
+          .then((QuerySnapshot snapshot) {
+        for (int i = 0; i < snapshot.docs.length; ++i) {
+          queryResultSet.add(snapshot.docs[i].data());
+
+          setState(() {
+            tempSearchStore.add(queryResultSet[i]);
+          });
+        }
+      });
+    } else {
+      tempSearchStore = [];
+      queryResultSet.forEach((element) {
+        if (element['displayName'].toLowerCase().contains(str.toLowerCase()) ==
+            true) {
+          if (element['displayName'].toLowerCase().indexOf(str.toLowerCase()) ==
+              0) {
+            setState(() {
+              tempSearchStore.add(element);
+            });
+          }
+        }
+      });
+    }
+
+    if (tempSearchStore.length == 0 && str.length > 1) {
+      setState(() {});
+    }
+
     setState(() {
-      searchResultsFuture = users;
+      isSearchTapped = true;
     });
   }
 
   clearSearch() {
+    focusNode.unfocus();
     searchController.clear();
 
     setState(() {
-      searchResultsFuture = null;
+      isSearchTapped = false;
     });
   }
 
@@ -54,7 +106,7 @@ class _SearchState extends State<Search>
           usersRef.orderBy('timestamp', descending: true).limit(20).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return UserSuggestionShimmer();
         }
 
         List<UserToFollow> userToFollow = [];
@@ -125,7 +177,11 @@ class _SearchState extends State<Search>
         height: MediaQuery.of(context).size.height * 0.045,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50), color: Colors.grey[200]),
-        child: TextFormField(
+        child: TextField(
+          focusNode: focusNode,
+          onChanged: (value) {
+            displayNameSearch(value);
+          },
           controller: searchController,
           decoration: InputDecoration(
             prefixIcon: Icon(
@@ -140,7 +196,7 @@ class _SearchState extends State<Search>
               onPressed: clearSearch,
             ),
           ),
-          onFieldSubmitted: handleSearch,
+          //onFieldSubmitted: displayNameSearch(searchController.text),
         ),
       ),
     );
@@ -149,6 +205,8 @@ class _SearchState extends State<Search>
   Container buildNoContent() {
     return Container(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           SingleChildScrollView(
             child: buildUsersToFollow(),
@@ -176,6 +234,7 @@ class _SearchState extends State<Search>
 
   buildNoSearchResult() {
     return Container(
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -198,32 +257,56 @@ class _SearchState extends State<Search>
               ),
             ),
           ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.1,
+          ),
+          buildUsersToFollow(),
         ],
       ),
     );
   }
 
   buildSearchResults() {
-    return FutureBuilder(
-      future: searchResultsFuture,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return circularProgress();
-        }
+    return tempSearchStore.isEmpty
+        ? buildNoSearchResult()
+        : Column(
+            children: tempSearchStore.map((e) {
+            print(e);
+            return buildResultLayout(e);
+          }).toList());
+  }
 
-        List<UserResult> searchResults = [];
-        snapshot.data.documents.forEach((doc) {
-          User user = User.fromDocument(doc);
-          UserResult searchResult = UserResult(user);
-          searchResults.add(searchResult);
-        });
-
-        return searchResults.length == 0
-            ? buildNoSearchResult()
-            : Column(
-                children: searchResults,
-              );
-      },
+  Widget buildResultLayout(data) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          GestureDetector(
+            onTap: () => showProfile(context, profileId: data.id),
+            child: ListTile(
+              leading: CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.grey,
+                backgroundImage: CachedNetworkImageProvider(data['photoUrl']),
+              ),
+              title: Text(
+                data['displayName'],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: fontName,
+                ),
+              ),
+              subtitle: Text(
+                "@" + data['username'],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: fontName,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -243,7 +326,7 @@ class _SearchState extends State<Search>
 
     await getFollowing();
 
-    await searchResultsFuture == null ? buildNoContent() : buildSearchResults();
+    buildNoContent();
   }
 
   bool get wantKeepAlive => true;
@@ -262,9 +345,7 @@ class _SearchState extends State<Search>
         child: SingleChildScrollView(
           clipBehavior: Clip.none,
           physics: AlwaysScrollableScrollPhysics(),
-          child: searchResultsFuture == null
-              ? buildNoContent()
-              : buildSearchResults(),
+          child: isSearchTapped ? buildSearchResults() : buildNoContent(),
         ),
       ),
     );

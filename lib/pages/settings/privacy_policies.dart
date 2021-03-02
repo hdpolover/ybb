@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:ybb/widgets/default_appbar.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/webview_shimmer_layout.dart';
 
 class PrivacyPoliciesView extends StatefulWidget {
   @override
@@ -38,12 +38,7 @@ class _PrivacyPoliciesView extends State<PrivacyPoliciesView> {
               )),
             ],
           ),
-          Container(
-            color: Colors.white,
-            child: Center(
-              child: circularProgress(),
-            ),
-          ),
+          WebviewShimmer(),
         ],
       ),
     );

@@ -9,7 +9,8 @@ import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/settings.dart';
 import 'package:ybb/pages/upload_post.dart';
 import 'package:ybb/widgets/post.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/profile_dashboard_shimmer_layout.dart';
+import 'package:ybb/widgets/shimmers/profile_header_shimmer_layout.dart';
 
 class Profile extends StatefulWidget {
   final String profileId, username;
@@ -299,7 +300,7 @@ class _ProfileState extends State<Profile>
       future: usersRef.doc(widget.profileId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return ProfileDashboardShimmer();
         }
 
         User user = User.fromDocument(snapshot.data);
@@ -430,7 +431,7 @@ class _ProfileState extends State<Profile>
       future: usersRef.doc(widget.profileId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return ProfileHeaderShimmer();
         }
 
         User user = User.fromDocument(snapshot.data);
@@ -572,7 +573,7 @@ class _ProfileState extends State<Profile>
 
   buildProfilePosts() {
     if (isLoading) {
-      return circularProgress();
+      return ProfileDashboardShimmer();
     }
     if (profileMenu == "dashboard") {
       return buildProfileDashboard();
@@ -737,8 +738,8 @@ class _ProfileState extends State<Profile>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          buildCountColumn("followers", followerCount),
-                          buildCountColumn("followings", followingCount),
+                          buildCountColumn("Followers", followerCount),
+                          buildCountColumn("Followings", followingCount),
                           buildProfileButton(),
                         ],
                       ),

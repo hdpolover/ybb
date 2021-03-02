@@ -9,7 +9,7 @@ import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/comments.dart';
 import 'package:ybb/pages/home.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/post_header_shimmer_layout.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Post extends StatefulWidget {
@@ -105,7 +105,7 @@ class _PostState extends State<Post> {
       future: usersRef.doc(ownerId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return PostHeaderShimmer();
         }
 
         User user = User.fromDocument(snapshot.data);

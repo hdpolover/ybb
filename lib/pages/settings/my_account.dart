@@ -5,7 +5,7 @@ import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/profile_dashboard_shimmer_layout.dart';
 
 class MyAccount extends StatefulWidget {
   MyAccount({Key key}) : super(key: key);
@@ -20,7 +20,7 @@ class _MyAccountState extends State<MyAccount> {
       future: usersRef.doc(currentUser.id).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return ProfileDashboardShimmer();
         }
 
         User user = User.fromDocument(snapshot.data);

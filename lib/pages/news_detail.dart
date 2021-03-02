@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:ybb/helpers/constants.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/webview_shimmer_layout.dart';
 
 class NewsDetail extends StatefulWidget {
   final String url, title, imageUrl, date, category, content;
@@ -141,12 +141,7 @@ class _NewsDetailState extends State<NewsDetail> {
             )),
           ],
         ),
-        Container(
-          color: Colors.white,
-          child: Center(
-            child: circularProgress(),
-          ),
-        ),
+        WebviewShimmer()
       ],
     );
   }

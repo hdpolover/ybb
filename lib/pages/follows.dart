@@ -6,7 +6,7 @@ import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
 
 // ignore: must_be_immutable
 class Follows extends StatefulWidget {
@@ -102,7 +102,7 @@ class _FollowsState extends State<Follows> {
 
   buildFollowResults() {
     if (results == null) {
-      return circularProgress();
+      return CommentShimmer();
     } else {
       return results.length == 0
           ? buildNoContent()

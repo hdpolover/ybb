@@ -2,14 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
-import 'package:ybb/widgets/progress.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:ybb/models/commenter.dart';
+import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
 
 class Comments extends StatefulWidget {
   final String postId;
@@ -76,7 +77,7 @@ class CommentsState extends State<Comments> {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return CommentShimmer();
         }
 
         comments = [];
@@ -300,7 +301,14 @@ class Comment extends StatelessWidget {
       future: usersRef.doc(userId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300],
+            highlightColor: Colors.white,
+            child: CircleAvatar(
+              backgroundColor: Colors.grey,
+              radius: 25,
+            ),
+          );
         }
 
         Commenter commenter = Commenter.fromDocument(snapshot.data);
@@ -321,7 +329,15 @@ class Comment extends StatelessWidget {
       future: usersRef.doc(userId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300],
+            highlightColor: Colors.white,
+            child: Container(
+              color: Colors.grey,
+              width: MediaQuery.of(context).size.width * 0.6,
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+          );
         }
 
         Commenter commenter = Commenter.fromDocument(snapshot.data);

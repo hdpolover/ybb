@@ -10,7 +10,7 @@ import 'package:ybb/pages/news_detail.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/models/news_category.dart';
 import 'package:ybb/models/article.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/news_category_shimmer_layout.dart';
 
 class News extends StatefulWidget {
   @override
@@ -69,7 +69,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
         onRefresh: getNewsAgain,
         child: SingleChildScrollView(
           child: _loading
-              ? circularProgress()
+              ? NewsCategoryShimmer()
               : Container(
                   child: Column(
                     children: <Widget>[
@@ -191,7 +191,7 @@ class CategoryTile extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.35,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6.0),
-                color: Colors.black26,
+                color: Colors.black45,
               ),
               child: Text(
                 categoryName,

@@ -3,14 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/commenter.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
-import 'package:ybb/pages/post_screen.dart';
+import 'package:ybb/pages/post_detail.dart';
 import 'package:ybb/pages/profile.dart';
-import 'package:ybb/widgets/progress.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
 
 class ActivityFeed extends StatefulWidget {
   final User currentUser;
@@ -64,11 +65,42 @@ class _ActivityFeedState extends State<ActivityFeed>
       feedItems = [];
     });
 
-    await getActivityFeed();
+    await buildActivityFeed();
+  }
+
+  buildActivityFeed() {
+    return StreamBuilder(
+      stream: activityFeedRef
+          .doc(widget.currentUser.id)
+          .collection('feedItems')
+          .orderBy(
+            'timestamp',
+            descending: true,
+          )
+          .limit(50)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return CommentShimmer();
+        }
+
+        feedItems = [];
+        snapshot.data.documents.forEach(
+          (doc) {
+            feedItems.add(ActivityFeedItem.fromDocument(doc));
+          },
+        );
+
+        return feedItems.length == 0
+            ? buildNoFeed()
+            : Column(children: feedItems);
+      },
+    );
   }
 
   buildNoFeed() {
     return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -113,13 +145,13 @@ class _ActivityFeedState extends State<ActivityFeed>
           ),
           onPressed: feedItems == null || feedItems.isEmpty
               ? null
-              : () => handleDeletePost(context),
+              : () => handleDeleteFeed(context),
         ),
       ],
     );
   }
 
-  handleDeletePost(BuildContext parentContext) {
+  handleDeleteFeed(BuildContext parentContext) {
     return showDialog(
       context: parentContext,
       builder: (context) {
@@ -204,21 +236,15 @@ class _ActivityFeedState extends State<ActivityFeed>
       body: RefreshIndicator(
         key: refreshkey,
         onRefresh: refreshActivityFeed,
-        child: Container(
-            child: FutureBuilder(
-          future: getActivityFeed(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return circularProgress();
-            }
-
-            return feedItems.length == 0
-                ? buildNoFeed()
-                : ListView(
-                    children: snapshot.data,
-                  );
-          },
-        )),
+        child: SingleChildScrollView(
+          clipBehavior: Clip.none,
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              buildActivityFeed(),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -283,7 +309,14 @@ class ActivityFeedItem extends StatelessWidget {
       future: usersRef.doc(userId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300],
+            highlightColor: Colors.white,
+            child: CircleAvatar(
+              backgroundColor: Colors.grey,
+              radius: 25,
+            ),
+          );
         }
 
         Commenter commenter = Commenter.fromDocument(snapshot.data);
@@ -304,7 +337,15 @@ class ActivityFeedItem extends StatelessWidget {
       future: usersRef.doc(userId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300],
+            highlightColor: Colors.white,
+            child: Container(
+              color: Colors.grey,
+              width: MediaQuery.of(context).size.width * 0.6,
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+          );
         }
 
         Commenter commenter = Commenter.fromDocument(snapshot.data);

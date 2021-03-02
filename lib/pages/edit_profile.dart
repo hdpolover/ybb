@@ -9,8 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
-import 'package:ybb/widgets/progress.dart';
 import 'package:image/image.dart' as Im;
+import 'package:ybb/widgets/shimmers/profile_dashboard_shimmer_layout.dart';
 
 class EditProfile extends StatefulWidget {
   final String currentUserId;
@@ -324,6 +324,7 @@ class _EditProfileState extends State<EditProfile> {
         "occupation": occupationController.text,
         "interests": interestController.text,
         "photoUrl": mediaUrl,
+        "dnSearchKey": displayNameController.text.substring(0, 1).toUpperCase(),
       });
 
       clearImageAndBack();
@@ -366,7 +367,7 @@ class _EditProfileState extends State<EditProfile> {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: isLoading
-          ? circularProgress()
+          ? ProfileDashboardShimmer()
           : ListView(
               children: [
                 Container(

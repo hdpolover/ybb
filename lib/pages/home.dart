@@ -131,6 +131,7 @@ class _HomeState extends State<Home> {
           "timestamp": timestamp,
           "occupation": "",
           "interests": "",
+          "dnSearchKey": user.displayName.substring(0, 1).toUpperCase(),
         },
       );
 

@@ -7,7 +7,8 @@ import 'package:ybb/pages/comments.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/post_in_detail.dart';
-import 'package:ybb/widgets/progress.dart';
+import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
+import 'package:ybb/widgets/shimmers/single_post_shimmer_layout.dart';
 
 class PostDetail extends StatefulWidget {
   final String userId;
@@ -157,7 +158,7 @@ class _PostDetailState extends State<PostDetail> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return circularProgress();
+            return CommentShimmer();
           }
 
           comments = [];
@@ -182,7 +183,7 @@ class _PostDetailState extends State<PostDetail> {
           .get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return SinglePostShimmer();
         }
 
         PostInDetail post = PostInDetail.fromDocument(snapshot.data);
