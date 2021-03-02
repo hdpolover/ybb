@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:uuid/uuid.dart';
@@ -108,14 +109,28 @@ class _PostDetailState extends State<PostDetail> {
         ),
         leading: CircleAvatar(
             backgroundImage: CachedNetworkImageProvider(currentUser.photoUrl)),
-        trailing: OutlineButton(
-          onPressed: addComment,
-          borderSide: BorderSide.none,
-          child: Text(
-            "POST",
-            style: TextStyle(
-              fontFamily: fontName,
-              color: Colors.black,
+        trailing: ConnectivityWidgetWrapper(
+          stacked: false,
+          offlineWidget: OutlineButton(
+            onPressed: null,
+            borderSide: BorderSide.none,
+            child: Text(
+              "POST",
+              style: TextStyle(
+                fontFamily: fontName,
+                color: Colors.black45,
+              ),
+            ),
+          ),
+          child: OutlineButton(
+            onPressed: addComment,
+            borderSide: BorderSide.none,
+            child: Text(
+              "POST",
+              style: TextStyle(
+                fontFamily: fontName,
+                color: Colors.black,
+              ),
             ),
           ),
         ),

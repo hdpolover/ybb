@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/commenter.dart';
@@ -100,7 +102,7 @@ class _ActivityFeedState extends State<ActivityFeed>
 
   buildNoFeed() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.3),
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -119,6 +121,7 @@ class _ActivityFeedState extends State<ActivityFeed>
               fontFamily: fontName,
             ),
           ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.4),
         ],
       ),
     );
@@ -233,16 +236,25 @@ class _ActivityFeedState extends State<ActivityFeed>
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       appBar: buildAppbar(),
-      body: RefreshIndicator(
+      body: LiquidPullToRefresh(
+        height: MediaQuery.of(context).size.height * 0.08,
+        color: Colors.blue,
+        animSpeedFactor: 2.5,
+        backgroundColor: Colors.white,
+        showChildOpacityTransition: false,
         key: refreshkey,
         onRefresh: refreshActivityFeed,
-        child: SingleChildScrollView(
-          clipBehavior: Clip.none,
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              buildActivityFeed(),
-            ],
+        child: ConnectivityScreenWrapper(
+          child: SingleChildScrollView(
+            clipBehavior: Clip.none,
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buildActivityFeed(),
+              ],
+            ),
           ),
         ),
       ),
@@ -421,6 +433,7 @@ showProfile(BuildContext context, {String profileId}) {
     MaterialPageRoute(
       builder: (context) => Profile(
         profileId: profileId,
+        isFromOutside: true,
       ),
     ),
   );

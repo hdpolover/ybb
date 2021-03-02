@@ -1,3 +1,4 @@
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/upload_post.dart';
@@ -20,21 +21,31 @@ AppBar header(context,
     backgroundColor: Theme.of(context).primaryColor,
     elevation: 0,
     actions: <Widget>[
-      IconButton(
-        icon: Icon(
-          Icons.edit,
-          color: Colors.white,
+      ConnectivityWidgetWrapper(
+        stacked: false,
+        offlineWidget: IconButton(
+          icon: Icon(
+            Icons.edit,
+            color: Colors.white38,
+          ),
+          onPressed: null,
         ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UploadPost(
-                currentUser: currentUser,
+        child: IconButton(
+          icon: Icon(
+            Icons.edit,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UploadPost(
+                  currentUser: currentUser,
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     ],
   );

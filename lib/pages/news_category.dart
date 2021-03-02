@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/news_categories.dart';
 import 'package:ybb/models/article.dart';
 import 'package:ybb/widgets/default_appbar.dart';
@@ -60,7 +61,12 @@ class _NewsCategoryState extends State<NewsCategory>
 
     return Scaffold(
       appBar: defaultAppBar(context, titleText: widget.categoryName),
-      body: RefreshIndicator(
+      body: LiquidPullToRefresh(
+        height: MediaQuery.of(context).size.height * 0.08,
+        color: Colors.blue,
+        animSpeedFactor: 2.5,
+        backgroundColor: Colors.white,
+        showChildOpacityTransition: false,
         key: refreshkey,
         onRefresh: refresh,
         child: SingleChildScrollView(

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -127,22 +128,26 @@ class _NewsDetailState extends State<NewsDetail> {
   }
 
   buildNewsWebView() {
-    return IndexedStack(
-      index: _stackToView,
-      children: [
-        Column(
-          children: <Widget>[
-            Expanded(
-                child: WebView(
-              key: _key,
-              javascriptMode: JavascriptMode.unrestricted,
-              initialUrl: widget.url,
-              onPageFinished: _handleLoad,
-            )),
-          ],
-        ),
-        WebviewShimmer()
-      ],
+    return ConnectivityWidgetWrapper(
+      stacked: false,
+      offlineWidget: WebviewShimmer(),
+      child: IndexedStack(
+        index: _stackToView,
+        children: [
+          Column(
+            children: <Widget>[
+              Expanded(
+                  child: WebView(
+                key: _key,
+                javascriptMode: JavascriptMode.unrestricted,
+                initialUrl: widget.url,
+                onPageFinished: _handleLoad,
+              )),
+            ],
+          ),
+          WebviewShimmer()
+        ],
+      ),
     );
   }
 
@@ -174,7 +179,9 @@ class _NewsDetailState extends State<NewsDetail> {
         //   ),
         // ],
       ),
-      body: webViewSelected ? buildNewsWebView() : buildNewsView(),
+      body: ConnectivityScreenWrapper(
+        child: webViewSelected ? buildNewsWebView() : buildNewsView(),
+      ),
     );
   }
 }

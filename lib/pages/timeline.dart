@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
@@ -115,16 +117,9 @@ class _TimelineState extends State<Timeline>
     });
 
     await getTimeline();
+
     await buildTimeline();
   }
-
-  // buildShimmer() {
-  //   return Shimmer.fromColors(
-  //     child: PostShimmerLayout(),
-  //     baseColor: Colors.grey[300],
-  //     highlightColor: Colors.white,
-  //   );
-  // }
 
   buildNoFeed() {
     return Center(
@@ -167,16 +162,23 @@ class _TimelineState extends State<Timeline>
         removeBackButton: true,
       ),
       resizeToAvoidBottomPadding: false,
-      body: RefreshIndicator(
+      body: LiquidPullToRefresh(
+        height: MediaQuery.of(context).size.height * 0.08,
+        color: Colors.blue,
+        animSpeedFactor: 2.5,
+        backgroundColor: Colors.white,
+        showChildOpacityTransition: false,
         key: refreshkey,
         onRefresh: refreshTimeline,
-        child: SingleChildScrollView(
-          clipBehavior: Clip.none,
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              buildTimeline(),
-            ],
+        child: ConnectivityScreenWrapper(
+          child: SingleChildScrollView(
+            clipBehavior: Clip.none,
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                buildTimeline(),
+              ],
+            ),
           ),
         ),
       ),

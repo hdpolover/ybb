@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
@@ -176,41 +177,57 @@ class CommentsState extends State<Comments> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: defaultAppBar(context, titleText: "Comments"),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: buildComments(),
-          ),
-          ListTile(
-            title: TextFormField(
-              focusNode: focusNode,
-              controller: commentController,
-              minLines: 1,
-              maxLines: 5,
-              decoration: InputDecoration(
-                errorText: isCommentValid ? null : "Comment cannot be empty",
-                labelText: "Write a comment...",
-                hintStyle: TextStyle(
-                  fontFamily: fontName,
+      body: ConnectivityScreenWrapper(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: buildComments(),
+            ),
+            ListTile(
+              title: TextFormField(
+                focusNode: focusNode,
+                controller: commentController,
+                minLines: 1,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  errorText: isCommentValid ? null : "Comment cannot be empty",
+                  labelText: "Write a comment...",
+                  hintStyle: TextStyle(
+                    fontFamily: fontName,
+                  ),
+                ),
+              ),
+              leading: CircleAvatar(
+                  backgroundImage:
+                      CachedNetworkImageProvider(currentUser.photoUrl)),
+              trailing: ConnectivityWidgetWrapper(
+                stacked: false,
+                offlineWidget: OutlineButton(
+                  onPressed: null,
+                  borderSide: BorderSide.none,
+                  child: Text(
+                    "POST",
+                    style: TextStyle(
+                      fontFamily: fontName,
+                      color: Colors.black45,
+                    ),
+                  ),
+                ),
+                child: OutlineButton(
+                  onPressed: addComment,
+                  borderSide: BorderSide.none,
+                  child: Text(
+                    "POST",
+                    style: TextStyle(
+                      fontFamily: fontName,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
               ),
             ),
-            leading: CircleAvatar(
-                backgroundImage:
-                    CachedNetworkImageProvider(currentUser.photoUrl)),
-            trailing: OutlineButton(
-              onPressed: addComment,
-              borderSide: BorderSide.none,
-              child: Text(
-                "POST",
-                style: TextStyle(
-                  fontFamily: fontName,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

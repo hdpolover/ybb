@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:image/image.dart' as Im;
@@ -349,15 +350,7 @@ class _EditProfileState extends State<EditProfile> {
       key: _scaffoldKey,
       appBar: AppBar(
         elevation: 0,
-        title: Text(
-          "Edit Profile",
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: "Montserrat",
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text("Edit Profile", style: appBarTextStyle),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),

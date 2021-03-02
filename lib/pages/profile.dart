@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/edit_profile.dart';
@@ -13,9 +15,10 @@ import 'package:ybb/widgets/shimmers/profile_dashboard_shimmer_layout.dart';
 import 'package:ybb/widgets/shimmers/profile_header_shimmer_layout.dart';
 
 class Profile extends StatefulWidget {
-  final String profileId, username;
+  final String profileId;
+  final bool isFromOutside;
 
-  Profile({this.profileId, this.username});
+  Profile({@required this.profileId, @required this.isFromOutside});
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -54,9 +57,14 @@ class _ProfileState extends State<Profile>
   }
 
   manageAppbar() {
-    if (currentUserId == widget.profileId) {
+    if (currentUserId == widget.profileId && !widget.isFromOutside) {
       setState(() {
         removeBackButton = true;
+        removeSettingButton = false;
+      });
+    } else if (currentUserId == widget.profileId && widget.isFromOutside) {
+      setState(() {
+        removeBackButton = false;
         removeSettingButton = false;
       });
     } else {
@@ -166,31 +174,66 @@ class _ProfileState extends State<Profile>
             builder: (context) => EditProfile(currentUserId: currentUserId)));
   }
 
-  GestureDetector buildButton({String text, Function function}) {
-    return GestureDetector(
-      onTap: function,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.4,
-        decoration: BoxDecoration(
-          color: isFollowing && currentUserId != widget.profileId
-              ? Colors.white
-              : null,
-          border: Border.all(
-            color: Colors.white,
+  Container buildButton({String text, Function function}) {
+    return Container(
+      child: ConnectivityWidgetWrapper(
+        stacked: false,
+        offlineWidget: GestureDetector(
+          onTap: null,
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.4,
+            decoration: BoxDecoration(
+              color: isFollowing && currentUserId != widget.profileId
+                  ? Colors.white38
+                  : null,
+              border: Border.all(
+                color: Colors.grey,
+              ),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: isFollowing && currentUserId != widget.profileId
+                        ? Colors.grey
+                        : Colors.grey,
+                    fontSize: 12,
+                    fontFamily: fontName,
+                  ),
+                ),
+              ),
+            ),
           ),
-          borderRadius: BorderRadius.circular(5.0),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: isFollowing && currentUserId != widget.profileId
-                    ? Colors.blue
-                    : Colors.white,
-                fontSize: 12,
-                fontFamily: fontName,
+        child: GestureDetector(
+          onTap: function,
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.4,
+            decoration: BoxDecoration(
+              color: isFollowing && currentUserId != widget.profileId
+                  ? Colors.white
+                  : null,
+              border: Border.all(
+                color: Colors.white,
+              ),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: isFollowing && currentUserId != widget.profileId
+                        ? Colors.blue
+                        : Colors.white,
+                    fontSize: 12,
+                    fontFamily: fontName,
+                  ),
+                ),
               ),
             ),
           ),
@@ -419,7 +462,7 @@ class _ProfileState extends State<Profile>
                 ],
               ),
             ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.4),
           ],
         );
       },
@@ -686,22 +729,32 @@ class _ProfileState extends State<Profile>
       actions: <Widget>[
         removeSettingButton
             ? Text('')
-            : IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.white,
+            : ConnectivityWidgetWrapper(
+                stacked: false,
+                offlineWidget: IconButton(
+                  icon: Icon(
+                    Icons.settings,
+                    color: Colors.white38,
+                  ),
+                  onPressed: null,
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProfileSettings(
-                        appName: "YBB",
-                        version: "1.0.0",
+                child: IconButton(
+                  icon: Icon(
+                    Icons.settings,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileSettings(
+                          appName: "YBB",
+                          version: "1.0.0",
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
       ],
     );
@@ -712,71 +765,78 @@ class _ProfileState extends State<Profile>
     super.build(context);
 
     return Scaffold(
-      backgroundColor: Color(0xffF8F8FA),
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: buildAppbar(),
-      body: RefreshIndicator(
+      body: LiquidPullToRefresh(
+        height: MediaQuery.of(context).size.height * 0.08,
+        color: Colors.blue,
+        animSpeedFactor: 2.5,
+        backgroundColor: Colors.white,
+        showChildOpacityTransition: false,
         key: refreshkey,
         onRefresh: refreshProfile,
-        child: SingleChildScrollView(
-          child: Stack(
-            overflow: Overflow.visible,
-            children: <Widget>[
-              Container(
-                color: Theme.of(context).primaryColor,
-                height: MediaQuery.of(context).size.height * 0.35,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      left: 30.0,
-                      right: 30.0,
-                      top: MediaQuery.of(context).size.height * 0.01),
-                  child: Column(
-                    children: <Widget>[
-                      buildProfileHeader(),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.045,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          buildCountColumn("Followers", followerCount),
-                          buildCountColumn("Followings", followingCount),
-                          buildProfileButton(),
-                        ],
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.03,
-                      ),
-                      buildProfileMenu(),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.3),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(30.0),
-                        topLeft: Radius.circular(30.0),
-                      )),
-                  child: SingleChildScrollView(
+        child: ConnectivityScreenWrapper(
+          child: SingleChildScrollView(
+            child: Stack(
+              overflow: Overflow.visible,
+              children: <Widget>[
+                Container(
+                  color: Theme.of(context).primaryColor,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        left: 30.0,
+                        right: 30.0,
+                        top: MediaQuery.of(context).size.height * 0.01),
                     child: Column(
                       children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(
-                              left: 10,
-                              top: MediaQuery.of(context).size.height * 0.02),
-                          child: buildProfilePosts(),
+                        buildProfileHeader(),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.045,
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            buildCountColumn("Followers", followerCount),
+                            buildCountColumn("Followings", followingCount),
+                            buildProfileButton(),
+                          ],
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.03,
+                        ),
+                        buildProfileMenu(),
                       ],
                     ),
                   ),
                 ),
-              )
-            ],
+                Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.3),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(30.0),
+                          topLeft: Radius.circular(30.0),
+                        )),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: 10,
+                                top: MediaQuery.of(context).size.height * 0.02),
+                            child: buildProfilePosts(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

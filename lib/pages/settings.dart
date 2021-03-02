@@ -1,3 +1,4 @@
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ybb/helpers/constants.dart';
@@ -139,26 +140,53 @@ class _SettingsState extends State<ProfileSettings> {
     }
   }
 
-  Padding buildSettingList(Icon icon, String text, int index) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: FlatButton(
-        highlightColor: null,
-        child: Container(
-          alignment: Alignment.center,
-          width: double.infinity,
-          child: Row(
-            children: [
-              icon,
-              SizedBox(width: 10),
-              Text(
-                text,
-                style: TextStyle(fontFamily: fontName),
+  Container buildSettingList(Icon icon, String text, int index) {
+    return Container(
+      child: ConnectivityWidgetWrapper(
+        stacked: false,
+        offlineWidget: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: FlatButton(
+            highlightColor: null,
+            child: Container(
+              alignment: Alignment.center,
+              width: double.infinity,
+              child: Row(
+                children: [
+                  icon,
+                  SizedBox(width: 10),
+                  Text(
+                    text,
+                    style:
+                        TextStyle(fontFamily: fontName, color: Colors.black38),
+                  ),
+                ],
               ),
-            ],
+            ),
+            onPressed: null,
           ),
         ),
-        onPressed: () => move(index),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: FlatButton(
+            highlightColor: null,
+            child: Container(
+              alignment: Alignment.center,
+              width: double.infinity,
+              child: Row(
+                children: [
+                  icon,
+                  SizedBox(width: 10),
+                  Text(
+                    text,
+                    style: TextStyle(fontFamily: fontName),
+                  ),
+                ],
+              ),
+            ),
+            onPressed: () => move(index),
+          ),
+        ),
       ),
     );
   }
@@ -168,40 +196,68 @@ class _SettingsState extends State<ProfileSettings> {
     return Scaffold(
       appBar: defaultAppBar(context,
           titleText: "Settings", removeBackButton: false),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          buildSettingList(
-              Icon(Icons.account_circle_outlined), "My Account", 1),
-          buildSettingList(
-              Icon(Icons.announcement_outlined), "Send Feedback", 2),
-          buildSettingList(
-              Icon(Icons.privacy_tip_outlined), "Privacy Policies", 3),
-          buildSettingList(
-              Icon(Icons.library_books), "Terms and Conditions", 4),
-          buildSettingList(Icon(Icons.device_unknown), "About App", 5),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: FlatButton(
-              highlightColor: null,
-              child: Container(
-                alignment: Alignment.center,
-                width: double.infinity,
-                child: Row(
-                  children: [
-                    Icon(Icons.exit_to_app),
-                    SizedBox(width: 10),
-                    Text("Sign out", style: TextStyle(fontFamily: fontName)),
-                  ],
+      body: ConnectivityScreenWrapper(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            buildSettingList(
+                Icon(Icons.account_circle_outlined), "My Account", 1),
+            buildSettingList(
+                Icon(Icons.announcement_outlined), "Send Feedback", 2),
+            buildSettingList(
+                Icon(Icons.privacy_tip_outlined), "Privacy Policies", 3),
+            buildSettingList(
+                Icon(Icons.library_books), "Terms and Conditions", 4),
+            buildSettingList(Icon(Icons.device_unknown), "About App", 5),
+            ConnectivityWidgetWrapper(
+              stacked: false,
+              offlineWidget: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: FlatButton(
+                  highlightColor: null,
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        Icon(Icons.exit_to_app),
+                        SizedBox(width: 10),
+                        Text("Sign out",
+                            style: TextStyle(
+                              fontFamily: fontName,
+                              color: Colors.black38,
+                            )),
+                      ],
+                    ),
+                  ),
+                  onPressed: null,
                 ),
               ),
-              onPressed: logout,
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: FlatButton(
+                  highlightColor: null,
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        Icon(Icons.exit_to_app),
+                        SizedBox(width: 10),
+                        Text("Sign out",
+                            style: TextStyle(fontFamily: fontName)),
+                      ],
+                    ),
+                  ),
+                  onPressed: logout,
+                ),
+              ),
             ),
-          ),
-          Spacer(),
-          buildAppVersion(),
-        ],
+            Spacer(),
+            buildAppVersion(),
+          ],
+        ),
       ),
     );
   }

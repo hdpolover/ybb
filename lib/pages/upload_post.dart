@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,12 +30,27 @@ class _UploadPostState extends State<UploadPost>
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String downloadUrl;
 
+  FocusNode focusNode;
+
   String text;
   File _image;
   final picker = ImagePicker();
 
   bool isUploading = false;
   String postId = Uuid().v4();
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    focusNode.dispose();
+  }
 
   Future handleCamera() async {
     Navigator.pop(context);
@@ -128,6 +144,8 @@ class _UploadPostState extends State<UploadPost>
   }
 
   handleSubmit() async {
+    focusNode.unfocus();
+
     setState(() {
       isUploading = true;
     });
@@ -192,86 +210,103 @@ class _UploadPostState extends State<UploadPost>
           style: appBarTextStyle,
         ),
         actions: [
-          FlatButton(
-            onPressed: isNotFilled()
-                ? showError
-                : isUploading
-                    ? null
-                    : () => handleSubmit(),
-            child: Text(
-              'POST',
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: "OpenSans",
-                fontWeight: FontWeight.bold,
+          ConnectivityWidgetWrapper(
+            stacked: false,
+            offlineWidget: FlatButton(
+              onPressed: null,
+              child: Text(
+                'POST',
+                style: TextStyle(
+                  color: Colors.white30,
+                  fontFamily: "OpenSans",
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            child: FlatButton(
+              onPressed: isNotFilled()
+                  ? showError
+                  : isUploading
+                      ? null
+                      : () => handleSubmit(),
+              child: Text(
+                'POST',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "OpenSans",
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          isUploading ? linearProgress() : Text(''),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-            child: Container(
-              child: TextField(
-                controller: descController,
-                onChanged: (value) {
-                  setState(() {
-                    text = descController.text;
-                  });
-                },
-                minLines: 1,
-                maxLines: 30,
-                decoration: InputDecoration(
-                  hintText: "Write something here...",
-                  hintStyle: commonTextStyle,
-                  border: InputBorder.none,
+      body: ConnectivityScreenWrapper(
+        child: ListView(
+          children: <Widget>[
+            isUploading ? linearProgress() : Text(''),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+              child: Container(
+                child: TextField(
+                  focusNode: focusNode,
+                  controller: descController,
+                  onChanged: (value) {
+                    setState(() {
+                      text = descController.text;
+                    });
+                  },
+                  minLines: 1,
+                  maxLines: 30,
+                  decoration: InputDecoration(
+                    hintText: "Write something here...",
+                    hintStyle: commonTextStyle,
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
-          ),
-          Divider(),
-          Container(
-            height: 220.0,
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: GestureDetector(
-                  onTap: () {
-                    selectImage(context);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: _image == null
-                            ? AssetImage(
-                                'assets/images/placeholder_ybb_news.jpg')
-                            : FileImage(_image),
+            Divider(),
+            Container(
+              height: 220.0,
+              width: MediaQuery.of(context).size.width,
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: GestureDetector(
+                    onTap: () {
+                      selectImage(context);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: _image == null
+                              ? AssetImage(
+                                  'assets/images/placeholder_ybb_news.jpg')
+                              : FileImage(_image),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              child: Text(
-                "*Click above image to add/change with another",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                  fontFamily: "OpenSans",
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                child: Text(
+                  "*Click above image to add/change with another",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                    fontFamily: "OpenSans",
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

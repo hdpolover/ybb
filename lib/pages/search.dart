@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
@@ -212,7 +214,7 @@ class _SearchState extends State<Search>
             child: buildUsersToFollow(),
           ),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.2,
+            height: MediaQuery.of(context).size.height * 0.3,
           ),
           SvgPicture.asset(
             'assets/images/no_search.svg',
@@ -227,6 +229,7 @@ class _SearchState extends State<Search>
               fontFamily: fontName,
             ),
           ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
         ],
       ),
     );
@@ -234,7 +237,7 @@ class _SearchState extends State<Search>
 
   buildNoSearchResult() {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.15),
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -258,7 +261,7 @@ class _SearchState extends State<Search>
             ),
           ),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.1,
+            height: MediaQuery.of(context).size.height * 0.15,
           ),
           buildUsersToFollow(),
         ],
@@ -281,7 +284,7 @@ class _SearchState extends State<Search>
       child: Column(
         children: <Widget>[
           GestureDetector(
-            onTap: () => showProfile(context, profileId: data.id),
+            onTap: () => showProfile(context, profileId: data['id']),
             child: ListTile(
               leading: CircleAvatar(
                 radius: 30,
@@ -339,13 +342,20 @@ class _SearchState extends State<Search>
       key: _scaffoldKey,
       appBar: buildSearchField(),
       resizeToAvoidBottomPadding: false,
-      body: RefreshIndicator(
+      body: LiquidPullToRefresh(
+        height: MediaQuery.of(context).size.height * 0.08,
+        color: Colors.blue,
+        animSpeedFactor: 2.5,
+        backgroundColor: Colors.white,
+        showChildOpacityTransition: false,
         onRefresh: refreshSearch,
         key: refreshKey,
-        child: SingleChildScrollView(
-          clipBehavior: Clip.none,
-          physics: AlwaysScrollableScrollPhysics(),
-          child: isSearchTapped ? buildSearchResults() : buildNoContent(),
+        child: ConnectivityScreenWrapper(
+          child: SingleChildScrollView(
+            clipBehavior: Clip.none,
+            physics: AlwaysScrollableScrollPhysics(),
+            child: isSearchTapped ? buildSearchResults() : buildNoContent(),
+          ),
         ),
       ),
     );

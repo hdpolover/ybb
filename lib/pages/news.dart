@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/news_categories.dart';
 import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/main.dart';
@@ -64,58 +66,66 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
 
     return Scaffold(
       appBar: defaultAppBar(context, titleText: "News", removeBackButton: true),
-      body: RefreshIndicator(
+      body: LiquidPullToRefresh(
+        height: MediaQuery.of(context).size.height * 0.08,
+        color: Colors.blue,
+        animSpeedFactor: 2.5,
+        backgroundColor: Colors.white,
+        showChildOpacityTransition: false,
         key: refreshkey,
         onRefresh: getNewsAgain,
-        child: SingleChildScrollView(
-          child: _loading
-              ? NewsCategoryShimmer()
-              : Container(
-                  child: Column(
-                    children: <Widget>[
-                      //categories
-                      Container(
-                        padding: EdgeInsets.only(top: 5.0, left: 5.0),
-                        height: MediaQuery.of(context).size.height * 0.06,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: newsCategories.length,
-                          itemBuilder: (context, index) {
-                            return CategoryTile(
-                              categoryName: newsCategories[index].categoryName,
-                              categoryImageUrl:
-                                  newsCategories[index].categroyImageUrl,
-                              categoryIndex: newsCategories[index].categoryId,
-                            );
-                          },
+        child: ConnectivityScreenWrapper(
+          child: SingleChildScrollView(
+            child: _loading
+                ? NewsCategoryShimmer()
+                : Container(
+                    child: Column(
+                      children: <Widget>[
+                        //categories
+                        Container(
+                          padding: EdgeInsets.only(top: 5.0, left: 5.0),
+                          height: MediaQuery.of(context).size.height * 0.06,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: newsCategories.length,
+                            itemBuilder: (context, index) {
+                              return CategoryTile(
+                                categoryName:
+                                    newsCategories[index].categoryName,
+                                categoryImageUrl:
+                                    newsCategories[index].categroyImageUrl,
+                                categoryIndex: newsCategories[index].categoryId,
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      //articles
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
-                          itemCount: articles.length,
-                          itemBuilder: (context, index) {
-                            return ArticleTile(
-                              newsCategory:
-                                  convertNewsCategory(articles[index].category),
-                              newsImageUrl: articles[index].imageUrl,
-                              newsTitle: articles[index].title,
-                              newsDesc: articles[index].desc,
-                              newsUrl: articles[index].url,
-                              newsContent: articles[index].content,
-                              newsDate: articles[index].date,
-                            );
-                          },
-                        ),
-                      )
-                    ],
+                        //articles
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemCount: articles.length,
+                            itemBuilder: (context, index) {
+                              return ArticleTile(
+                                newsCategory: convertNewsCategory(
+                                    articles[index].category),
+                                newsImageUrl: articles[index].imageUrl,
+                                newsTitle: articles[index].title,
+                                newsDesc: articles[index].desc,
+                                newsUrl: articles[index].url,
+                                newsContent: articles[index].content,
+                                newsDate: articles[index].date,
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
+          ),
         ),
       ),
     );

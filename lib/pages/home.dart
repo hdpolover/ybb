@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -219,7 +220,10 @@ class _HomeState extends State<Home> {
           Search(),
           ActivityFeed(currentUser: currentUser),
           //UploadPost(currentUser: currentUser),
-          Profile(profileId: currentUser?.id, username: currentUser?.username),
+          Profile(
+            profileId: currentUser?.id,
+            isFromOutside: false,
+          ),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,

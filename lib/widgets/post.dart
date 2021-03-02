@@ -253,8 +253,14 @@ class _PostState extends State<Post> {
         doc.reference.delete();
       }
     });
-    // delete uploaded image for thep ost
-    storageRef.child("Posts").child("post_$postId.jpg").delete();
+
+    try {
+      // delete uploaded image for thep ost
+      storageRef.child("Posts").child("post_$postId.jpg").delete();
+    } catch (e) {
+      print('post has no image');
+    }
+
     // then delete all activity feed notifications
     QuerySnapshot activityFeedSnapshot = await activityFeedRef
         .doc(ownerId)
