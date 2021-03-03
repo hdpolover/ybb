@@ -109,7 +109,7 @@ class _ActivityFeedState extends State<ActivityFeed>
         children: [
           SvgPicture.asset(
             'assets/images/no_notif.svg',
-            height: MediaQuery.of(context).size.width * 0.3,
+            height: MediaQuery.of(context).size.width * 0.4,
           ),
           SizedBox(
             height: 30,

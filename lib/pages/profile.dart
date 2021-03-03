@@ -7,6 +7,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/edit_profile.dart';
+import 'package:ybb/pages/follows.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/settings.dart';
 import 'package:ybb/pages/upload_post.dart';
@@ -797,8 +798,32 @@ class _ProfileState extends State<Profile>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            buildCountColumn("Followers", followerCount),
-                            buildCountColumn("Followings", followingCount),
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Follows(
+                                    type: "followers",
+                                    userId: widget.profileId,
+                                  ),
+                                ),
+                              ),
+                              child:
+                                  buildCountColumn("Followers", followerCount),
+                            ),
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Follows(
+                                    type: "followings",
+                                    userId: widget.profileId,
+                                  ),
+                                ),
+                              ),
+                              child: buildCountColumn(
+                                  "Followings", followingCount),
+                            ),
                             buildProfileButton(),
                           ],
                         ),

@@ -8,6 +8,7 @@ import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/pages/people_suggestion.dart';
 import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/widgets/shimmers/user_suggestion_shimmer_layout.dart';
 
@@ -135,37 +136,42 @@ class _SearchState extends State<Search>
           },
         );
 
-        return Column(
-          children: [
-            userToFollow.length > 0
-                ? Container(
-                    padding: EdgeInsets.all(10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Icon(
-                          Icons.person_add,
-                          color: Theme.of(context).primaryColor,
-                          size: 25,
-                        ),
-                        SizedBox(
-                          width: 8.0,
-                        ),
-                        Text(
-                          "People to follow",
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 18.0,
-                            fontFamily: fontName,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Text(''),
-            Row(children: userToFollow),
-          ],
-        );
+        // return Column(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: [
+        //     userToFollow.length > 0
+        //         ? Container(
+        //             padding: EdgeInsets.all(10.0),
+        //             child: Row(
+        //               mainAxisAlignment: MainAxisAlignment.start,
+        //               children: <Widget>[
+        //                 Icon(
+        //                   Icons.person_add,
+        //                   color: Theme.of(context).primaryColor,
+        //                   size: 25,
+        //                 ),
+        //                 SizedBox(
+        //                   width: 8.0,
+        //                 ),
+        //                 Text(
+        //                   "People to follow",
+        //                   style: TextStyle(
+        //                     color: Theme.of(context).primaryColor,
+        //                     fontSize: 18.0,
+        //                     fontFamily: fontName,
+        //                   ),
+        //                 ),
+        //               ],
+        //             ),
+        //           )
+        //         : Text(''),
+        //     Row(children: userToFollow),
+        //   ],
+        // );
+        return Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: userToFollow);
       },
     );
   }
@@ -204,17 +210,76 @@ class _SearchState extends State<Search>
     );
   }
 
+  buildSectionPeopleToFollow() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Icon(
+                Icons.person_add,
+                color: Colors.black,
+                size: 25,
+              ),
+              SizedBox(
+                width: 8.0,
+              ),
+              Text(
+                "People to follow",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18.0,
+                  fontFamily: fontName,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.25,
+        ),
+        FlatButton(
+          textColor: Colors.blue,
+          color: Colors.white10,
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PeopleSuggestion()),
+          ),
+          child: Text(
+            'See All',
+            style: TextStyle(
+                fontFamily: fontName,
+                color: Colors.blue,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
   Container buildNoContent() {
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          SingleChildScrollView(
-            child: buildUsersToFollow(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildSectionPeopleToFollow(),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: buildUsersToFollow(),
+              ),
+            ],
           ),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
+            height: MediaQuery.of(context).size.height * 0.2,
           ),
           SvgPicture.asset(
             'assets/images/no_search.svg',

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/comments.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/pages/post_likers.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/post_in_detail.dart';
 import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
@@ -31,11 +33,14 @@ class _PostDetailState extends State<PostDetail> {
 
   bool isCommentValid;
   FocusNode focusNode;
+  String firstUsername = "";
+
+  List<String> likerIds = [];
 
   @override
   void initState() {
     super.initState();
-
+    likerIds = [];
     focusNode = FocusNode();
     isCommentValid = true;
   }
@@ -44,6 +49,7 @@ class _PostDetailState extends State<PostDetail> {
   void dispose() {
     focusNode.dispose();
 
+    getUserId();
     super.dispose();
   }
 
@@ -90,6 +96,106 @@ class _PostDetailState extends State<PostDetail> {
     setState(() {
       commentId = Uuid().v4();
     });
+  }
+
+  int getLikeCount(likes) {
+    // if no likes, return 0
+    if (likes == null) {
+      return 0;
+    }
+    int count = 0;
+
+    // if the key is explicitly set to true, add a like
+    likes.values.forEach((val) {
+      if (val == true) {
+        count += 1;
+      }
+    });
+    return count;
+  }
+
+  Future<String> getUsername(String str) async {
+    DocumentSnapshot doc = await usersRef.doc(str).get();
+
+    return doc['displayName'];
+  }
+
+  Future<String> getUserId() async {
+    DocumentSnapshot doc = await postsRef
+        .doc(widget.userId)
+        .collection('userPosts')
+        .doc(widget.postId)
+        .get();
+
+    PostInDetail post = PostInDetail.fromDocument(doc);
+    Map<String, dynamic> i = post.likes;
+    String id = i.keys.last;
+
+    i.keys.forEach((element) {
+      likerIds.add(element);
+    });
+
+    return getUsername(id);
+  }
+
+  showLikers() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            PostLikers(likerIds: likerIds, postId: widget.postId),
+      ),
+    );
+  }
+
+  buildLikeDetailSection() {
+    return GestureDetector(
+      onTap: () => showLikers(),
+      child: Padding(
+        padding: EdgeInsets.only(left: 15, bottom: 15),
+        child: Row(
+          children: [
+            //Text("$firstUsername and "),
+            FutureBuilder(
+              future: getUserId(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Text("");
+                }
+
+                String name = snapshot.data;
+
+                return Text(
+                  "$name ",
+                  style: TextStyle(
+                      fontFamily: fontName, fontWeight: FontWeight.bold),
+                );
+              },
+            ),
+            FutureBuilder(
+              future: postsRef
+                  .doc(widget.userId)
+                  .collection('userPosts')
+                  .doc(widget.postId)
+                  .get(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Text("");
+                }
+
+                PostInDetail post = PostInDetail.fromDocument(snapshot.data);
+                int count = getLikeCount(post.likes) - 1;
+
+                return Text("and $count others liked this post.",
+                    style: TextStyle(
+                      fontFamily: fontName,
+                    ));
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   buildCommentField() {
@@ -144,6 +250,7 @@ class _PostDetailState extends State<PostDetail> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          SizedBox(height: 20),
           SvgPicture.asset(
             'assets/images/no_comment.svg',
             height: MediaQuery.of(context).size.height * 0.2,
@@ -159,6 +266,9 @@ class _PostDetailState extends State<PostDetail> {
               letterSpacing: .7,
             ),
           ),
+          SizedBox(
+            height: 30,
+          ),
         ],
       ),
     );
@@ -166,27 +276,28 @@ class _PostDetailState extends State<PostDetail> {
 
   buildCommentLayout() {
     return StreamBuilder(
-        stream: commentsRef
-            .doc(widget.postId)
-            .collection('comments')
-            .orderBy("timestamp", descending: false)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return CommentShimmer();
-          }
+      stream: commentsRef
+          .doc(widget.postId)
+          .collection('comments')
+          .orderBy("timestamp", descending: false)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return CommentShimmer();
+        }
 
-          comments = [];
-          snapshot.data.documents.forEach((doc) {
-            comments.add(Comment.fromDocument(doc));
-          });
-
-          return comments.length == 0
-              ? buildNoComment()
-              : Column(
-                  children: comments,
-                );
+        comments = [];
+        snapshot.data.documents.forEach((doc) {
+          comments.add(Comment.fromDocument(doc));
         });
+
+        return comments.length == 0
+            ? buildNoComment()
+            : Column(
+                children: comments,
+              );
+      },
+    );
   }
 
   buildPostLayout() {
@@ -229,7 +340,11 @@ class _PostDetailState extends State<PostDetail> {
               child: Column(
                 children: [
                   buildPostLayout(),
+                  buildLikeDetailSection(),
                   buildCommentLayout(),
+                  SizedBox(
+                    height: 20,
+                  ),
                 ],
               ),
             ),

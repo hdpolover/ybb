@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
-import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/pages/search.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
 
@@ -13,7 +13,7 @@ class Follows extends StatefulWidget {
   final String type;
   final String userId;
 
-  Follows({this.type, this.userId});
+  Follows({@required this.type, @required this.userId});
 
   @override
   _FollowsState createState() => _FollowsState();
@@ -81,17 +81,17 @@ class _FollowsState extends State<Follows> {
           shrinkWrap: true,
           children: <Widget>[
             SvgPicture.asset(
-              'assets/images/no_search.svg',
-              height: 200.0,
+              'assets/images/no_notif.svg',
+              height: MediaQuery.of(context).size.width * 0.4,
             ),
             SizedBox(
-              height: 15,
+              height: 30,
             ),
             Text(
-              "Find people to broaden your network.",
+              "Nothing to see here.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.black,
+                fontFamily: fontName,
               ),
             ),
           ],
@@ -114,50 +114,8 @@ class _FollowsState extends State<Follows> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: defaultAppBar(context,
-          titleText:
-              widget.type.contains("followers") ? "Followers" : "Followings"),
+          titleText: widget.type == ("followers") ? "Followers" : "Followings"),
       body: buildFollowResults(),
-    );
-  }
-}
-
-class UserResult extends StatelessWidget {
-  final User user;
-
-  UserResult(this.user);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      //color: Theme.of(context).primaryColor.withOpacity(0.7),
-      child: Column(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () => showProfile(context, profileId: user.id),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.grey,
-                backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-              ),
-              title: Text(
-                user.displayName,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text(
-                user.username,
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ),
-          Divider(
-            height: 2.0,
-            color: Colors.white54,
-          ),
-        ],
-      ),
     );
   }
 }

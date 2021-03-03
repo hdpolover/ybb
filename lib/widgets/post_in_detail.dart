@@ -466,7 +466,7 @@ class _PostInDetailState extends State<PostInDetail> {
     isLiked = (likes[currentUserId] == true);
 
     return Container(
-      margin: EdgeInsets.only(bottom: 25),
+      margin: EdgeInsets.only(bottom: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

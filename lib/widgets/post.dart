@@ -46,6 +46,7 @@ class Post extends StatefulWidget {
       return 0;
     }
     int count = 0;
+
     // if the key is explicitly set to true, add a like
     likes.values.forEach((val) {
       if (val == true) {
