@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/models/article.dart';
 import 'package:ybb/pages/home.dart';
@@ -36,12 +39,15 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool isConnected = true;
+  Future<dynamic> longLoad;
 
   @override
   void initState() {
     super.initState();
 
     checkConnection();
+    countLoading();
+    getNews();
   }
 
   checkConnection() async {
@@ -56,61 +62,67 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> getNews() async {
+    NewsData newsData = new NewsData();
+
+    List<ArticleModel> a;
+    try {
+      a = await newsData.getArcs();
+    } catch (e) {
+      return articlesFromMain;
+    }
+
+    articlesFromMain = a;
+  }
+
   Future<Widget> loadFromFuture() async {
     NewsData newsData = new NewsData();
 
-    await newsData.getArticles();
+    try {
+      await newsData.getArticles();
+    } catch (e) {
+      print(e);
+      articlesFromMain = [];
+    }
 
     articlesFromMain = newsData.articles;
 
     return Future.value(new Home());
   }
 
+  countLoading() {
+    Future.delayed(const Duration(milliseconds: 10000), () {
+      longLoad = Future.value("This is taking longer than usual...");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   body: ConnectivityScreenWrapper(
-    //     child: SafeArea(
-    //       child: ConnectivityWidgetWrapper(
-    //         stacked: false,
-    //         offlineWidget: CustomSplashscreen(
-    //           seconds: 1000,
-    //           image:
-    //               Image(image: AssetImage('assets/images/ybb_black_full.png')),
-    //           backgroundColor: Colors.white,
-    //           styleTextUnderTheLoader: new TextStyle(),
-    //           photoSize: MediaQuery.of(context).size.width * 0.35,
-    //           useLoader: true,
-    //           loaderColor: Theme.of(context).primaryColor,
-    //         ),
-    //         child: CustomSplashscreen(
-    //           onClick: loadFromFuture,
-    //           seconds: 3,
-    //           navigateAfterSeconds: new Home(),
-    //           navigateAfterFuture: loadFromFuture(),
-    //           image:
-    //               Image(image: AssetImage('assets/images/ybb_black_full.png')),
-    //           backgroundColor: Colors.white,
-    //           styleTextUnderTheLoader: new TextStyle(),
-    //           photoSize: MediaQuery.of(context).size.width * 0.35,
-    //           useLoader: true,
-    //           loaderColor: Theme.of(context).primaryColor,
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
     return isConnected
         ? CustomSplashscreen(
-            seconds: 3,
+            seconds: 4,
             navigateAfterSeconds: new Home(),
-            navigateAfterFuture: loadFromFuture(),
+            //navigateAfterFuture: loadFromFuture(),
             image: Image(image: AssetImage('assets/images/ybb_black_full.png')),
             backgroundColor: Colors.white,
             styleTextUnderTheLoader: new TextStyle(),
             photoSize: MediaQuery.of(context).size.width * 0.35,
             useLoader: true,
             loaderColor: Theme.of(context).primaryColor,
+            loadingText: FutureBuilder(
+              future: longLoad,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Text("");
+                }
+                return Text(
+                  snapshot.data,
+                  style: TextStyle(
+                    fontFamily: fontName,
+                  ),
+                );
+              },
+            ),
           )
         : NoInternet(isConnected: false);
   }

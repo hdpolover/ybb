@@ -139,16 +139,23 @@ class _ActivityFeedState extends State<ActivityFeed>
       ),
       elevation: 0,
       actions: <Widget>[
-        IconButton(
-          icon: Icon(
-            Icons.delete,
-            color: feedItems == null || feedItems.isEmpty
-                ? Colors.white30
-                : Colors.white,
+        ConnectivityWidgetWrapper(
+          stacked: false,
+          offlineWidget: IconButton(
+            icon: Icon(Icons.delete, color: Colors.white38),
+            onPressed: null,
           ),
-          onPressed: feedItems == null || feedItems.isEmpty
-              ? null
-              : () => handleDeleteFeed(context),
+          child: IconButton(
+            icon: Icon(
+              Icons.delete,
+              color: feedItems == null || feedItems.isEmpty
+                  ? Colors.white38
+                  : Colors.white,
+            ),
+            onPressed: feedItems == null || feedItems.isEmpty
+                ? null
+                : () => handleDeleteFeed(context),
+          ),
         ),
       ],
     );

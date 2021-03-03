@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
@@ -30,13 +31,82 @@ class _TimelineState extends State<Timeline>
 
   var refreshkey = GlobalKey<RefreshIndicatorState>();
 
+  //pagination
+  List<DocumentSnapshot> products = []; // stores fetched products
+  bool isLoading = false; // track if products fetching
+  bool hasMore = true; // flag for more products available or not
+  int documentLimit = 3; // documents to be fetched per request
+  DocumentSnapshot
+      lastDocument; // flag for last document from where next 10 records to be fetched
+  ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
 
-    getIdFollowing();
+    _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.20;
+      if (maxScroll - currentScroll <= delta) {
+        getTimeline();
+      }
+    });
+
     getTimeline();
-    //getFollowing();
+
+    getIdFollowing();
+  }
+
+  getTimeline() async {
+    if (!hasMore) {
+      print('No More Products');
+      return;
+    }
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+
+    QuerySnapshot querySnapshot;
+    if (lastDocument == null) {
+      querySnapshot = await timelineRef
+          .doc(widget.currentUser.id)
+          .collection('timelinePosts')
+          .orderBy('timestamp', descending: true)
+          .limit(documentLimit)
+          .get();
+    } else {
+      querySnapshot = await timelineRef
+          .doc(widget.currentUser.id)
+          .collection('timelinePosts')
+          .orderBy('timestamp', descending: true)
+          .startAfterDocument(lastDocument)
+          .limit(documentLimit)
+          .get();
+    }
+
+    if (querySnapshot.docs.length < documentLimit) {
+      hasMore = false;
+    }
+
+    try {
+      lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    products.addAll(querySnapshot.docs);
+
+    List<Post> posts = products.map((doc) => Post.fromDocument(doc)).toList();
+    setState(() {
+      this.posts = posts;
+      isLoading = false;
+    });
   }
 
   getIdFollowing() async {
@@ -49,38 +119,17 @@ class _TimelineState extends State<Timeline>
     });
   }
 
-  getTimeline() async {
-    QuerySnapshot snapshot = await timelineRef
-        .doc(widget.currentUser.id)
-        .collection('timelinePosts')
-        .orderBy('timestamp', descending: true)
-        .get();
-    List<Post> posts =
-        snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
-    setState(() {
-      this.posts = posts;
-    });
-  }
-
-  // Future<void> getPosts() async {
-  //   getFollowing().then((value) => getTimeline());
-  // }
-
-  // Future<void> getTimeline() async {
-  //   List<Post> userPosts = [];
-  //   followingList.forEach((element) async {
-  //     QuerySnapshot snapshot = await postsRef
-  //         .doc(element)
-  //         .collection('userPosts')
-  //         .orderBy('timestamp', descending: true)
-  //         .get();
-
-  //     userPosts
-  //         .addAll(snapshot.docs.map((doc) => Post.fromDocument(doc)).toList());
-
-  //     setState(() {
-  //       this.posts = userPosts;
-  //     });
+  // getTimeline() async {
+  //   QuerySnapshot snapshot = await timelineRef
+  //       .doc(widget.currentUser.id)
+  //       .collection('timelinePosts')
+  //       .orderBy('timestamp', descending: true)
+  //       .limit(10)
+  //       .get();
+  //   List<Post> posts =
+  //       snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+  //   setState(() {
+  //     this.posts = posts;
   //   });
   // }
 
@@ -100,11 +149,39 @@ class _TimelineState extends State<Timeline>
     } else if (posts.isEmpty) {
       return PostShimmer();
     } else {
-      return Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: posts,
-        ),
+      return Column(
+        children: [
+          Expanded(
+            child: products.length == 0
+                ? Center(
+                    child: buildNoFeed(),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(15.0, 15, 15, 0),
+                    controller: _scrollController,
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      return posts[index];
+                    },
+                  ),
+          ),
+          isLoading
+              ? Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(5),
+                  color: Colors.blue,
+                  child: Text(
+                    'Loading',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: fontName,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                )
+              : Container()
+        ],
       );
     }
   }
@@ -114,6 +191,9 @@ class _TimelineState extends State<Timeline>
 
     setState(() {
       posts = [];
+      products = [];
+      lastDocument = null;
+      hasMore = true;
     });
 
     await getTimeline();
@@ -171,15 +251,15 @@ class _TimelineState extends State<Timeline>
         key: refreshkey,
         onRefresh: refreshTimeline,
         child: ConnectivityScreenWrapper(
-          child: SingleChildScrollView(
-            clipBehavior: Clip.none,
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                buildTimeline(),
-              ],
-            ),
-          ),
+          child: buildTimeline(),
+          // child: SingleChildScrollView(
+          //   clipBehavior: Clip.none,
+          //   physics: AlwaysScrollableScrollPhysics(),
+          //   child: Column(
+          //     children: [
+          //       buildTimeline(),
+          //     ],
+          //   ),
         ),
       ),
     );

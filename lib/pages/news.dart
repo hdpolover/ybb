@@ -35,10 +35,20 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   }
 
   getNews() async {
-    articles = articlesFromMain;
+    setState(() {
+      articles = articlesFromMain;
+    });
 
     if (articles == null || articles.isEmpty) {
-      getNewsAgain();
+      NewsData newsData = new NewsData();
+
+      articles = [];
+
+      await newsData.getArticles();
+
+      setState(() {
+        articles = newsData.articles;
+      });
     }
 
     if (mounted) {
@@ -76,32 +86,31 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
         onRefresh: getNewsAgain,
         child: ConnectivityScreenWrapper(
           child: SingleChildScrollView(
-            child: _loading
-                ? NewsCategoryShimmer()
-                : Container(
-                    child: Column(
-                      children: <Widget>[
-                        //categories
-                        Container(
-                          padding: EdgeInsets.only(top: 5.0, left: 5.0),
-                          height: MediaQuery.of(context).size.height * 0.06,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: newsCategories.length,
-                            itemBuilder: (context, index) {
-                              return CategoryTile(
-                                categoryName:
-                                    newsCategories[index].categoryName,
-                                categoryImageUrl:
-                                    newsCategories[index].categroyImageUrl,
-                                categoryIndex: newsCategories[index].categoryId,
-                              );
-                            },
-                          ),
-                        ),
-                        //articles
-                        Padding(
+            child: Container(
+              child: Column(
+                children: <Widget>[
+                  //categories
+                  Container(
+                    padding: EdgeInsets.only(top: 5.0, left: 5.0),
+                    height: MediaQuery.of(context).size.height * 0.06,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: newsCategories.length,
+                      itemBuilder: (context, index) {
+                        return CategoryTile(
+                          categoryName: newsCategories[index].categoryName,
+                          categoryImageUrl:
+                              newsCategories[index].categroyImageUrl,
+                          categoryIndex: newsCategories[index].categoryId,
+                        );
+                      },
+                    ),
+                  ),
+                  //articles
+                  _loading
+                      ? NewsCategoryShimmer()
+                      : Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: ListView.builder(
                             scrollDirection: Axis.vertical,
@@ -122,9 +131,9 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                             },
                           ),
                         )
-                      ],
-                    ),
-                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

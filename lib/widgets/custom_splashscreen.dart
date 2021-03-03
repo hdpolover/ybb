@@ -33,7 +33,7 @@ class CustomSplashscreen extends StatefulWidget {
   final Image image;
 
   /// Loading text, default: "Loading"
-  final Text loadingText;
+  final Widget loadingText;
 
   ///  Background image for the entire screen
   final ImageProvider imageBackground;
@@ -80,7 +80,7 @@ class CustomSplashscreen extends StatefulWidget {
           Color loaderColor,
           Color backgroundColor,
           double photoSize,
-          Text loadingText,
+          Widget loadingText,
           Image image,
           Route pageRoute,
           dynamic onClick,
@@ -114,7 +114,7 @@ class CustomSplashscreen extends StatefulWidget {
           Color loaderColor,
           Color backgroundColor,
           double photoSize,
-          Text loadingText,
+          Widget loadingText,
           Image image,
           Route pageRoute,
           dynamic onClick,

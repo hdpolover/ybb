@@ -1,17 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
-import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/pages/search.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
 
 class PeopleSuggestion extends StatefulWidget {
-  PeopleSuggestion({Key key}) : super(key: key);
-
   @override
   _PeopleSuggestionState createState() => _PeopleSuggestionState();
 }
@@ -52,21 +49,18 @@ class _PeopleSuggestionState extends State<PeopleSuggestion> {
         snapshot.data.documents.forEach(
           (doc) {
             User user = User.fromDocument(doc);
-            final bool isAuthUser = currentUser.id == user.id;
             final bool isFollowingUser = followingList.contains(user.id);
             // remove auth user from recommended list
-            if (isAuthUser) {
-              return;
-            } else if (isFollowingUser) {
-              return;
-            } else {
+            if (!isFollowingUser) {
               UserResult userResult = UserResult(user);
               userToFollow.add(userResult);
             }
           },
         );
 
-        return Column(children: userToFollow);
+        return userToFollow.length == 0
+            ? buildNoContent()
+            : Column(children: userToFollow);
       },
     );
   }
@@ -101,7 +95,7 @@ class _PeopleSuggestionState extends State<PeopleSuggestion> {
     );
   }
 
-  buildFollowResults() {
+  buildPeopleResults() {
     if (results == null) {
       return CommentShimmer();
     } else {
@@ -116,47 +110,6 @@ class _PeopleSuggestionState extends State<PeopleSuggestion> {
     return Scaffold(
       appBar: defaultAppBar(context, titleText: "People to Follow"),
       body: buildUsersToFollow(),
-    );
-  }
-}
-
-class UserResult extends StatelessWidget {
-  final User user;
-
-  UserResult(this.user);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      //color: Theme.of(context).primaryColor.withOpacity(0.7),
-      child: Column(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () => showProfile(context, profileId: user.id),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.grey,
-                backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-              ),
-              title: Text(
-                user.displayName,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text(
-                user.username,
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ),
-          Divider(
-            height: 2.0,
-            color: Colors.white54,
-          ),
-        ],
-      ),
     );
   }
 }

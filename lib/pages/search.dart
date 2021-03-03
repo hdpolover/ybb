@@ -136,42 +136,21 @@ class _SearchState extends State<Search>
           },
         );
 
-        // return Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     userToFollow.length > 0
-        //         ? Container(
-        //             padding: EdgeInsets.all(10.0),
-        //             child: Row(
-        //               mainAxisAlignment: MainAxisAlignment.start,
-        //               children: <Widget>[
-        //                 Icon(
-        //                   Icons.person_add,
-        //                   color: Theme.of(context).primaryColor,
-        //                   size: 25,
-        //                 ),
-        //                 SizedBox(
-        //                   width: 8.0,
-        //                 ),
-        //                 Text(
-        //                   "People to follow",
-        //                   style: TextStyle(
-        //                     color: Theme.of(context).primaryColor,
-        //                     fontSize: 18.0,
-        //                     fontFamily: fontName,
-        //                   ),
-        //                 ),
-        //               ],
-        //             ),
-        //           )
-        //         : Text(''),
-        //     Row(children: userToFollow),
-        //   ],
-        // );
-        return Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: userToFollow);
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            userToFollow.length > 0 ? buildSectionPeopleToFollow() : Text(''),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: userToFollow,
+              ),
+            ),
+          ],
+        );
       },
     );
   }
@@ -265,33 +244,32 @@ class _SearchState extends State<Search>
   Container buildNoContent() {
     return Container(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildSectionPeopleToFollow(),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: buildUsersToFollow(),
-              ),
-            ],
-          ),
+          buildUsersToFollow(),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.2,
+            height: MediaQuery.of(context).size.height * 0.15,
           ),
-          SvgPicture.asset(
-            'assets/images/no_search.svg',
-            height: MediaQuery.of(context).size.height * 0.2,
-          ),
-          SizedBox(height: 10),
-          Text(
-            "Find people to broaden your network.",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontFamily: fontName,
+          Container(
+            margin:
+                EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.17),
+            child: Column(
+              children: [
+                SvgPicture.asset(
+                  'assets/images/no_search.svg',
+                  height: MediaQuery.of(context).size.height * 0.2,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Find people to broaden your network.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: fontName,
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(height: MediaQuery.of(context).size.height * 0.3),

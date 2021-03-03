@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:image_picker/image_picker.dart';
@@ -352,60 +353,73 @@ class _EditProfileState extends State<EditProfile> {
         elevation: 0,
         title: Text("Edit Profile", style: appBarTextStyle),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: updateProfileData,
+          ConnectivityWidgetWrapper(
+            stacked: false,
+            offlineWidget: IconButton(
+              icon: Icon(
+                Icons.save,
+                color: Colors.white38,
+              ),
+              onPressed: null,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.save),
+              onPressed: updateProfileData,
+            ),
           ),
         ],
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: isLoading
-          ? ProfileDashboardShimmer()
-          : ListView(
-              children: [
-                Container(
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          selectImage(context);
-                        },
-                        child: Stack(
-                          alignment: AlignmentDirectional.bottomEnd,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 16.9),
-                              child: CircleAvatar(
-                                radius: 50.0,
-                                backgroundImage: _image == null
-                                    ? CachedNetworkImageProvider(user.photoUrl)
-                                    : FileImage(_image),
+      body: ConnectivityScreenWrapper(
+        child: isLoading
+            ? ProfileDashboardShimmer()
+            : ListView(
+                children: [
+                  Container(
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            selectImage(context);
+                          },
+                          child: Stack(
+                            alignment: AlignmentDirectional.bottomEnd,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 16.9),
+                                child: CircleAvatar(
+                                  radius: 50.0,
+                                  backgroundImage: _image == null
+                                      ? CachedNetworkImageProvider(
+                                          user.photoUrl)
+                                      : FileImage(_image),
+                                ),
                               ),
-                            ),
-                            Icon(
-                              Icons.photo_camera,
-                              color: Colors.grey,
-                            ),
-                          ],
+                              Icon(
+                                Icons.photo_camera,
+                                color: Colors.grey,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            buildUsernameField(),
-                            buildDisplayNameField(),
-                            buildOccupationField(),
-                            buildInterestField(),
-                            buildBioField(),
-                          ],
+                        Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              buildUsernameField(),
+                              buildDisplayNameField(),
+                              buildOccupationField(),
+                              buildInterestField(),
+                              buildBioField(),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }

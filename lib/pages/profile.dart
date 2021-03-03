@@ -136,6 +136,7 @@ class _ProfileState extends State<Profile>
         .doc(widget.profileId)
         .collection('userPosts')
         .orderBy('timestamp', descending: true)
+        .limit(10)
         .get();
     setState(() {
       isLoading = false;
