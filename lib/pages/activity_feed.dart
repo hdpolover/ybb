@@ -16,7 +16,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
 
 class ActivityFeed extends StatefulWidget {
-  final User currentUser;
+  final AppUser currentUser;
 
   ActivityFeed({this.currentUser});
 
@@ -179,7 +179,7 @@ class _ActivityFeedState extends State<ActivityFeed>
             ),
           ),
           actions: [
-            FlatButton(
+            TextButton(
               child: Text(
                 "Cancel",
                 style: TextStyle(
@@ -190,7 +190,7 @@ class _ActivityFeedState extends State<ActivityFeed>
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 "Delete",
                 style: TextStyle(
@@ -204,6 +204,7 @@ class _ActivityFeedState extends State<ActivityFeed>
                 SnackBar snackBar =
                     SnackBar(content: Text("Activity feed deleted"));
                 _scaffoldKey.currentState.showSnackBar(snackBar);
+                //ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
                 Navigator.of(context).pop();
 

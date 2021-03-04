@@ -105,8 +105,10 @@ class _SearchState extends State<Search>
 
   buildUsersToFollow() {
     return StreamBuilder(
-      stream:
-          usersRef.orderBy('timestamp', descending: true).limit(20).snapshots(),
+      stream: usersRef
+          .orderBy('registerDate', descending: true)
+          .limit(20)
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return UserSuggestionShimmer();
@@ -115,7 +117,7 @@ class _SearchState extends State<Search>
         List<UserToFollow> userToFollow = [];
         snapshot.data.documents.forEach(
           (doc) {
-            User user = User.fromDocument(doc);
+            AppUser user = AppUser.fromDocument(doc);
             final bool isAuthUser = currentUser.id == user.id;
             final bool isFollowingUser = followingList.contains(user.id);
             // remove auth user from recommended list
@@ -384,7 +386,6 @@ class _SearchState extends State<Search>
     return Scaffold(
       key: _scaffoldKey,
       appBar: buildSearchField(),
-      resizeToAvoidBottomPadding: false,
       body: LiquidPullToRefresh(
         height: MediaQuery.of(context).size.height * 0.08,
         color: Colors.blue,
@@ -406,7 +407,7 @@ class _SearchState extends State<Search>
 }
 
 class UserToFollow extends StatelessWidget {
-  final User user;
+  final AppUser user;
 
   UserToFollow(this.user);
 
@@ -440,8 +441,8 @@ class UserToFollow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  user.displayName.length > 13
-                      ? user.displayName.substring(0, 13) + "..."
+                  user.displayName.length > 10
+                      ? user.displayName.substring(0, 10) + "..."
                       : user.displayName,
                   style: TextStyle(
                     color: Colors.black,
@@ -453,11 +454,12 @@ class UserToFollow extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * 0.035,
                 ),
                 Text(
-                  user.occupation.length > 30
-                      ? user.occupation.substring(0, 30) + "..."
+                  user.occupation.length > 10
+                      ? user.occupation.substring(0, 10) + "..."
                       : user.occupation,
                   style: TextStyle(
                     color: Colors.black,
+                    fontSize: 13,
                     fontFamily: fontName,
                   ),
                 ),
@@ -472,7 +474,7 @@ class UserToFollow extends StatelessWidget {
 }
 
 class UserResult extends StatelessWidget {
-  final User user;
+  final AppUser user;
 
   UserResult(this.user);
 

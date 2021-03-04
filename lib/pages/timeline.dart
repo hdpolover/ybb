@@ -15,7 +15,7 @@ import 'package:ybb/widgets/shimmers/post_shimmer_layout.dart';
 List<String> idFollowing = [];
 
 class Timeline extends StatefulWidget {
-  final User currentUser;
+  final AppUser currentUser;
 
   Timeline({this.currentUser});
 
@@ -53,14 +53,15 @@ class _TimelineState extends State<Timeline>
       }
     });
 
-    getTimeline();
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      getTimeline();
+    });
 
     getIdFollowing();
   }
 
   getTimeline() async {
     if (!hasMore) {
-      print('No More Products');
       return;
     }
     if (isLoading) {
@@ -241,7 +242,6 @@ class _TimelineState extends State<Timeline>
         currentUser: currentUser,
         removeBackButton: true,
       ),
-      resizeToAvoidBottomPadding: false,
       body: LiquidPullToRefresh(
         height: MediaQuery.of(context).size.height * 0.08,
         color: Colors.blue,

@@ -22,7 +22,7 @@ class ChatWidget extends StatefulWidget {
 class _ChatWidgetState extends State<ChatWidget> {
   MessageRepository messageRepository = MessageRepository();
   Chat chat;
-  User user;
+  AppUser user;
 
   getUserDetail() async {
     user = await messageRepository.getUserDetail(userId: widget.selectedUserId);
@@ -52,9 +52,9 @@ class _ChatWidgetState extends State<ChatWidget> {
   }
 
   openChat() async {
-    User currentUser =
+    AppUser currentUser =
         await messageRepository.getUserDetail(userId: widget.userId);
-    User selectedUser =
+    AppUser selectedUser =
         await messageRepository.getUserDetail(userId: widget.selectedUserId);
 
     try {

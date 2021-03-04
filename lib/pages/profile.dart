@@ -29,7 +29,6 @@ class _ProfileState extends State<Profile>
     with AutomaticKeepAliveClientMixin<Profile> {
   var refreshkey = GlobalKey<RefreshIndicatorState>();
   final String currentUserId = currentUser?.id;
-  String postOrientation = "grid";
   bool isFollowing = false;
   bool isLoading = false;
   int postCount = 0;
@@ -329,12 +328,9 @@ class _ProfileState extends State<Profile>
         .set({
       "type": "follow",
       "ownerId": widget.profileId,
-      "displayName": currentUser.displayName,
       "userId": currentUserId,
-      "userProfileImg": currentUser.photoUrl,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "commentData": "",
-      "mediaUrl": "",
       "postId": "",
       "feedId": currentUserId,
     });
@@ -348,7 +344,7 @@ class _ProfileState extends State<Profile>
           return ProfileDashboardShimmer();
         }
 
-        User user = User.fromDocument(snapshot.data);
+        AppUser user = AppUser.fromDocument(snapshot.data);
 
         return Column(
           children: [
@@ -479,7 +475,7 @@ class _ProfileState extends State<Profile>
           return ProfileHeaderShimmer();
         }
 
-        User user = User.fromDocument(snapshot.data);
+        AppUser user = AppUser.fromDocument(snapshot.data);
 
         return Row(
           children: <Widget>[
@@ -555,7 +551,6 @@ class _ProfileState extends State<Profile>
               "It seems like you have no posts yet. Make one now.",
               style: TextStyle(
                 color: Colors.black,
-                fontWeight: FontWeight.bold,
                 fontFamily: fontName,
               ),
             ),
@@ -569,7 +564,10 @@ class _ProfileState extends State<Profile>
               icon: Icon(Icons.edit),
               label: Text(
                 "Create a post",
-                style: commonTextStyle,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontFamily: fontName,
+                ),
               ),
               onPressed: () {
                 Navigator.push(
@@ -606,9 +604,9 @@ class _ProfileState extends State<Profile>
             child: Text(
               "This user doesn't seem to have any posts.",
               style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: fontName),
+                color: Colors.black,
+                fontFamily: fontName,
+              ),
             ),
           ),
         ],

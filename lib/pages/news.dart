@@ -20,8 +20,8 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
-  List<NewsCategoryModel> newsCategories = new List<NewsCategoryModel>();
-  List<ArticleModel> articles = new List<ArticleModel>();
+  List<NewsCategoryModel> newsCategories = [];
+  List<ArticleModel> articles = [];
   var refreshkey = GlobalKey<RefreshIndicatorState>();
 
   bool _loading = true;
@@ -31,12 +31,23 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
     super.initState();
 
     newsCategories = getNewsCategories();
-    getNews();
+    //getNews();
+    get();
+  }
+
+  get() {
+    articles = articlesFromMain;
+
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   getNews() async {
     setState(() {
-      articles = articlesFromMain;
+      //articles = articlesFromMain;
     });
 
     if (articles == null || articles.isEmpty) {
@@ -46,9 +57,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
 
       await newsData.getArticles();
 
-      setState(() {
-        articles = newsData.articles;
-      });
+      articles = newsData.articles;
     }
 
     if (mounted) {

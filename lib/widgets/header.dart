@@ -7,7 +7,7 @@ AppBar header(context,
     {bool isAppTitle = false,
     String titleText,
     removeBackButton = false,
-    User currentUser}) {
+    AppUser currentUser}) {
   return AppBar(
     automaticallyImplyLeading: removeBackButton ? false : true,
     title: Padding(

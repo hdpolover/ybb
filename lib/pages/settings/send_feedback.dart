@@ -7,7 +7,7 @@ import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/pages/home.dart';
 
 class SendFeedback extends StatefulWidget {
-  final User user;
+  final AppUser user;
 
   SendFeedback({this.user});
 
@@ -166,6 +166,7 @@ class _SendFeedbackState extends State<SendFeedback> {
       });
 
       _scaffoldKey.currentState.showSnackBar(SnackBar(
+        backgroundColor: Colors.blue,
         content: Text("Feedback succesfully submitted!"),
       ));
     }

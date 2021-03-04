@@ -100,7 +100,7 @@ class _PostInDetailState extends State<PostInDetail> {
           return PostHeaderShimmer();
         }
 
-        User user = User.fromDocument(snapshot.data);
+        AppUser user = AppUser.fromDocument(snapshot.data);
         bool isPostOwner = currentUserId == ownerId;
 
         return Row(

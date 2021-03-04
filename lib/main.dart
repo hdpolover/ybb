@@ -91,7 +91,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   countLoading() {
-    Future.delayed(const Duration(milliseconds: 10000), () {
+    Future.delayed(const Duration(milliseconds: 2000), () {
       longLoad = Future.value("This is taking longer than usual...");
     });
   }
@@ -100,7 +100,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return isConnected
         ? CustomSplashscreen(
-            seconds: 4,
+            seconds: 3,
             navigateAfterSeconds: new Home(),
             //navigateAfterFuture: loadFromFuture(),
             image: Image(image: AssetImage('assets/images/ybb_black_full.png')),
@@ -119,6 +119,7 @@ class _MyAppState extends State<MyApp> {
                   snapshot.data,
                   style: TextStyle(
                     fontFamily: fontName,
+                    color: Colors.black,
                   ),
                 );
               },

@@ -32,7 +32,7 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController interestController = TextEditingController();
 
   bool isLoading = false;
-  User user;
+  AppUser user;
   bool _displayNameValid = true;
   bool _usernameValid = true;
   bool _bioValid = true;
@@ -154,7 +154,7 @@ class _EditProfileState extends State<EditProfile> {
     });
 
     DocumentSnapshot doc = await usersRef.doc(widget.currentUserId).get();
-    user = User.fromDocument(doc);
+    user = AppUser.fromDocument(doc);
 
     displayNameController.text = user.displayName;
     bioController.text = user.bio;

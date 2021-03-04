@@ -23,7 +23,7 @@ class _MyAccountState extends State<MyAccount> {
           return ProfileDashboardShimmer();
         }
 
-        User user = User.fromDocument(snapshot.data);
+        AppUser user = AppUser.fromDocument(snapshot.data);
 
         return Padding(
           padding: EdgeInsets.fromLTRB(10, 10, 20, 10),
@@ -131,7 +131,7 @@ class _MyAccountState extends State<MyAccount> {
                     ),
                     Spacer(),
                     Text(
-                      convertDateTime(user.timestamp),
+                      convertDateTime(user.registerDate),
                       style: TextStyle(
                           fontFamily: fontName, color: Colors.black54),
                     ),

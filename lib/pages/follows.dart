@@ -54,7 +54,7 @@ class _FollowsState extends State<Follows> {
       if (element != widget.userId) {
         DocumentSnapshot snapshot = await usersRef.doc(element).get();
 
-        User user = User.fromDocument(snapshot);
+        AppUser user = AppUser.fromDocument(snapshot);
         UserResult userResult = UserResult(user);
 
         users.add(userResult);

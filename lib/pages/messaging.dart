@@ -15,7 +15,7 @@ import 'package:ybb/widgets/message.dart';
 import 'package:ybb/widgets/user_photo.dart';
 
 class Messaging extends StatefulWidget {
-  final User currentUser, selectedUser;
+  final AppUser currentUser, selectedUser;
 
   const Messaging({this.currentUser, this.selectedUser});
 

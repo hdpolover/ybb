@@ -38,8 +38,10 @@ class _PeopleSuggestionState extends State<PeopleSuggestion> {
 
   buildUsersToFollow() {
     return StreamBuilder(
-      stream:
-          usersRef.orderBy('timestamp', descending: true).limit(20).snapshots(),
+      stream: usersRef
+          .orderBy('registerDate', descending: false)
+          .limit(30)
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return CommentShimmer();
@@ -48,7 +50,7 @@ class _PeopleSuggestionState extends State<PeopleSuggestion> {
         List<UserResult> userToFollow = [];
         snapshot.data.documents.forEach(
           (doc) {
-            User user = User.fromDocument(doc);
+            AppUser user = AppUser.fromDocument(doc);
             final bool isFollowingUser = followingList.contains(user.id);
             // remove auth user from recommended list
             if (!isFollowingUser) {
@@ -60,7 +62,7 @@ class _PeopleSuggestionState extends State<PeopleSuggestion> {
 
         return userToFollow.length == 0
             ? buildNoContent()
-            : Column(children: userToFollow);
+            : ListView(children: userToFollow);
       },
     );
   }

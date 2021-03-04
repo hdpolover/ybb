@@ -162,7 +162,8 @@ class CommentsState extends State<Comments> {
       );
     }
 
-    SnackBar snackBar = SnackBar(content: Text("Comment added"));
+    SnackBar snackBar =
+        SnackBar(backgroundColor: Colors.blue, content: Text("Comment added"));
     _scaffoldKey.currentState.showSnackBar(snackBar);
 
     commentController.clear();

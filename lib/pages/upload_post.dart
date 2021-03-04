@@ -16,7 +16,7 @@ import 'package:image/image.dart' as Im;
 import 'home.dart';
 
 class UploadPost extends StatefulWidget {
-  final User currentUser;
+  final AppUser currentUser;
 
   UploadPost({this.currentUser});
 
@@ -137,7 +137,7 @@ class _UploadPostState extends State<UploadPost>
         "displayName": widget.currentUser.displayName,
         "mediaUrl": mediaUrl,
         "description": desc,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
         "likes": {}
       },
     );
@@ -173,7 +173,8 @@ class _UploadPostState extends State<UploadPost>
       postId = Uuid().v4();
     });
 
-    SnackBar snackBar = SnackBar(content: Text("Posted successfully!"));
+    SnackBar snackBar = SnackBar(
+        backgroundColor: Colors.blue, content: Text("Posted successfully!"));
     _scaffoldKey.currentState.showSnackBar(snackBar);
 
     Timer(
@@ -189,8 +190,9 @@ class _UploadPostState extends State<UploadPost>
   }
 
   showError() {
-    SnackBar snackBar =
-        SnackBar(content: Text("Please fill out the fields first!"));
+    SnackBar snackBar = SnackBar(
+        backgroundColor: Colors.blue,
+        content: Text("Please fill out the fields first!"));
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 

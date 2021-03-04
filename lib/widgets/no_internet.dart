@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/news_data.dart';
-import 'package:ybb/main.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/custom_splashscreen.dart';
 
@@ -33,7 +32,7 @@ class _NoInternetState extends State<NoInternet> {
 
     await newsData.getArticles();
 
-    articlesFromMain = newsData.articles;
+    //articlesFromMain = newsData.articles;
 
     return Future.value(new Home());
   }

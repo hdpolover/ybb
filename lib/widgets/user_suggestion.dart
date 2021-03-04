@@ -159,7 +159,7 @@ class _UserSuggestionState extends State<UserSuggestion> {
       "displayName": currentUser.displayName,
       "userId": currentUser.id,
       "userProfileImg": currentUser.photoUrl,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "commentData": "",
       "mediaUrl": "",
       "postId": "",

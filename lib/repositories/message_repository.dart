@@ -26,8 +26,8 @@ class MessageRepository {
         .delete();
   }
 
-  Future<User> getUserDetail({userId}) async {
-    User _user = User();
+  Future<AppUser> getUserDetail({userId}) async {
+    AppUser _user = AppUser();
 
     await _firestore.collection('users').doc(userId).get().then((user) {
       _user.id = user.id;

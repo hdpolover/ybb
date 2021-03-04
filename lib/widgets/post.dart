@@ -109,7 +109,7 @@ class _PostState extends State<Post> {
           return PostHeaderShimmer();
         }
 
-        User user = User.fromDocument(snapshot.data);
+        AppUser user = AppUser.fromDocument(snapshot.data);
         bool isPostOwner = currentUserId == ownerId;
 
         return Row(
@@ -257,7 +257,16 @@ class _PostState extends State<Post> {
 
     try {
       // delete uploaded image for thep ost
-      storageRef.child("Posts").child("post_$postId.jpg").delete();
+      //storageRef.child("Posts").child("post_$postId.jpg").delete();
+
+      var ref = storageRef.child("Posts").child("post_$postId.jpg");
+      var downloadUrl = await ref.getDownloadURL();
+      var url = downloadUrl.toString();
+      if (url != null) {
+        ref.delete();
+      } else {
+        print('no image');
+      }
     } catch (e) {
       print('post has no image');
     }
@@ -327,7 +336,7 @@ class _PostState extends State<Post> {
         "type": "like",
         "userId": currentUser.id,
         "postId": postId,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
         "commentData": "",
         "feedId": postId,
       });
