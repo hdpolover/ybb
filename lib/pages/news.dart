@@ -31,8 +31,8 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
     super.initState();
 
     newsCategories = getNewsCategories();
-    //getNews();
-    get();
+    getNews();
+    //get();
   }
 
   get() {

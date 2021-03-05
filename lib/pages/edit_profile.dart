@@ -37,10 +37,13 @@ class _EditProfileState extends State<EditProfile> {
   bool _usernameValid = true;
   bool _bioValid = true;
   bool _occupationValid = true;
+  bool _isUsernameAvailable = true;
 
   FocusNode focusNode;
   FocusNode focusNode1;
-  //FocusNode focusNode2;
+  FocusNode focusNode2;
+
+  List<String> allUsernames = [];
 
   String downloadUrl;
 
@@ -50,11 +53,13 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
+
     getUser();
+    getAllUsernames();
 
     focusNode = FocusNode();
     focusNode1 = FocusNode();
-    //focusNode2 = FocusNode();
+    focusNode2 = FocusNode();
   }
 
   Future handleCamera() async {
@@ -143,9 +148,19 @@ class _EditProfileState extends State<EditProfile> {
   void dispose() {
     focusNode.dispose();
     focusNode1.dispose();
-    //focusNode2.dispose();
+    focusNode2.dispose();
 
     super.dispose();
+  }
+
+  getAllUsernames() async {
+    QuerySnapshot snapshot = await usersRef.get();
+
+    snapshot.docs.forEach((element) {
+      allUsernames.add(element['username']);
+    });
+
+    print(allUsernames.length);
   }
 
   getUser() async {
@@ -224,11 +239,15 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ),
         TextField(
-          //focusNode: focusNode2,
+          focusNode: focusNode2,
           controller: usernameController,
           decoration: InputDecoration(
             hintText: user.username,
-            errorText: _usernameValid ? null : "Username is too short",
+            errorText: _usernameValid
+                ? _isUsernameAvailable
+                    ? null
+                    : "Username is unavailable"
+                : "Username is too short",
           ),
         ),
       ],
@@ -285,7 +304,7 @@ class _EditProfileState extends State<EditProfile> {
   updateProfileData() async {
     focusNode.unfocus();
     focusNode1.unfocus();
-    //focusNode2.unfocus();
+    focusNode2.unfocus();
 
     String mediaUrl = "";
 
@@ -296,6 +315,19 @@ class _EditProfileState extends State<EditProfile> {
       mediaUrl = downloadUrl;
     } catch (e) {
       mediaUrl = user.photoUrl;
+    }
+
+    for (int i = 0; i < allUsernames.length; i++) {
+      if (usernameController.text.toString().trim() == allUsernames[i]) {
+        setState(() {
+          _isUsernameAvailable = false;
+        });
+        return;
+      } else {
+        setState(() {
+          _isUsernameAvailable = true;
+        });
+      }
     }
 
     setState(() {
@@ -318,7 +350,11 @@ class _EditProfileState extends State<EditProfile> {
           : _occupationValid = true;
     });
 
-    if (_displayNameValid && _bioValid && _usernameValid && _occupationValid) {
+    if (_displayNameValid &&
+        _bioValid &&
+        _usernameValid &&
+        _occupationValid &&
+        _isUsernameAvailable) {
       usersRef.doc(widget.currentUserId).update({
         "displayName": displayNameController.text,
         "bio": bioController.text,
@@ -331,8 +367,10 @@ class _EditProfileState extends State<EditProfile> {
 
       clearImageAndBack();
 
-      SnackBar snackBar =
-          SnackBar(content: Text("Profile successfully updated!"));
+      SnackBar snackBar = SnackBar(
+        backgroundColor: Colors.blue,
+        content: Text("Profile successfully updated!"),
+      );
       _scaffoldKey.currentState.showSnackBar(snackBar);
 
       //Navigator.pop(context);
@@ -342,6 +380,8 @@ class _EditProfileState extends State<EditProfile> {
           Navigator.of(context).pop();
         },
       );
+    } else {
+      return;
     }
   }
 

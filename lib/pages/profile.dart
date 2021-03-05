@@ -492,7 +492,7 @@ class _ProfileState extends State<Profile>
               children: <Widget>[
                 Text(
                   user.displayName.length > 20
-                      ? user.displayName.substring(0, 23) + "..."
+                      ? user.displayName.substring(0, 19) + "..."
                       : user.displayName,
                   style: TextStyle(
                     color: Colors.white,
@@ -516,8 +516,8 @@ class _ProfileState extends State<Profile>
                   height: MediaQuery.of(context).size.height * 0.035,
                 ),
                 Text(
-                  user.occupation.length > 30
-                      ? user.occupation.substring(0, 30) + "..."
+                  user.occupation.length > 34
+                      ? user.occupation.substring(0, 33) + "..."
                       : user.occupation,
                   style: TextStyle(
                     color: Colors.white,
@@ -539,9 +539,12 @@ class _ProfileState extends State<Profile>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.05,
+          ),
           SvgPicture.asset(
             'assets/images/no_post.svg',
-            height: MediaQuery.of(context).size.height * 0.2,
+            height: MediaQuery.of(context).size.height * 0.15,
           ),
           Padding(
             padding: EdgeInsets.only(
@@ -592,9 +595,12 @@ class _ProfileState extends State<Profile>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.05,
+          ),
           SvgPicture.asset(
             'assets/images/no_post.svg',
-            height: MediaQuery.of(context).size.height * 0.2,
+            height: MediaQuery.of(context).size.height * 0.15,
           ),
           Padding(
             padding: EdgeInsets.only(
@@ -749,7 +755,7 @@ class _ProfileState extends State<Profile>
                       MaterialPageRoute(
                         builder: (context) => ProfileSettings(
                           appName: "YBB",
-                          version: "1.0.0",
+                          version: "2.0.0",
                         ),
                       ),
                     );
