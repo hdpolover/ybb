@@ -25,7 +25,8 @@ class _TrialState extends State<Trial> {
   void initState() {
     super.initState();
 
-    convert();
+    //convert();
+    createUser();
 
     // googleSignIn.onCurrentUserChanged.listen((account) {
     //   handleSignIn(account);
@@ -171,50 +172,88 @@ class _TrialState extends State<Trial> {
   }
 
   createUser() async {
-    GoogleSignInAccount googleSignInAccount = googleSignIn.currentUser;
-    GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+    // GoogleSignInAccount googleSignInAccount = googleSignIn.currentUser;
+    // GoogleSignInAuthentication googleSignInAuthentication =
+    //     await googleSignInAccount.authentication;
 
-    AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleSignInAuthentication.idToken,
-        accessToken: googleSignInAuthentication.accessToken);
+    // AuthCredential credential = GoogleAuthProvider.credential(
+    //     idToken: googleSignInAuthentication.idToken,
+    //     accessToken: googleSignInAuthentication.accessToken);
 
-    var result = (await _auth.signInWithCredential(credential));
+    // var result = (await _auth.signInWithCredential(credential));
 
-    firebaseUser = result.user;
+    // firebaseUser = result.user;
 
-    DocumentSnapshot doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(firebaseUser.uid)
-        .get();
+    // DocumentSnapshot doc = await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(firebaseUser.uid)
+    //     .get();
 
-    if (!doc.exists) {
-      // 3) get username from create account, use it to make new user document in users collection
-      FirebaseFirestore.instance.collection('users').doc(firebaseUser.uid).set(
-        {
-          "id": firebaseUser.uid,
-          "username": "ybbadmin",
-          "photoUrl": firebaseUser.photoURL,
-          "email": firebaseUser.email,
-          "displayName": firebaseUser.displayName,
-          "bio": "",
-          "registerDate": DateTime.fromMillisecondsSinceEpoch(1582935277790),
-          "occupation": "Administrator",
-          "interests":
-              "Youth empowerment, Education, Scholarships, International events",
-          "dnSearchKey": firebaseUser.displayName.substring(0, 1).toUpperCase(),
-          "phoneNumber": "",
-        },
-      );
+    //if (!doc.exists) {
+    // 3) get username from create account, use it to make new user document in users collection
+    // FirebaseFirestore.instance.collection('users').doc(firebaseUser.uid).set(
+    //   {
+    //     "id": firebaseUser.uid,
+    //     "username": "ybbadmin",
+    //     "photoUrl": firebaseUser.photoURL,
+    //     "email": firebaseUser.email,
+    //     "displayName": firebaseUser.displayName,
+    //     "bio": "",
+    //     "registerDate": DateTime.fromMillisecondsSinceEpoch(1582935277790),
+    //     "occupation": "Administrator",
+    //     "interests":
+    //         "Youth empowerment, Education, Scholarships, International events",
+    //     "dnSearchKey": firebaseUser.displayName.substring(0, 1).toUpperCase(),
+    //     "phoneNumber": "",
+    //   },
+    // );
 
-      doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(firebaseUser.uid)
-          .get();
-    }
+    List<String> ids = [];
 
-    currentUser = AppUser.fromDocument(doc);
-    print(currentUser.id);
+    QuerySnapshot doc =
+        await FirebaseFirestore.instance.collection("users").get();
+
+    doc.docs.forEach((element) {
+      AppUser b = AppUser.fromDocument(element);
+      ids.add(b.id);
+    });
+
+    print(ids.length);
+
+    // for (int i = 0; i < ids.length; i++) {
+    //   if (ids[i] != "N1q9I7cX36RQBngrOOl9fZ2POWC3") {
+    //     FirebaseFirestore.instance.collection('users').doc(ids[i]).update({
+    //       "instagram": "-",
+    //       "showContacts": false,
+    //       "facebook": "-",
+    //       "website": "-",
+    //     });
+    //     print("updated " + i.toString());
+    //   }
+    // }
+
+    // a.forEach((element) {
+    //   ids.add(element['id']);
+    // });
+
+    // FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc("N1q9I7cX36RQBngrOOl9fZ2POWC3")
+    //     .update({
+    //   "instagram": "-",
+    //   "showContacts": false,
+    //   "facebook": "-",
+    //   "website": "-",
+    // });
+
+    // doc = await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(firebaseUser.uid)
+    //     .get();
+    //}
+
+    // currentUser = AppUser.fromDocument(doc);
+    // print(currentUser.id);
   }
 
   gooleSignout() async {

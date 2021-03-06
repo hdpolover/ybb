@@ -39,8 +39,8 @@ class _PeopleSuggestionState extends State<PeopleSuggestion> {
   buildUsersToFollow() {
     return StreamBuilder(
       stream: usersRef
-          .orderBy('registerDate', descending: false)
-          .limit(30)
+          .orderBy('registerDate', descending: true)
+          .limit(50)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {

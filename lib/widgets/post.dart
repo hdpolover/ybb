@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
@@ -81,6 +80,8 @@ class _PostState extends State<Post> {
   int commentCount = 0;
   Map likes;
 
+  List<String> followers = [];
+
   _PostState(
       {this.postId,
       this.ownerId,
@@ -94,11 +95,15 @@ class _PostState extends State<Post> {
   void initState() {
     super.initState();
 
+    getFollowers();
     getCommentCount();
   }
 
-  String convertDateTime(DateTime postedDate) {
-    return DateFormat.yMMMd().add_jm().format(postedDate);
+  Future<void> getFollowers() async {
+    QuerySnapshot snapshot =
+        await followersRef.doc(ownerId).collection('userFollowers').get();
+
+    followers = snapshot.docs.map((doc) => doc.id).toList();
   }
 
   buildPostHeader() {
@@ -237,8 +242,8 @@ class _PostState extends State<Post> {
                   ),
                 ),
                 onPressed: () {
+                  deletePost(parentContext);
                   Navigator.of(context).pop();
-                  deletePost();
                 },
               ),
             ],
@@ -247,19 +252,54 @@ class _PostState extends State<Post> {
   }
 
   // Note: To delete post, ownerId and currentUserId must be equal, so they can be used interchangeably
-  deletePost() async {
+  deletePost(BuildContext contexxt) async {
     // delete post itself
-    postsRef.doc(ownerId).collection('userPosts').doc(postId).get().then((doc) {
+    await postsRef
+        .doc(ownerId)
+        .collection('userPosts')
+        .doc(postId)
+        .get()
+        .then((doc) {
       if (doc.exists) {
         doc.reference.delete();
       }
     });
 
+    // await timelineRef
+    //     .doc(ownerId)
+    //     .collection("timelinePosts")
+    //     .doc(postId)
+    //     .get()
+    //     .then((doc) {
+    //   if (doc.exists) {
+    //     doc.reference.delete();
+    //   }
+    // });
+
+    // //delete from followers timeline
+    // if (followers.isNotEmpty) {
+    //   for (int i = 0; i < followers.length; i++) {
+    //     if (followers[i] != ownerId) {
+    //       await timelineRef
+    //           .doc(followers[i])
+    //           .collection("timelinePosts")
+    //           .doc(postId)
+    //           .get()
+    //           .then((doc) {
+    //         if (doc.exists) {
+    //           doc.reference.delete();
+    //         }
+    //       });
+    //     }
+
+    //     print("deleted " + i.toString());
+    //   }
+    // }
+
     try {
       // delete uploaded image for thep ost
       //storageRef.child("Posts").child("post_$postId.jpg").delete();
-
-      var ref = storageRef.child("Posts").child("post_$postId.jpg");
+      var ref = storageRef.child("Posts").child("pimage_$postId.jpg");
       var downloadUrl = await ref.getDownloadURL();
       var url = downloadUrl.toString();
       if (url != null) {
@@ -282,6 +322,7 @@ class _PostState extends State<Post> {
         doc.reference.delete();
       }
     });
+
     // then delete all comments
     QuerySnapshot commentsSnapshot =
         await commentsRef.doc(postId).collection('comments').get();
@@ -292,15 +333,43 @@ class _PostState extends State<Post> {
     });
   }
 
-  handleLikePost() {
+  handleLikePost() async {
     bool _isLiked = likes[currentUserId] == true;
 
     if (_isLiked) {
-      postsRef
+      await postsRef
           .doc(ownerId)
           .collection('userPosts')
           .doc(postId)
           .update({'likes.$currentUserId': false});
+
+      // await timelineRef
+      //     .doc(currentUserId)
+      //     .collection("timelinePosts")
+      //     .doc(postId)
+      //     .update({'likes.$currentUserId': false});
+
+      // await timelineRef
+      //     .doc(ownerId)
+      //     .collection("timelinePosts")
+      //     .doc(postId)
+      //     .update({'likes.$currentUserId': false});
+
+      // //delete from followers timeline
+      // if (followers.isNotEmpty) {
+      //   for (int i = 0; i < followers.length; i++) {
+      //     if (followers[i] != ownerId) {
+      //       await timelineRef
+      //           .doc(followers[i])
+      //           .collection("timelinePosts")
+      //           .doc(postId)
+      //           .update({'likes.$currentUserId': false});
+      //     }
+
+      //     print("updated " + i.toString());
+      //   }
+      // }
+
       removeLikeFromActivityFeed();
       setState(() {
         likeCount -= 1;
@@ -308,11 +377,39 @@ class _PostState extends State<Post> {
         likes[currentUserId] = false;
       });
     } else if (!_isLiked) {
-      postsRef
+      await postsRef
           .doc(ownerId)
           .collection('userPosts')
           .doc(postId)
           .update({'likes.$currentUserId': true});
+
+      // await timelineRef
+      //     .doc(currentUserId)
+      //     .collection("timelinePosts")
+      //     .doc(postId)
+      //     .update({'likes.$currentUserId': true});
+
+      // await timelineRef
+      //     .doc(ownerId)
+      //     .collection("timelinePosts")
+      //     .doc(postId)
+      //     .update({'likes.$currentUserId': true});
+
+      // //delete from followers timeline
+      // if (followers.isNotEmpty) {
+      //   for (int i = 0; i < followers.length; i++) {
+      //     if (followers[i] != ownerId) {
+      //       await timelineRef
+      //           .doc(followers[i])
+      //           .collection("timelinePosts")
+      //           .doc(postId)
+      //           .update({'likes.$currentUserId': true});
+      //     }
+
+      //     print("updated " + i.toString());
+      //   }
+      // }
+
       addLikeToActivityFeed();
       setState(() {
         likeCount += 1;

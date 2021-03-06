@@ -64,33 +64,33 @@ exports.onDeleteFollower = functions.firestore
     })
   })
 
-exports.onCreatePost = functions.firestore
-  .document('/posts/{userId}/userPosts/{postId}')
-  .onCreate(async (snapshot, context) => {
-    const postCreated = snapshot.data()
-    const userId = context.params.userId
-    const postId = context.params.postId
+// exports.onCreatePost = functions.firestore
+//   .document('/posts/{userId}/userPosts/{postId}')
+//   .onCreate(async (snapshot, context) => {
+//     const postCreated = snapshot.data()
+//     const userId = context.params.userId
+//     const postId = context.params.postId
 
-    const userFollowersRef = admin
-      .firestore()
-      .collection('followers')
-      .doc(userId)
-      .collection('userFollowers')
+//     const userFollowersRef = admin
+//       .firestore()
+//       .collection('followers')
+//       .doc(userId)
+//       .collection('userFollowers')
 
-    const querySnapshot = await userFollowersRef.get()
+//     const querySnapshot = await userFollowersRef.get()
 
-    querySnapshot.forEach(doc => {
-      const followerId = doc.id
+//     querySnapshot.forEach(doc => {
+//       const followerId = doc.id
 
-      admin
-        .firestore()
-        .collection('timeline')
-        .doc(followerId)
-        .collection('timelinePosts')
-        .doc(postId)
-        .set(postCreated)
-    })
-  })
+//       admin
+//         .firestore()
+//         .collection('timeline')
+//         .doc(followerId)
+//         .collection('timelinePosts')
+//         .doc(postId)
+//         .set(postCreated)
+//     })
+//   })
 
 exports.onUpdatePost = functions.firestore
   .document('/posts/{userId}/userPosts/{postId}')
@@ -126,37 +126,37 @@ exports.onUpdatePost = functions.firestore
     })
   })
 
-exports.onDeletePost = functions.firestore
-  .document('/posts/{userId}/userPosts/{postId}')
-  .onDelete(async (snapshot, context) => {
-    const userId = context.params.userId
-    const postId = context.params.postId
+// exports.onDeletePost = functions.firestore
+//   .document('/posts/{userId}/userPosts/{postId}')
+//   .onDelete(async (snapshot, context) => {
+//     const userId = context.params.userId
+//     const postId = context.params.postId
 
-    const userFollowersRef = admin
-      .firestore()
-      .collection('followers')
-      .doc(userId)
-      .collection('userFollowers')
+//     const userFollowersRef = admin
+//       .firestore()
+//       .collection('followers')
+//       .doc(userId)
+//       .collection('userFollowers')
 
-    const querySnapshot = await userFollowersRef.get()
+//     const querySnapshot = await userFollowersRef.get()
 
-    querySnapshot.forEach(doc => {
-      const followerId = doc.id
+//     querySnapshot.forEach(doc => {
+//       const followerId = doc.id
 
-      admin
-        .firestore()
-        .collection('timeline')
-        .doc(followerId)
-        .collection('timelinePosts')
-        .doc(postId)
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            doc.ref.delete()
-          }
-        })
-    })
-  })
+//       admin
+//         .firestore()
+//         .collection('timeline')
+//         .doc(followerId)
+//         .collection('timelinePosts')
+//         .doc(postId)
+//         .get()
+//         .then(doc => {
+//           if (doc.exists) {
+//             doc.ref.delete()
+//           }
+//         })
+//     })
+//   })
 
 exports.onCreateActivityFeedItem = functions.firestore
   .document('/feed/{userId}/feedItems/{activityFeedItem}')

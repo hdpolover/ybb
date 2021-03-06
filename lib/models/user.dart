@@ -11,6 +11,10 @@ class AppUser {
   final String interests;
   final DateTime registerDate;
   final String phoneNumber;
+  final String instagram;
+  final String facebook;
+  final String website;
+  final bool showContacts;
 
   AppUser({
     this.id,
@@ -23,6 +27,10 @@ class AppUser {
     this.interests,
     this.registerDate,
     this.phoneNumber,
+    this.instagram,
+    this.facebook,
+    this.website,
+    this.showContacts,
   });
 
   factory AppUser.fromDocument(DocumentSnapshot doc) {
@@ -37,6 +45,10 @@ class AppUser {
       interests: doc['interests'],
       registerDate: doc['registerDate'].toDate(),
       phoneNumber: doc['phoneNumber'],
+      showContacts: doc['showContacts'],
+      instagram: doc['instagram'],
+      facebook: doc['facebook'],
+      website: doc['website'],
     );
   }
 }

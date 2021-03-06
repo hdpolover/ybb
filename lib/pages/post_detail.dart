@@ -250,7 +250,7 @@ class _PostDetailState extends State<PostDetail> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 20),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.1),
           SvgPicture.asset(
             'assets/images/no_comment.svg',
             height: MediaQuery.of(context).size.height * 0.2,

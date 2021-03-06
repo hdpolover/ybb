@@ -4,6 +4,8 @@ const backgroundColor = Colors.blueGrey;
 
 final fontName = "OpenSans";
 
+final int postTimelineLimit = 5;
+
 final hintTextStyle = TextStyle(
   color: Colors.white54,
   fontFamily: 'OpenSans',

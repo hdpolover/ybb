@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/news_categories.dart';
 import 'package:ybb/helpers/news_data.dart';
-import 'package:ybb/main.dart';
 import 'package:ybb/pages/news_category.dart';
 import 'package:ybb/pages/news_detail.dart';
+import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/models/news_category.dart';
 import 'package:ybb/models/article.dart';
@@ -32,23 +32,14 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
 
     newsCategories = getNewsCategories();
     getNews();
-    //get();
-  }
-
-  get() {
-    articles = articlesFromMain;
-
-    if (mounted) {
-      setState(() {
-        _loading = false;
-      });
-    }
   }
 
   getNews() async {
-    setState(() {
-      //articles = articlesFromMain;
-    });
+    try {
+      articles = newsFromTimeline;
+    } catch (e) {
+      print("empty");
+    }
 
     if (articles == null || articles.isEmpty) {
       NewsData newsData = new NewsData();

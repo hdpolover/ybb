@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
@@ -131,12 +133,14 @@ class _ProfileState extends State<Profile>
     setState(() {
       isLoading = true;
     });
+
     QuerySnapshot snapshot = await postsRef
         .doc(widget.profileId)
         .collection('userPosts')
         .orderBy('timestamp', descending: true)
         .limit(10)
         .get();
+
     setState(() {
       isLoading = false;
       postCount = snapshot.docs.length;
@@ -357,7 +361,7 @@ class _ProfileState extends State<Profile>
                   Text(
                     "About",
                     style: TextStyle(
-                        color: Colors.grey[900],
+                        color: Colors.blue,
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5),
@@ -389,6 +393,132 @@ class _ProfileState extends State<Profile>
                       ),
                     ),
                   ),
+                  SizedBox(height: 10),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                    alignment: Alignment.topLeft,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          color: Colors.grey[700],
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "Joined in ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[800],
+                            letterSpacing: .7,
+                            fontFamily: fontName,
+                          ),
+                        ),
+                        Text(
+                          convertDateTime(user.registerDate),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[800],
+                            letterSpacing: .7,
+                            fontFamily: fontName,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  user.showContacts
+                      ? Column(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                              alignment: Alignment.topLeft,
+                              child: Row(
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.phone,
+                                    color: Colors.grey[700],
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    user.phoneNumber,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey[800],
+                                      letterSpacing: .7,
+                                      fontFamily: fontName,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                              alignment: Alignment.topLeft,
+                              child: Row(
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.instagram,
+                                    color: Colors.grey[700],
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "@" + user.instagram,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey[800],
+                                      letterSpacing: .7,
+                                      fontFamily: fontName,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                              alignment: Alignment.topLeft,
+                              child: Row(
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.facebookSquare,
+                                    color: Colors.grey[700],
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "@" + user.facebook,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey[800],
+                                      letterSpacing: .7,
+                                      fontFamily: fontName,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                              alignment: Alignment.topLeft,
+                              child: Row(
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.globe,
+                                    color: Colors.grey[700],
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    user.website,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey[800],
+                                      letterSpacing: .7,
+                                      fontFamily: fontName,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container(),
                 ],
               ),
             ),
@@ -402,7 +532,7 @@ class _ProfileState extends State<Profile>
                   Text(
                     "Bio",
                     style: TextStyle(
-                      color: Colors.grey[900],
+                      color: Colors.blue,
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
@@ -436,7 +566,7 @@ class _ProfileState extends State<Profile>
                   Text(
                     "Interests",
                     style: TextStyle(
-                      color: Colors.grey[900],
+                      color: Colors.blue,
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
@@ -465,6 +595,10 @@ class _ProfileState extends State<Profile>
         );
       },
     );
+  }
+
+  String convertDateTime(DateTime postedDate) {
+    return DateFormat.yMMMd().format(postedDate);
   }
 
   buildProfileHeader() {
@@ -711,10 +845,17 @@ class _ProfileState extends State<Profile>
   Future<Null> refreshProfile() async {
     refreshkey.currentState?.show(atTop: true);
 
+    setState(() {
+      posts = [];
+    });
+
     await getFollowers();
     await getFollowing();
+    await getProfilePosts();
     await checkIfFollowing();
+
     await buildProfileHeader();
+    await buildProfilePosts();
   }
 
   bool get wantKeepAlive => true;

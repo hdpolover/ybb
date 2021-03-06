@@ -31,6 +31,15 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController occupationController = TextEditingController();
   TextEditingController interestController = TextEditingController();
 
+  TextEditingController emailController = TextEditingController();
+  TextEditingController instagramController = TextEditingController();
+  TextEditingController facebookController = TextEditingController();
+  TextEditingController websiteController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+
+  bool showContacts = false;
+  bool finalShowContacts = false;
+
   bool isLoading = false;
   AppUser user;
   bool _displayNameValid = true;
@@ -44,6 +53,7 @@ class _EditProfileState extends State<EditProfile> {
   FocusNode focusNode2;
 
   List<String> allUsernames = [];
+  String currentUsername = "";
 
   String downloadUrl;
 
@@ -176,128 +186,135 @@ class _EditProfileState extends State<EditProfile> {
     usernameController.text = user.username;
     occupationController.text = user.occupation;
     interestController.text = user.interests;
+    emailController.text = user.email;
+
+    showContacts = user.showContacts;
+    instagramController.text = user.instagram;
+    facebookController.text = user.facebook;
+    websiteController.text = user.website;
+    phoneNumberController.text = user.phoneNumber;
 
     setState(() {
       isLoading = false;
+      currentUsername = user.username;
     });
   }
 
-  Column buildDisplayNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 16.0),
-          child: Text(
-            "Display Name",
-            style: TextStyle(color: Colors.grey),
-          ),
+  Padding buildDisplayNameField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        focusNode: focusNode,
+        style: TextStyle(fontFamily: fontName),
+        controller: displayNameController,
+        minLines: 1,
+        maxLines: 4,
+        maxLength: 35,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          errorStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Display name",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: user.displayName,
+          errorText: _displayNameValid ? null : "Display name is too short",
         ),
-        TextField(
-          focusNode: focusNode,
-          controller: displayNameController,
-          decoration: InputDecoration(
-            hintText: "Update display name",
-            errorText: _displayNameValid ? null : "Display name is too short",
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Column buildOccupationField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 16.0),
-          child: Text(
-            "Occupation",
-            style: TextStyle(color: Colors.grey),
-          ),
+  Padding buildOccupationField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        style: TextStyle(fontFamily: fontName),
+        controller: occupationController,
+        minLines: 1,
+        maxLines: 3,
+        maxLength: 30,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          errorStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Occupation",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: "Input your current occupation",
+          errorText: _occupationValid ? null : "Occupation is not valid",
         ),
-        TextField(
-          controller: occupationController,
-          decoration: InputDecoration(
-            hintText: "Update current occupation",
-            errorText: _occupationValid ? null : "Occupation is not valid",
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Column buildUsernameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 16.0),
-          child: Text(
-            "Username",
-            style: TextStyle(color: Colors.grey),
-          ),
+  Padding buildUsernameField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        focusNode: focusNode1,
+        style: TextStyle(fontFamily: fontName),
+        controller: usernameController,
+        minLines: 1,
+        maxLines: 3,
+        maxLength: 20,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          errorStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Username",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: user.username,
+          errorText: _usernameValid
+              ? _isUsernameAvailable
+                  ? null
+                  : "Username is unavailable"
+              : "Username is too short",
         ),
-        TextField(
-          focusNode: focusNode2,
-          controller: usernameController,
-          decoration: InputDecoration(
-            hintText: user.username,
-            errorText: _usernameValid
-                ? _isUsernameAvailable
-                    ? null
-                    : "Username is unavailable"
-                : "Username is too short",
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Column buildInterestField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 16.0),
-          child: Text(
-            "Interests",
-            style: TextStyle(color: Colors.grey),
-          ),
+  Padding buildInterestField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        focusNode: focusNode2,
+        style: TextStyle(fontFamily: fontName),
+        controller: interestController,
+        minLines: 1,
+        maxLines: 10,
+        maxLength: 100,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          errorStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Interests",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: "Input your interests",
         ),
-        TextField(
-          //focusNode: focusNode2,
-          controller: interestController,
-          decoration: InputDecoration(
-            hintText: user.interests,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Column buildBioField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 16.0),
-          child: Text(
-            "Bio",
-            style: TextStyle(color: Colors.grey),
+  Padding buildBioField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        style: TextStyle(fontFamily: fontName),
+        controller: bioController,
+        minLines: 1,
+        maxLines: 30,
+        maxLength: 400,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(
+            fontFamily: fontName,
+            fontWeight: FontWeight.bold,
           ),
+          errorStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Bio",
+          labelStyle: TextStyle(fontFamily: fontName),
+          errorText: _bioValid ? null : "Bio is too long",
         ),
-        TextField(
-          maxLines: 10,
-          minLines: 1,
-          focusNode: focusNode1,
-          controller: bioController,
-          decoration: InputDecoration(
-            hintText: user.bio.length == 0 ? "Update bio" : user.bio,
-            errorText: _bioValid ? null : "Bio is too long",
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -317,16 +334,22 @@ class _EditProfileState extends State<EditProfile> {
       mediaUrl = user.photoUrl;
     }
 
-    for (int i = 0; i < allUsernames.length; i++) {
-      if (usernameController.text.toString().trim() == allUsernames[i]) {
-        setState(() {
-          _isUsernameAvailable = false;
-        });
-        return;
-      } else {
-        setState(() {
-          _isUsernameAvailable = true;
-        });
+    if (usernameController.text.toString().trim() == currentUsername) {
+      setState(() {
+        _isUsernameAvailable = true;
+      });
+    } else {
+      for (int i = 0; i < allUsernames.length; i++) {
+        if (usernameController.text.toString().trim() == allUsernames[i]) {
+          setState(() {
+            _isUsernameAvailable = false;
+          });
+          return;
+        } else {
+          setState(() {
+            _isUsernameAvailable = true;
+          });
+        }
       }
     }
 
@@ -341,7 +364,7 @@ class _EditProfileState extends State<EditProfile> {
           ? _usernameValid = false
           : _usernameValid = true;
 
-      bioController.text.trim().length > 200
+      bioController.text.trim().length > 300
           ? _bioValid = false
           : _bioValid = true;
 
@@ -356,13 +379,18 @@ class _EditProfileState extends State<EditProfile> {
         _occupationValid &&
         _isUsernameAvailable) {
       usersRef.doc(widget.currentUserId).update({
-        "displayName": displayNameController.text,
-        "bio": bioController.text,
-        "username": usernameController.text,
-        "occupation": occupationController.text,
-        "interests": interestController.text,
+        "displayName": displayNameController.text.trim(),
+        "bio": bioController.text.trim(),
+        "username": usernameController.text.trim(),
+        "occupation": occupationController.text.trim(),
+        "interests": interestController.text.trim(),
         "photoUrl": mediaUrl,
         "dnSearchKey": displayNameController.text.substring(0, 1).toUpperCase(),
+        "instagram": instagramController.text.trim(),
+        "phoneNumber": phoneNumberController.text.trim(),
+        "facebook": facebookController.text.trim(),
+        "website": websiteController.text.trim(),
+        "showContacts": showContacts,
       });
 
       clearImageAndBack();
@@ -414,10 +442,12 @@ class _EditProfileState extends State<EditProfile> {
         child: isLoading
             ? ProfileDashboardShimmer()
             : ListView(
+                scrollDirection: Axis.vertical,
                 children: [
                   Container(
                     child: Column(
                       children: [
+                        SizedBox(height: 10),
                         GestureDetector(
                           onTap: () {
                             selectImage(context);
@@ -428,7 +458,7 @@ class _EditProfileState extends State<EditProfile> {
                               Padding(
                                 padding: EdgeInsets.only(top: 16.9),
                                 child: CircleAvatar(
-                                  radius: 50.0,
+                                  radius: 70.0,
                                   backgroundImage: _image == null
                                       ? CachedNetworkImageProvider(
                                           user.photoUrl)
@@ -442,23 +472,154 @@ class _EditProfileState extends State<EditProfile> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              buildUsernameField(),
-                              buildDisplayNameField(),
-                              buildOccupationField(),
-                              buildInterestField(),
-                              buildBioField(),
-                            ],
-                          ),
+                        SizedBox(height: 20),
+                        ExpansionTile(
+                          initiallyExpanded: true,
+                          leading: Icon(Icons.info),
+                          title: Text('Basic information'),
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  right: 20, left: 20, bottom: 20),
+                              child: Column(
+                                children: [
+                                  buildUsernameField(),
+                                  buildDisplayNameField(),
+                                  buildOccupationField(),
+                                  buildInterestField(),
+                                  buildBioField(),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
+                        ExpansionTile(
+                          leading: Icon(Icons.info),
+                          title: Text('Contacts'),
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  right: 20, left: 20, bottom: 20),
+                              child: Column(
+                                children: [
+                                  CheckboxListTile(
+                                    controlAffinity:
+                                        ListTileControlAffinity.trailing,
+                                    title: Text("Show contacts to everyone"),
+                                    value: showContacts,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        showContacts = !showContacts;
+                                        finalShowContacts = value;
+                                      });
+                                    },
+                                  ),
+                                  buildEmailField(),
+                                  buildPhoneNumberField(),
+                                  buildInstagramField(),
+                                  buildFacebookField(),
+                                  buildWebsiteController(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 40),
                       ],
                     ),
                   ),
                 ],
               ),
+      ),
+    );
+  }
+
+  Padding buildEmailField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        enabled: false,
+        controller: emailController,
+        style: TextStyle(
+          fontFamily: fontName,
+          color: Colors.grey,
+        ),
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Email",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: user.email,
+        ),
+      ),
+    );
+  }
+
+  Padding buildInstagramField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        controller: instagramController,
+        style: TextStyle(fontFamily: fontName),
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Instagram",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: "Input Instagram account",
+        ),
+      ),
+    );
+  }
+
+  Padding buildFacebookField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        controller: facebookController,
+        style: TextStyle(fontFamily: fontName),
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Facebook",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: "Input Facebook username",
+        ),
+      ),
+    );
+  }
+
+  Padding buildWebsiteController() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        controller: websiteController,
+        style: TextStyle(fontFamily: fontName),
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Website",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: "Input website URL",
+        ),
+      ),
+    );
+  }
+
+  Padding buildPhoneNumberField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: TextFormField(
+        controller: phoneNumberController,
+        keyboardType: TextInputType.phone,
+        style: TextStyle(fontFamily: fontName),
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Phone Number",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: "Input phone number",
+        ),
       ),
     );
   }

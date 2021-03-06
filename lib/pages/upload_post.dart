@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,6 +11,7 @@ import 'package:uuid/uuid.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/widgets/dialog.dart';
 import 'package:ybb/widgets/progress.dart';
 import 'package:image/image.dart' as Im;
 
@@ -32,16 +34,22 @@ class _UploadPostState extends State<UploadPost>
 
   FocusNode focusNode;
 
+  final GlobalKey<State> _keyLoader = GlobalKey<State>();
+
   String text;
   File _image;
   final picker = ImagePicker();
 
   bool isUploading = false;
   String postId = Uuid().v4();
+  List<String> followers = [];
 
   @override
   void initState() {
     super.initState();
+
+    getFollowers();
+
     focusNode = FocusNode();
   }
 
@@ -120,7 +128,9 @@ class _UploadPostState extends State<UploadPost>
   }
 
   uploadImageFile(imageFile) async {
-    Reference ref = storageRef.child("Posts").child("post_$postId.jpg");
+    String id = timePosted.millisecondsSinceEpoch.toString();
+
+    Reference ref = storageRef.child("Posts").child("pimage_$id.jpg");
 
     await ref.putFile(imageFile).whenComplete(() async {
       await ref.getDownloadURL().then((value) {
@@ -129,21 +139,40 @@ class _UploadPostState extends State<UploadPost>
     });
   }
 
-  createPostInFirestore({String desc, String mediaUrl}) {
-    postsRef.doc(widget.currentUser.id).collection("userPosts").doc(postId).set(
+  Future<void> getFollowers() async {
+    QuerySnapshot snapshot = await followersRef
+        .doc(widget.currentUser.id)
+        .collection('userFollowers')
+        .get();
+
+    setState(() {
+      followers = snapshot.docs.map((doc) => doc.id).toList();
+    });
+  }
+
+  var timePosted = DateTime.now();
+
+  createPostInFirestore({String desc, String mediaUrl}) async {
+    String id = timePosted.millisecondsSinceEpoch.toString();
+
+    await postsRef
+        .doc(widget.currentUser.id)
+        .collection("userPosts")
+        .doc(id)
+        .set(
       {
-        "postId": postId,
+        "postId": id,
         "ownerId": widget.currentUser.id,
-        "displayName": widget.currentUser.displayName,
         "mediaUrl": mediaUrl,
         "description": desc,
-        "timestamp": DateTime.now(),
+        "timestamp": timePosted,
         "likes": {}
       },
     );
   }
 
   handleSubmit() async {
+    Dialogs.showLoadingDialog(context, _keyLoader);
     focusNode.unfocus();
 
     setState(() {
@@ -161,7 +190,7 @@ class _UploadPostState extends State<UploadPost>
       mediaUrl = "";
     }
 
-    createPostInFirestore(
+    await createPostInFirestore(
       desc: descController.text,
       mediaUrl: mediaUrl,
     );
@@ -173,16 +202,19 @@ class _UploadPostState extends State<UploadPost>
       postId = Uuid().v4();
     });
 
-    SnackBar snackBar = SnackBar(
-        backgroundColor: Colors.blue, content: Text("Posted successfully!"));
-    _scaffoldKey.currentState.showSnackBar(snackBar);
+    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.pop(context);
 
-    Timer(
-      Duration(seconds: 2),
-      () {
-        Navigator.pop(context);
-      },
-    );
+    // SnackBar snackBar = SnackBar(
+    //     backgroundColor: Colors.blue, content: Text("Posted successfully!"));
+    // _scaffoldKey.currentState.showSnackBar(snackBar);
+
+    // Timer(
+    //   Duration(seconds: 2),
+    //   () {
+    //     Navigator.pop(context);
+    //   },
+    // );
   }
 
   bool isNotFilled() {
@@ -246,7 +278,7 @@ class _UploadPostState extends State<UploadPost>
       body: ConnectivityScreenWrapper(
         child: ListView(
           children: <Widget>[
-            isUploading ? linearProgress() : Text(''),
+            //isUploading ? linearProgress() : Text(''),
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
               child: Container(

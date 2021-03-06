@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
@@ -138,10 +139,86 @@ class _MyAccountState extends State<MyAccount> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 30,
+              ),
+              // TextButton.icon(
+              //   icon: FaIcon(FontAwesomeIcons.trash),
+              //   label: Text("Deactivate account"),
+              //   style: TextButton.styleFrom(
+              //     backgroundColor: Colors.red,
+              //     onSurface: Colors.white,
+              //     primary: Colors.white,
+              //   ),
+              //   onPressed: () => handleDeletePost(context),
+              // )
             ],
           ),
         );
       },
+    );
+  }
+
+  handleDeletePost(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              "Deactivate Account",
+              style: TextStyle(
+                fontFamily: fontName,
+              ),
+            ),
+            content: Text(
+              "You are about to deactivate your account. This action cannot be undone and all your data will be erased. Are you sure?",
+              style: TextStyle(
+                fontFamily: fontName,
+              ),
+            ),
+            actions: [
+              FlatButton(
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(
+                    fontFamily: fontName,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text(
+                  "Deactivate",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontFamily: fontName,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  deactivateAccount();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  deactivateAccount() async {
+    logout();
+  }
+
+  logout() async {
+    await googleSignIn.signOut();
+
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Home(),
+      ),
     );
   }
 

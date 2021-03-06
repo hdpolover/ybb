@@ -7,6 +7,7 @@ import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/models/article.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/pages/trial.dart';
 import 'package:ybb/widgets/custom_splashscreen.dart';
 import 'package:ybb/widgets/no_internet.dart';
 

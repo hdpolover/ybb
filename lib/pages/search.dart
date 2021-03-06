@@ -106,7 +106,7 @@ class _SearchState extends State<Search>
   buildUsersToFollow() {
     return StreamBuilder(
       stream: usersRef
-          .orderBy('registerDate', descending: false)
+          .orderBy('registerDate', descending: true)
           .limit(20)
           .snapshots(),
       builder: (context, snapshot) {
