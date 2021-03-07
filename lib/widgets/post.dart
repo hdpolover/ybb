@@ -462,9 +462,9 @@ class _PostState extends State<Post> {
     QuerySnapshot snapshot =
         await commentsRef.doc(postId).collection('comments').get();
 
-    //setState(() {
-    commentCount = snapshot.docs.length;
-    //});
+    setState(() {
+      commentCount = snapshot.docs.length;
+    });
   }
 
   List<String> likerIds = [];

@@ -5,10 +5,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/curve_painter.dart';
+import 'package:ybb/helpers/fcm_item.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
+import 'package:ybb/pages/post_detail.dart';
 import 'package:ybb/pages/profile.dart';
 import 'package:ybb/pages/search.dart';
 import 'package:ybb/pages/timeline.dart';
@@ -45,12 +48,27 @@ class _HomeState extends State<Home> {
   bool isAuth = false;
   PageController pageController;
   int pageIndex = 0;
+  bool isNewUser;
 
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
+
+  final Map<String, Item> _items = <String, Item>{};
+  Item _itemForMessage(Map<String, dynamic> message) {
+    final String recipientId = message['data']['recipient'];
+    final String postId = message['data']['postId'];
+    final dynamic data = message['notification']['body'] ?? message;
+    final Item item = _items.putIfAbsent(
+        postId, () => Item(postId: postId, recipientId: recipientId))
+      ..status = data['status'];
+    return item;
+  }
 
   @override
   initState() {
     super.initState();
+
+    getUserStatusToApp();
+
     pageController = PageController();
     // Detects when user signed in
     googleSignIn.onCurrentUserChanged.listen((account) {
@@ -66,6 +84,15 @@ class _HomeState extends State<Home> {
     });
   }
 
+  getUserStatusToApp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return bool
+    bool boolValue = prefs.getBool('isNew');
+    setState(() {
+      isNewUser = boolValue;
+    });
+  }
+
   handleSignIn(GoogleSignInAccount account) async {
     if (account != null) {
       await createUserInFirestore();
@@ -77,6 +104,46 @@ class _HomeState extends State<Home> {
       setState(() {
         isAuth = false;
       });
+    }
+  }
+
+  Widget _buildDialog(BuildContext context, Item item) {
+    return AlertDialog(
+      content: Text("Item ${item.postId} has been updated"),
+      actions: <Widget>[
+        FlatButton(
+          child: const Text('CLOSE'),
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+        ),
+        FlatButton(
+          child: const Text('SHOW'),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showItemDialog(Map<String, dynamic> message) {
+    showDialog<bool>(
+      context: context,
+      builder: (_) => _buildDialog(context, _itemForMessage(message)),
+    ).then((bool shouldNavigate) {
+      if (shouldNavigate == true) {
+        _navigateToItemDetail(message);
+      }
+    });
+  }
+
+  void _navigateToItemDetail(Map<String, dynamic> message) {
+    final Item item = _itemForMessage(message);
+    // Clear away dialogs
+    Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
+    if (!item.route.isCurrent) {
+      Navigator.push(context, item.route);
     }
   }
 
@@ -102,18 +169,57 @@ class _HomeState extends State<Home> {
     });
 
     _firebaseMessaging.configure(
-      //onLaunch: (Map<String, dynamic> message)  async {},
-      //onResume: (Map<String, dynamic> message)  async {},
+      onLaunch: (Map<String, dynamic> message) async {
+        final String recipientId = message['data']['recipient'];
+        final String postId = message['data']['postId'];
+        // final dynamic data = message['notification']['body'];
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => postId == null || postId.isEmpty
+                ? Profile(
+                    isFromOutside: true,
+                    profileId: recipientId,
+                  )
+                : PostDetail(
+                    userId: recipientId,
+                  ),
+          ),
+        );
+      },
+      onResume: (Map<String, dynamic> message) async {
+        //_showItemDialog(message);
+
+        final String recipientId = message['data']['recipient'];
+        final String postId = message['data']['postId'];
+        // final dynamic data = message['notification']['body'];
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => postId == null || postId.isEmpty
+                ? Profile(
+                    isFromOutside: true,
+                    profileId: recipientId,
+                  )
+                : PostDetail(
+                    userId: recipientId,
+                  ),
+          ),
+        );
+      },
       onMessage: (Map<String, dynamic> message) async {
         final String recipientId = message['data']['recipient'];
         final String body = message['notification']['body'];
 
         if (recipientId == firebaseUser.uid) {
           SnackBar snackBar = SnackBar(
+              backgroundColor: Colors.blue,
               content: Text(
-            body,
-            overflow: TextOverflow.ellipsis,
-          ));
+                body,
+                overflow: TextOverflow.ellipsis,
+              ));
           _scaffoldKey.currentState.showSnackBar(snackBar);
         }
       },
@@ -248,6 +354,13 @@ class _HomeState extends State<Home> {
 
   login() {
     googleSignIn.signIn();
+
+    addUserStatus();
+  }
+
+  addUserStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isNew', false);
   }
 
   logout() {
@@ -430,13 +543,19 @@ class _HomeState extends State<Home> {
         child: Center(
           child: Column(
             children: <Widget>[
-              SizedBox(height: MediaQuery.of(context).size.height / 5),
+              isNewUser == null
+                  ? SizedBox(height: MediaQuery.of(context).size.height / 7)
+                  : SizedBox(height: MediaQuery.of(context).size.height / 4),
               Container(
                 margin: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.1),
+                  left: MediaQuery.of(context).size.width * 0.1,
+                  right: MediaQuery.of(context).size.width * 0.1,
+                ),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Welcome Back',
+                  isNewUser == null
+                      ? "We're happy to have you here"
+                      : 'Welcome Back',
                   style: TextStyle(
                     color: Colors.white,
                     letterSpacing: 1.5,

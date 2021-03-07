@@ -4,6 +4,7 @@ import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/helpers/fcm_item.dart';
@@ -11,6 +12,7 @@ import 'package:ybb/models/article.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/custom_splashscreen.dart';
 import 'package:ybb/widgets/no_internet.dart';
+import 'package:ybb/pages/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,12 +38,13 @@ final Map<String, Item> _items = <String, Item>{};
 Item _itemForMessage(Map<String, dynamic> message) {
   final dynamic data = message['data'] ?? message;
   final String itemId = data['id'];
-  final Item item = _items.putIfAbsent(itemId, () => Item(itemId: itemId))
+  final Item item = _items.putIfAbsent(itemId, () => Item(postId: itemId))
     ..status = data['status'];
   return item;
 }
 
 List<ArticleModel> articlesFromMain = [];
+bool isNewUser;
 
 class MyApp extends StatefulWidget {
   @override
@@ -57,7 +60,7 @@ class _MyAppState extends State<MyApp> {
 
   Widget _buildDialog(BuildContext context, Item item) {
     return AlertDialog(
-      content: Text("Item ${item.itemId} has been updated"),
+      content: Text("Item ${item.postId} has been updated"),
       actions: <Widget>[
         FlatButton(
           child: const Text('CLOSE'),
@@ -98,11 +101,22 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initFcm();
+    getUserStatusToApp();
+
+    //initFcm();
 
     checkConnection();
     countLoading();
     getNews();
+  }
+
+  getUserStatusToApp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return bool
+    bool boolValue = prefs.getBool('isNew');
+    setState(() {
+      isNewUser = boolValue;
+    });
   }
 
   initFcm() {
@@ -187,7 +201,8 @@ class _MyAppState extends State<MyApp> {
     return isConnected
         ? CustomSplashscreen(
             seconds: 3,
-            navigateAfterSeconds: new Home(),
+            navigateAfterSeconds:
+                isNewUser == null ? new OnboardingScreen() : new Home(),
             //navigateAfterFuture: loadFromFuture(),
             image: Image(image: AssetImage('assets/images/ybb_black_full.png')),
             backgroundColor: Colors.white,

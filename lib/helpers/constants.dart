@@ -6,14 +6,31 @@ final fontName = "OpenSans";
 
 final int postTimelineLimit = 5;
 
+final kTitleStyle = TextStyle(
+  fontWeight: FontWeight.bold,
+  letterSpacing: 1,
+  color: Colors.blue,
+  fontFamily: fontName,
+  fontSize: 26.0,
+  height: 1.5,
+);
+
+final kSubtitleStyle = TextStyle(
+  fontFamily: fontName,
+  color: Colors.black,
+  fontSize: 18.0,
+  height: 1.2,
+  letterSpacing: .7,
+);
+
 final hintTextStyle = TextStyle(
   color: Colors.white54,
-  fontFamily: 'OpenSans',
+  fontFamily: fontName,
 );
 
 final commonTextStyle = TextStyle(
   color: Colors.black,
-  fontFamily: 'OpenSans',
+  fontFamily: fontName,
   letterSpacing: .7,
 );
 

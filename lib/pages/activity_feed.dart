@@ -17,8 +17,9 @@ import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
 
 class ActivityFeed extends StatefulWidget {
   final AppUser currentUser;
+  final String userId;
 
-  ActivityFeed({this.currentUser});
+  ActivityFeed({this.currentUser, this.userId});
 
   @override
   _ActivityFeedState createState() => _ActivityFeedState();
@@ -35,7 +36,33 @@ class _ActivityFeedState extends State<ActivityFeed>
   void initState() {
     super.initState();
 
-    getActivityFeed();
+    if (widget.currentUser == null) {
+      getUser();
+    } else {
+      getActivityFeed();
+    }
+  }
+
+  getUser() async {
+    QuerySnapshot snapshot = await activityFeedRef
+        .doc(widget.userId)
+        .collection('feedItems')
+        .orderBy(
+          'timestamp',
+          descending: true,
+        )
+        .limit(50)
+        .get();
+
+    feedItems = [];
+    snapshot.docs.forEach((doc) {
+      ActivityFeedItem item = ActivityFeedItem.fromDocument(doc);
+      feedIds.add(item.feedId);
+
+      feedItems.add(item);
+    });
+
+    return feedItems;
   }
 
   getActivityFeed() async {

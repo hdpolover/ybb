@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class _UploadPostState extends State<UploadPost>
   bool isUploading = false;
   String postId = Uuid().v4();
   List<String> followers = [];
+  bool _uploadValid = true;
 
   @override
   void initState() {
@@ -189,6 +191,16 @@ class _UploadPostState extends State<UploadPost>
       mediaUrl = "";
     }
 
+    if (descController.text.toString().trim().isEmpty) {
+      setState(() {
+        _uploadValid = false;
+      });
+    } else {
+      setState(() {
+        _uploadValid = true;
+      });
+    }
+
     await createPostInFirestore(
       desc: descController.text,
       mediaUrl: mediaUrl,
@@ -217,13 +229,17 @@ class _UploadPostState extends State<UploadPost>
   }
 
   bool isNotFilled() {
-    return _image == null && text == null;
+    return _image == null && descController.text.isEmpty ? true : false;
   }
 
   showError() {
+    setState(() {
+      _uploadValid = false;
+    });
+
     SnackBar snackBar = SnackBar(
         backgroundColor: Colors.blue,
-        content: Text("Please fill out the fields first!"));
+        content: Text("Please fill out at least one of the fields first!"));
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
@@ -251,14 +267,14 @@ class _UploadPostState extends State<UploadPost>
                 'POST',
                 style: TextStyle(
                   color: Colors.white30,
-                  fontFamily: "OpenSans",
+                  fontFamily: fontName,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             child: FlatButton(
               onPressed: isNotFilled()
-                  ? showError
+                  ? null
                   : isUploading
                       ? null
                       : () => handleSubmit(),
@@ -266,7 +282,7 @@ class _UploadPostState extends State<UploadPost>
                 'POST',
                 style: TextStyle(
                   color: Colors.white,
-                  fontFamily: "OpenSans",
+                  fontFamily: fontName,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -275,70 +291,122 @@ class _UploadPostState extends State<UploadPost>
         ],
       ),
       body: ConnectivityScreenWrapper(
-        child: ListView(
-          children: <Widget>[
-            //isUploading ? linearProgress() : Text(''),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-              child: Container(
-                child: TextField(
-                  focusNode: focusNode,
-                  controller: descController,
-                  onChanged: (value) {
-                    setState(() {
-                      text = descController.text;
-                    });
-                  },
-                  minLines: 1,
-                  maxLines: 30,
-                  decoration: InputDecoration(
-                    hintText: "Write something here...",
-                    hintStyle: commonTextStyle,
-                    border: InputBorder.none,
-                  ),
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.005,
                 ),
-              ),
-            ),
-            Divider(),
-            Container(
-              height: 220.0,
-              width: MediaQuery.of(context).size.width,
-              child: Center(
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: GestureDetector(
-                    onTap: () {
-                      selectImage(context);
+                ListTile(
+                  title: TextFormField(
+                    focusNode: focusNode,
+                    controller: descController,
+                    onChanged: (value) {
+                      setState(() {
+                        _uploadValid = true;
+                      });
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: _image == null
-                              ? AssetImage(
-                                  'assets/images/placeholder_ybb_news.jpg')
-                              : FileImage(_image),
+                    minLines: 3,
+                    maxLines: 30,
+                    maxLength: 1000,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "What do you have in mind?",
+                      errorText: _uploadValid
+                          ? null
+                          : "Please write something here...",
+                      hintStyle: TextStyle(
+                        fontFamily: fontName,
+                      ),
+                    ),
+                  ),
+                  leading: CircleAvatar(
+                      radius: MediaQuery.of(context).size.width * 0.07,
+                      backgroundImage:
+                          CachedNetworkImageProvider(currentUser.photoUrl)),
+                ),
+                // Row(
+                //   children: [
+                //     CircleAvatar(
+                //       radius: 40.0,
+                //       backgroundColor: Colors.grey,
+                //       backgroundImage:
+                //           CachedNetworkImageProvider(currentUser.photoUrl),
+                //     ),
+                //     Padding(
+                //       padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                //       child: Container(
+                //         child: TextFormField(
+                //           focusNode: focusNode,
+                //           controller: descController,
+                //           onChanged: (value) {
+                //             setState(() {
+                //               text = descController.text;
+                //             });
+                //           },
+                //           minLines: 1,
+                //           maxLines: 30,
+                //           decoration: InputDecoration(
+                //             hintText: "Write something here...",
+                //             hintStyle: commonTextStyle,
+                //             border: InputBorder.none,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                //isUploading ? linearProgress() : Text(''),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
+                Container(
+                  decoration: _uploadValid
+                      ? null
+                      : BoxDecoration(
+                          border: Border.all(color: Colors.red),
+                        ),
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: Center(
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: GestureDetector(
+                        onTap: () {
+                          selectImage(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: _image == null
+                                  ? AssetImage(
+                                      'assets/images/placeholder_ybb_news.jpg')
+                                  : FileImage(_image),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                child: Text(
-                  "*Click above image to add/change with another",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    fontFamily: "OpenSans",
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    child: Text(
+                      "*Click the image above to add/change an image",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                        fontFamily: fontName,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
