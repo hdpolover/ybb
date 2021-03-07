@@ -421,7 +421,7 @@ class UserToFollow extends StatelessWidget {
     return GestureDetector(
       onTap: () => showProfile(context, profileId: user.id),
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.3,
+        height: MediaQuery.of(context).size.height * 0.25,
         width: MediaQuery.of(context).size.width * 0.35,
         margin: EdgeInsets.only(right: 5, left: 5),
         padding: EdgeInsets.all(10),
@@ -456,7 +456,7 @@ class UserToFollow extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: MediaQuery.of(context).size.height * 0.025,
                 ),
                 Text(
                   user.occupation.length > 10
@@ -464,7 +464,7 @@ class UserToFollow extends StatelessWidget {
                       : user.occupation,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 13,
+                    fontSize: MediaQuery.of(context).size.height * 0.015,
                     fontFamily: fontName,
                   ),
                 ),

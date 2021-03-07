@@ -69,7 +69,7 @@ class _SettingsState extends State<ProfileSettings> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          _appName,
+          _appName == null ? "YBB" : _appName,
           style: TextStyle(fontFamily: fontName),
         ),
         Text(
@@ -77,7 +77,7 @@ class _SettingsState extends State<ProfileSettings> {
           style: TextStyle(fontFamily: fontName),
         ),
         Text(
-          _projectVersion,
+          _projectVersion == null ? "0.0.0" : _projectVersion,
           style: TextStyle(fontFamily: fontName),
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.1),

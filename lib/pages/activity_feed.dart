@@ -106,7 +106,7 @@ class _ActivityFeedState extends State<ActivityFeed>
             'timestamp',
             descending: true,
           )
-          .limit(50)
+          .limit(20)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {

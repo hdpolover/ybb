@@ -664,7 +664,7 @@ class _ProfileState extends State<Profile>
                   "@" + user.username,
                   style: TextStyle(
                     color: Colors.white60,
-                    fontSize: MediaQuery.of(context).size.height * 0.02,
+                    fontSize: MediaQuery.of(context).size.height * 0.015,
                     fontFamily: fontName,
                   ),
                 ),
@@ -677,7 +677,7 @@ class _ProfileState extends State<Profile>
                       : user.occupation,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: MediaQuery.of(context).size.height * 0.02,
+                    fontSize: MediaQuery.of(context).size.height * 0.015,
                     fontFamily: fontName,
                   ),
                 ),
@@ -954,7 +954,7 @@ class _ProfileState extends State<Profile>
                   child: Padding(
                     padding: EdgeInsets.only(
                         left: MediaQuery.of(context).size.width * 0.1,
-                        right: MediaQuery.of(context).size.height * 0.05,
+                        right: MediaQuery.of(context).size.height * 0.03,
                         top: MediaQuery.of(context).size.height * 0.01),
                     child: Column(
                       children: <Widget>[
@@ -995,7 +995,7 @@ class _ProfileState extends State<Profile>
                           ],
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.02,
+                          height: MediaQuery.of(context).size.height * 0.025,
                         ),
                         buildProfileMenu(),
                       ],
@@ -1004,7 +1004,7 @@ class _ProfileState extends State<Profile>
                 ),
                 Padding(
                   padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.32),
+                      top: MediaQuery.of(context).size.height * 0.3),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
