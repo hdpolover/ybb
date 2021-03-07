@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/widgets/shimmers/webview_shimmer_layout.dart';
@@ -137,18 +139,71 @@ class _NewsDetailState extends State<NewsDetail> {
           Column(
             children: <Widget>[
               Expanded(
-                  child: WebView(
-                key: _key,
-                javascriptMode: JavascriptMode.unrestricted,
-                initialUrl: widget.url,
-                onPageFinished: _handleLoad,
-              )),
+                child: WebView(
+                  key: _key,
+                  javascriptMode: JavascriptMode.unrestricted,
+                  initialUrl: widget.url,
+                  onPageFinished: _handleLoad,
+                  onWebResourceError: (error) => showDialog<void>(
+                    context: context,
+                    barrierDismissible: false,
+                    barrierColor: Colors.black38,
+                    builder: (BuildContext context) {
+                      return SimpleDialog(
+                        elevation: 0,
+                        children: <Widget>[
+                          Center(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                SpinKitThreeBounce(
+                                  size: 35,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return DecoratedBox(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                    );
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "Please wait...",
+                                  style: TextStyle(color: Colors.blueAccent),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
           WebviewShimmer()
         ],
       ),
     );
+  }
+
+  openBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch';
+    }
   }
 
   @override
@@ -169,15 +224,27 @@ class _NewsDetailState extends State<NewsDetail> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
-        // actions: [
-        //   PopupMenuButton(
-        //     icon: Icon(Icons.more_vert),
-        //     itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        //       const PopupMenuItem(child: Text('Tampilkan dengan WebView')),
-        //       const PopupMenuItem(child: Text('Buka di browser')),
-        //     ],
-        //   ),
-        // ],
+        actions: [
+          PopupMenuButton(
+            icon: Icon(Icons.more_vert),
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              //const PopupMenuItem(child: Text('Tampilkan dengan WebView')),
+              const PopupMenuItem(
+                child: Text('Open in browser'),
+                value: 0,
+              ),
+            ],
+            onSelected: (value) {
+              switch (value) {
+                case 0:
+                  openBrowser(widget.url);
+                  break;
+                default:
+                  break;
+              }
+            },
+          ),
+        ],
       ),
       body: ConnectivityScreenWrapper(
         child: webViewSelected ? buildNewsWebView() : buildNewsView(),

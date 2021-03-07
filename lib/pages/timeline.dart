@@ -144,18 +144,23 @@ class _TimelineState extends State<Timeline>
 
     if (lastIndex >= posts.length) {
       hasMore = false;
+      print("has no more");
     }
 
     lastIndex += postLimit;
 
-    Timer(
-      Duration(seconds: 1),
-      () {
-        setState(() {
-          isLoading = false;
-        });
-      },
-    );
+    // Timer(
+    //   Duration(seconds: 1),
+    //   () {
+    //     setState(() {
+    //       isLoading = false;
+    //     });
+    //   },
+    // );
+
+    setState(() {
+      isLoading = false;
+    });
 
     print("shownpost count after added: " + shownPosts.length.toString());
     print('last index: ' + lastIndex.toString());

@@ -12,7 +12,6 @@ import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/dialog.dart';
-import 'package:ybb/widgets/progress.dart';
 import 'package:image/image.dart' as Im;
 
 import 'home.dart';

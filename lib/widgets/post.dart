@@ -8,6 +8,7 @@ import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/comments.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/pages/post_likers.dart';
 import 'package:ybb/widgets/shimmers/post_header_shimmer_layout.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -95,6 +96,7 @@ class _PostState extends State<Post> {
   void initState() {
     super.initState();
 
+    getUserId();
     getFollowers();
     getCommentCount();
   }
@@ -465,17 +467,45 @@ class _PostState extends State<Post> {
     //});
   }
 
+  List<String> likerIds = [];
+
+  getUserId() async {
+    DocumentSnapshot doc =
+        await postsRef.doc(ownerId).collection('userPosts').doc(postId).get();
+
+    Post post = Post.fromDocument(doc);
+    Map<String, dynamic> i = post.likes;
+
+    i.entries.forEach((element) {
+      if (element.value == true) {
+        likerIds.add(element.key);
+      }
+    });
+  }
+
+  showLikers() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PostLikers(likerIds: likerIds, postId: postId),
+      ),
+    );
+  }
+
   buildLikeAndComment() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text(
-          likeCount < 2 || likeCount == null
-              ? "$likeCount like"
-              : "$likeCount likes",
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontFamily: fontName,
+        GestureDetector(
+          onTap: () => showLikers(),
+          child: Text(
+            likeCount < 2 || likeCount == null
+                ? "$likeCount like"
+                : "$likeCount likes",
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontFamily: fontName,
+            ),
           ),
         ),
         Text(

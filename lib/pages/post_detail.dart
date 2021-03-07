@@ -129,10 +129,13 @@ class _PostDetailState extends State<PostDetail> {
 
     PostInDetail post = PostInDetail.fromDocument(doc);
     Map<String, dynamic> i = post.likes;
-    String id = i.keys.last;
+    String id = "";
 
-    i.keys.forEach((element) {
-      likerIds.add(element);
+    i.entries.forEach((element) {
+      if (element.value == true) {
+        likerIds.add(element.key);
+        id = element.key;
+      }
     });
 
     return getUsername(id);
@@ -186,10 +189,12 @@ class _PostDetailState extends State<PostDetail> {
                 PostInDetail post = PostInDetail.fromDocument(snapshot.data);
                 int count = getLikeCount(post.likes) - 1;
 
-                return Text("and $count others liked this post.",
-                    style: TextStyle(
-                      fontFamily: fontName,
-                    ));
+                return count == 0
+                    ? Text("liked this post")
+                    : Text("and $count others liked this post.",
+                        style: TextStyle(
+                          fontFamily: fontName,
+                        ));
               },
             ),
           ],

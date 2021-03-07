@@ -247,7 +247,7 @@ class _PostInDetailState extends State<PostInDetail> {
       }
     });
     // delete uploaded image for thep ost
-    storageRef.child("Posts").child("post_$postId.jpg").delete();
+    storageRef.child("Posts").child("pimage_$postId.jpg").delete();
     // then delete all activity feed notifications
     QuerySnapshot activityFeedSnapshot = await activityFeedRef
         .doc(ownerId)
