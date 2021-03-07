@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/curve_painter.dart';
-import 'package:ybb/helpers/fcm_item.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/post_detail.dart';
@@ -52,17 +51,6 @@ class _HomeState extends State<Home> {
 
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
-  final Map<String, Item> _items = <String, Item>{};
-  Item _itemForMessage(Map<String, dynamic> message) {
-    final String recipientId = message['data']['recipient'];
-    final String postId = message['data']['postId'];
-    final dynamic data = message['notification']['body'] ?? message;
-    final Item item = _items.putIfAbsent(
-        postId, () => Item(postId: postId, recipientId: recipientId))
-      ..status = data['status'];
-    return item;
-  }
-
   @override
   initState() {
     super.initState();
@@ -104,46 +92,6 @@ class _HomeState extends State<Home> {
       setState(() {
         isAuth = false;
       });
-    }
-  }
-
-  Widget _buildDialog(BuildContext context, Item item) {
-    return AlertDialog(
-      content: Text("Item ${item.postId} has been updated"),
-      actions: <Widget>[
-        FlatButton(
-          child: const Text('CLOSE'),
-          onPressed: () {
-            Navigator.pop(context, false);
-          },
-        ),
-        FlatButton(
-          child: const Text('SHOW'),
-          onPressed: () {
-            Navigator.pop(context, true);
-          },
-        ),
-      ],
-    );
-  }
-
-  void _showItemDialog(Map<String, dynamic> message) {
-    showDialog<bool>(
-      context: context,
-      builder: (_) => _buildDialog(context, _itemForMessage(message)),
-    ).then((bool shouldNavigate) {
-      if (shouldNavigate == true) {
-        _navigateToItemDetail(message);
-      }
-    });
-  }
-
-  void _navigateToItemDetail(Map<String, dynamic> message) {
-    final Item item = _itemForMessage(message);
-    // Clear away dialogs
-    Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
-    if (!item.route.isCurrent) {
-      Navigator.push(context, item.route);
     }
   }
 
