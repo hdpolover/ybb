@@ -789,7 +789,7 @@ class _ProfileState extends State<Profile>
             : buiildOtherProfileNoPost();
       } else {
         return Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(15.0),
           child: Column(
             children: posts,
           ),
@@ -963,7 +963,7 @@ class _ProfileState extends State<Profile>
                       children: <Widget>[
                         buildProfileHeader(),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
+                          height: MediaQuery.of(context).size.height * 0.04,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -998,7 +998,7 @@ class _ProfileState extends State<Profile>
                           ],
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.02,
+                          height: MediaQuery.of(context).size.height * 0.03,
                         ),
                         buildProfileMenu(),
                       ],
@@ -1023,7 +1023,6 @@ class _ProfileState extends State<Profile>
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.only(
-                                left: MediaQuery.of(context).size.width * 0.05,
                                 top: MediaQuery.of(context).size.width * 0.05),
                             child: buildProfilePosts(),
                           ),
