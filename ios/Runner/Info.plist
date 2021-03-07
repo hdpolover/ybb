@@ -42,8 +42,10 @@
 	<string>Location is required.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location permission is required to get your current location</string>
+  	<key>NSCameraUsageDescription</key>
+  	<string>Please grant permission for the application to have access to the images that will be uploaded</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string> Please grant permission for the application to have access to the images that will be uploaded. </string>
+	<string>Please grant permission for the application to have access to the images that will be uploaded</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

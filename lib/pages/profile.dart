@@ -353,7 +353,7 @@ class _ProfileState extends State<Profile>
         return Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(15),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -918,10 +918,7 @@ class _ProfileState extends State<Profile>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProfileSettings(
-                          appName: "YBB",
-                          version: "2.0.0",
-                        ),
+                        builder: (context) => ProfileSettings(),
                       ),
                     );
                   },

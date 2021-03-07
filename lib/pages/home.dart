@@ -228,6 +228,10 @@ class _HomeState extends State<Home> {
           "interests": "-",
           "dnSearchKey": firebaseUser.displayName.substring(0, 1).toUpperCase(),
           "phoneNumber": "-",
+          "instagram": "-",
+          "facebook": "-",
+          "website": "-",
+          "showContacts": false,
         },
       );
 

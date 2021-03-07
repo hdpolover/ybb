@@ -117,23 +117,28 @@ class _SearchState extends State<Search>
         List<UserToFollow> userToFollow = [];
         snapshot.data.documents.forEach(
           (doc) {
-            AppUser user = AppUser.fromDocument(doc);
-            final bool isAuthUser = currentUser.id == user.id;
-            final bool isFollowingUser = followingList.contains(user.id);
-            // remove auth user from recommended list
-            if (isAuthUser) {
-              return;
-            } else if (isFollowingUser) {
-              return;
-            } else {
-              UserToFollow userResult = UserToFollow(user);
-              userToFollow.add(userResult);
+            try {
+              AppUser user = AppUser.fromDocument(doc);
 
-              if (userToFollow.length > 0) {
-                isAllUsersFollowed = false;
+              final bool isAuthUser = currentUser.id == user.id;
+              final bool isFollowingUser = followingList.contains(user.id);
+              // remove auth user from recommended list
+              if (isAuthUser) {
+                return;
+              } else if (isFollowingUser) {
+                return;
               } else {
-                isAllUsersFollowed = true;
+                UserToFollow userResult = UserToFollow(user);
+                userToFollow.add(userResult);
+
+                if (userToFollow.length > 0) {
+                  isAllUsersFollowed = false;
+                } else {
+                  isAllUsersFollowed = true;
+                }
               }
+            } catch (e) {
+              print(e);
             }
           },
         );
@@ -451,7 +456,7 @@ class UserToFollow extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.035,
+                  height: MediaQuery.of(context).size.height * 0.05,
                 ),
                 Text(
                   user.occupation.length > 10

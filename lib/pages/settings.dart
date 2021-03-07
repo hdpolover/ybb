@@ -11,23 +11,19 @@ import 'package:ybb/pages/settings/terms_cons.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 
 class ProfileSettings extends StatefulWidget {
-  final String appName, version;
-
-  ProfileSettings({this.appName, this.version});
-
   @override
   _SettingsState createState() => _SettingsState();
 }
 
 class _SettingsState extends State<ProfileSettings> {
-  static String _projectVersion = '2.1.0';
+  static String _projectVersion = '2.1.1';
   static String _appName = 'YBB';
 
   @override
   initState() {
     super.initState();
 
-    _projectVersion = "1.0.0";
+    _projectVersion = "2.1.1";
     _appName = "YBB";
 
     initPlatformState();
@@ -44,7 +40,7 @@ class _SettingsState extends State<ProfileSettings> {
       projectVersion = packageInfo.version;
     } catch (e) {
       appName = "YBB";
-      projectVersion = "2.1.0";
+      projectVersion = "2.1.1";
     }
 
     if (!mounted) return;
@@ -73,7 +69,7 @@ class _SettingsState extends State<ProfileSettings> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          _appName == null ? widget.appName : _appName,
+          _appName,
           style: TextStyle(fontFamily: fontName),
         ),
         Text(
@@ -81,7 +77,7 @@ class _SettingsState extends State<ProfileSettings> {
           style: TextStyle(fontFamily: fontName),
         ),
         Text(
-          _projectVersion == null ? widget.version : _projectVersion,
+          _projectVersion,
           style: TextStyle(fontFamily: fontName),
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.1),
@@ -128,8 +124,8 @@ class _SettingsState extends State<ProfileSettings> {
           context,
           MaterialPageRoute(
             builder: (context) => AboutApp(
-              appName: widget.appName,
-              appVersion: widget.version,
+              appName: _appName,
+              appVersion: _projectVersion,
             ),
           ),
         );
