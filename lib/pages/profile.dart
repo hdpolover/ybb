@@ -455,6 +455,28 @@ class _ProfileState extends State<Profile>
                               alignment: Alignment.topLeft,
                               child: Row(
                                 children: [
+                                  Icon(
+                                    Icons.email,
+                                    color: Colors.grey[700],
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    user.email,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey[800],
+                                      letterSpacing: .7,
+                                      fontFamily: fontName,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0.0, 10.0, 10.0),
+                              alignment: Alignment.topLeft,
+                              child: Row(
+                                children: [
                                   FaIcon(
                                     FontAwesomeIcons.instagram,
                                     color: Colors.grey[700],
@@ -793,7 +815,8 @@ class _ProfileState extends State<Profile>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
                 child: Icon(
                   Icons.dashboard,
                   color: profileMenu == "dashboard"
@@ -821,7 +844,8 @@ class _ProfileState extends State<Profile>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
                 child: Icon(
                   Icons.archive,
                   color: profileMenu == "posts" ? Colors.white : Colors.white60,
@@ -932,14 +956,14 @@ class _ProfileState extends State<Profile>
                   height: MediaQuery.of(context).size.height * 0.35,
                   child: Padding(
                     padding: EdgeInsets.only(
-                        left: 30.0,
-                        right: 30.0,
+                        left: MediaQuery.of(context).size.width * 0.1,
+                        right: MediaQuery.of(context).size.height * 0.05,
                         top: MediaQuery.of(context).size.height * 0.01),
                     child: Column(
                       children: <Widget>[
                         buildProfileHeader(),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.045,
+                          height: MediaQuery.of(context).size.height * 0.03,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -974,7 +998,7 @@ class _ProfileState extends State<Profile>
                           ],
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
+                          height: MediaQuery.of(context).size.height * 0.02,
                         ),
                         buildProfileMenu(),
                       ],
@@ -989,16 +1013,18 @@ class _ProfileState extends State<Profile>
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(30.0),
-                          topLeft: Radius.circular(30.0),
+                          topRight: Radius.circular(
+                              MediaQuery.of(context).size.width * 0.1),
+                          topLeft: Radius.circular(
+                              MediaQuery.of(context).size.width * 0.1),
                         )),
                     child: SingleChildScrollView(
                       child: Column(
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.only(
-                                left: 10,
-                                top: MediaQuery.of(context).size.height * 0.02),
+                                left: MediaQuery.of(context).size.width * 0.05,
+                                top: MediaQuery.of(context).size.width * 0.05),
                             child: buildProfilePosts(),
                           ),
                         ],

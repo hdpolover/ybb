@@ -416,7 +416,7 @@ class UserToFollow extends StatelessWidget {
     return GestureDetector(
       onTap: () => showProfile(context, profileId: user.id),
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.21,
+        height: MediaQuery.of(context).size.height * 0.25,
         width: MediaQuery.of(context).size.width * 0.35,
         margin: EdgeInsets.only(right: 5, left: 5),
         padding: EdgeInsets.all(10),
