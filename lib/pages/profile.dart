@@ -664,12 +664,12 @@ class _ProfileState extends State<Profile>
                   "@" + user.username,
                   style: TextStyle(
                     color: Colors.white60,
-                    fontSize: 12,
+                    fontSize: MediaQuery.of(context).size.height * 0.02,
                     fontFamily: fontName,
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.035,
+                  height: MediaQuery.of(context).size.height * 0.03,
                 ),
                 Text(
                   user.occupation.length > 34
@@ -677,7 +677,7 @@ class _ProfileState extends State<Profile>
                       : user.occupation,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
+                    fontSize: MediaQuery.of(context).size.height * 0.02,
                     fontFamily: fontName,
                   ),
                 ),
@@ -995,7 +995,7 @@ class _ProfileState extends State<Profile>
                           ],
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
+                          height: MediaQuery.of(context).size.height * 0.02,
                         ),
                         buildProfileMenu(),
                       ],
@@ -1004,7 +1004,7 @@ class _ProfileState extends State<Profile>
                 ),
                 Padding(
                   padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.3),
+                      top: MediaQuery.of(context).size.height * 0.32),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
