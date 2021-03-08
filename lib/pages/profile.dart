@@ -354,7 +354,11 @@ class _ProfileState extends State<Profile>
         return Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+              padding: EdgeInsets.fromLTRB(
+                  MediaQuery.of(context).size.width * 0.05,
+                  MediaQuery.of(context).size.width * 0.05,
+                  MediaQuery.of(context).size.width * 0.05,
+                  0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -568,7 +572,11 @@ class _ProfileState extends State<Profile>
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+              padding: EdgeInsets.fromLTRB(
+                  MediaQuery.of(context).size.width * 0.05,
+                  MediaQuery.of(context).size.width * 0.05,
+                  MediaQuery.of(context).size.width * 0.05,
+                  0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -601,8 +609,11 @@ class _ProfileState extends State<Profile>
               ),
             ),
             Padding(
-              padding:
-                  EdgeInsets.all(MediaQuery.of(context).size.width * 0.050),
+              padding: EdgeInsets.fromLTRB(
+                  MediaQuery.of(context).size.width * 0.05,
+                  MediaQuery.of(context).size.width * 0.05,
+                  MediaQuery.of(context).size.width * 0.05,
+                  0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -962,12 +973,11 @@ class _ProfileState extends State<Profile>
         onRefresh: refreshProfile,
         child: ConnectivityScreenWrapper(
           child: SingleChildScrollView(
-            child: Stack(
-              overflow: Overflow.visible,
+            child: Column(
               children: <Widget>[
                 Container(
                   color: Theme.of(context).primaryColor,
-                  height: MediaQuery.of(context).size.height * 0.3,
+                  height: MediaQuery.of(context).size.height * 0.32,
                   child: Padding(
                     padding: EdgeInsets.only(
                         left: MediaQuery.of(context).size.width * 0.07,
@@ -1012,36 +1022,32 @@ class _ProfileState extends State<Profile>
                           ],
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.02,
+                          height: MediaQuery.of(context).size.height * 0.025,
                         ),
                         buildProfileMenu(),
                       ],
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.3),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(
-                              MediaQuery.of(context).size.width * 0.1),
-                          topLeft: Radius.circular(
-                              MediaQuery.of(context).size.width * 0.1),
-                        )),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: MediaQuery.of(context).size.width * 0.02),
-                            child: buildProfilePosts(),
-                          ),
-                        ],
-                      ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(
+                            MediaQuery.of(context).size.width * 0.1),
+                        topLeft: Radius.circular(
+                            MediaQuery.of(context).size.width * 0.1),
+                      )),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.width * 0.02),
+                          child: buildProfilePosts(),
+                        ),
+                      ],
                     ),
                   ),
                 )
