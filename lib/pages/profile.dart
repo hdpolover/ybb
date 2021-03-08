@@ -155,7 +155,7 @@ class _ProfileState extends State<Profile>
           count.toString(),
           style: TextStyle(
             color: Colors.white,
-            fontSize: 15,
+            fontSize: MediaQuery.of(context).size.height * 0.02,
             fontWeight: FontWeight.bold,
             fontFamily: fontName,
           ),
@@ -164,7 +164,7 @@ class _ProfileState extends State<Profile>
           label,
           style: TextStyle(
             color: Colors.white70,
-            fontSize: 12,
+            fontSize: MediaQuery.of(context).size.height * 0.014,
             fontFamily: fontName,
           ),
         ),
@@ -186,7 +186,7 @@ class _ProfileState extends State<Profile>
         offlineWidget: GestureDetector(
           onTap: null,
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.4,
+            width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               color: isFollowing && currentUserId != widget.profileId
                   ? Colors.white38
@@ -205,7 +205,7 @@ class _ProfileState extends State<Profile>
                     color: isFollowing && currentUserId != widget.profileId
                         ? Colors.grey
                         : Colors.grey,
-                    fontSize: 12,
+                    fontSize: MediaQuery.of(context).size.height,
                     fontFamily: fontName,
                   ),
                 ),
@@ -272,6 +272,7 @@ class _ProfileState extends State<Profile>
     setState(() {
       isFollowing = false;
     });
+
     // remove follower
     followersRef
         .doc(widget.profileId)
@@ -353,7 +354,7 @@ class _ProfileState extends State<Profile>
         return Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +363,7 @@ class _ProfileState extends State<Profile>
                     "About",
                     style: TextStyle(
                         color: Colors.blue,
-                        fontSize: 17,
+                        fontSize: MediaQuery.of(context).size.width * 0.045,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5),
                   ),
@@ -373,7 +374,7 @@ class _ProfileState extends State<Profile>
                     child: Text(
                       user.displayName,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: MediaQuery.of(context).size.width * 0.04,
                         color: Colors.grey[800],
                         letterSpacing: .7,
                         fontFamily: fontName,
@@ -386,7 +387,7 @@ class _ProfileState extends State<Profile>
                     child: Text(
                       user.occupation,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: MediaQuery.of(context).size.width * 0.04,
                         color: Colors.grey[800],
                         letterSpacing: .7,
                         fontFamily: fontName,
@@ -403,11 +404,12 @@ class _ProfileState extends State<Profile>
                           Icons.access_time,
                           color: Colors.grey[700],
                         ),
-                        SizedBox(width: 10),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.04),
                         Text(
                           "Joined in ",
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: MediaQuery.of(context).size.width * 0.04,
                             color: Colors.grey[800],
                             letterSpacing: .7,
                             fontFamily: fontName,
@@ -416,10 +418,11 @@ class _ProfileState extends State<Profile>
                         Text(
                           convertDateTime(user.registerDate),
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: MediaQuery.of(context).size.width * 0.04,
                             color: Colors.grey[800],
                             letterSpacing: .7,
                             fontFamily: fontName,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -437,11 +440,15 @@ class _ProfileState extends State<Profile>
                                     FontAwesomeIcons.phone,
                                     color: Colors.grey[700],
                                   ),
-                                  SizedBox(width: 10),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.04),
                                   Text(
                                     user.phoneNumber,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.04,
                                       color: Colors.grey[800],
                                       letterSpacing: .7,
                                       fontFamily: fontName,
@@ -459,11 +466,15 @@ class _ProfileState extends State<Profile>
                                     Icons.email,
                                     color: Colors.grey[700],
                                   ),
-                                  SizedBox(width: 10),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.04),
                                   Text(
                                     user.email,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.04,
                                       color: Colors.grey[800],
                                       letterSpacing: .7,
                                       fontFamily: fontName,
@@ -481,11 +492,15 @@ class _ProfileState extends State<Profile>
                                     FontAwesomeIcons.instagram,
                                     color: Colors.grey[700],
                                   ),
-                                  SizedBox(width: 10),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.04),
                                   Text(
                                     "@" + user.instagram,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.04,
                                       color: Colors.grey[800],
                                       letterSpacing: .7,
                                       fontFamily: fontName,
@@ -503,11 +518,15 @@ class _ProfileState extends State<Profile>
                                     FontAwesomeIcons.facebookSquare,
                                     color: Colors.grey[700],
                                   ),
-                                  SizedBox(width: 10),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.04),
                                   Text(
                                     "@" + user.facebook,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.04,
                                       color: Colors.grey[800],
                                       letterSpacing: .7,
                                       fontFamily: fontName,
@@ -525,11 +544,15 @@ class _ProfileState extends State<Profile>
                                     FontAwesomeIcons.globe,
                                     color: Colors.grey[700],
                                   ),
-                                  SizedBox(width: 10),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.04),
                                   Text(
                                     user.website,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.04,
                                       color: Colors.grey[800],
                                       letterSpacing: .7,
                                       fontFamily: fontName,
@@ -544,9 +567,8 @@ class _ProfileState extends State<Profile>
                 ],
               ),
             ),
-            SizedBox(height: 10),
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -555,7 +577,7 @@ class _ProfileState extends State<Profile>
                     "Bio",
                     style: TextStyle(
                       color: Colors.blue,
-                      fontSize: 17,
+                      fontSize: MediaQuery.of(context).size.width * 0.045,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
                       fontFamily: fontName,
@@ -568,7 +590,7 @@ class _ProfileState extends State<Profile>
                     child: Text(
                       user.bio,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: MediaQuery.of(context).size.width * 0.04,
                         color: Colors.grey[800],
                         letterSpacing: .7,
                         fontFamily: fontName,
@@ -578,9 +600,9 @@ class _ProfileState extends State<Profile>
                 ],
               ),
             ),
-            SizedBox(height: 10),
             Padding(
-              padding: EdgeInsets.all(10),
+              padding:
+                  EdgeInsets.all(MediaQuery.of(context).size.width * 0.050),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -589,7 +611,7 @@ class _ProfileState extends State<Profile>
                     "Interests",
                     style: TextStyle(
                       color: Colors.blue,
-                      fontSize: 17,
+                      fontSize: MediaQuery.of(context).size.width * 0.045,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
                       fontFamily: fontName,
@@ -602,7 +624,7 @@ class _ProfileState extends State<Profile>
                     child: Text(
                       user.interests,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: MediaQuery.of(context).size.width * 0.04,
                         color: Colors.grey[800],
                         letterSpacing: .7,
                         fontFamily: fontName,
@@ -612,7 +634,7 @@ class _ProfileState extends State<Profile>
                 ],
               ),
             ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.4),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.2),
           ],
         );
       },
@@ -636,19 +658,19 @@ class _ProfileState extends State<Profile>
         return Row(
           children: <Widget>[
             CircleAvatar(
-              radius: 40.0,
+              radius: MediaQuery.of(context).size.height * 0.06,
               backgroundColor: Colors.grey,
               backgroundImage: CachedNetworkImageProvider(user.photoUrl),
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.07,
+              width: MediaQuery.of(context).size.width * 0.055,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  user.displayName.length > 20
-                      ? user.displayName.substring(0, 19) + "..."
+                  user.displayName.length > 22
+                      ? user.displayName.substring(0, 21) + "..."
                       : user.displayName,
                   style: TextStyle(
                     color: Colors.white,
@@ -664,20 +686,20 @@ class _ProfileState extends State<Profile>
                   "@" + user.username,
                   style: TextStyle(
                     color: Colors.white60,
-                    fontSize: MediaQuery.of(context).size.height * 0.015,
+                    fontSize: MediaQuery.of(context).size.width * 0.035,
                     fontFamily: fontName,
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.03,
+                  height: MediaQuery.of(context).size.height * 0.04,
                 ),
                 Text(
-                  user.occupation.length > 34
-                      ? user.occupation.substring(0, 33) + "..."
+                  user.occupation.length > 29
+                      ? user.occupation.substring(0, 28) + "..."
                       : user.occupation,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: MediaQuery.of(context).size.height * 0.015,
+                    fontSize: MediaQuery.of(context).size.width * 0.035,
                     fontFamily: fontName,
                   ),
                 ),
@@ -789,7 +811,7 @@ class _ProfileState extends State<Profile>
             : buiildOtherProfileNoPost();
       } else {
         return Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: posts,
           ),
@@ -814,15 +836,13 @@ class _ProfileState extends State<Profile>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding:
-                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
-                child: Icon(
-                  Icons.dashboard,
-                  color: profileMenu == "dashboard"
-                      ? Colors.white
-                      : Colors.white60,
-                ),
+              Icon(
+                Icons.dashboard,
+                color:
+                    profileMenu == "dashboard" ? Colors.white : Colors.white60,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.02,
               ),
               Text(
                 'Dashboard',
@@ -843,14 +863,11 @@ class _ProfileState extends State<Profile>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding:
-                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
-                child: Icon(
-                  Icons.archive,
-                  color: profileMenu == "posts" ? Colors.white : Colors.white60,
-                ),
+              Icon(
+                Icons.archive,
+                color: profileMenu == "posts" ? Colors.white : Colors.white60,
               ),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.02),
               Text(
                 postCount.toString() + ' Posts',
                 style: TextStyle(
@@ -950,17 +967,17 @@ class _ProfileState extends State<Profile>
               children: <Widget>[
                 Container(
                   color: Theme.of(context).primaryColor,
-                  height: MediaQuery.of(context).size.height * 0.35,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   child: Padding(
                     padding: EdgeInsets.only(
-                        left: MediaQuery.of(context).size.width * 0.1,
-                        right: MediaQuery.of(context).size.height * 0.03,
+                        left: MediaQuery.of(context).size.width * 0.07,
+                        right: MediaQuery.of(context).size.width * 0.07,
                         top: MediaQuery.of(context).size.height * 0.01),
                     child: Column(
                       children: <Widget>[
                         buildProfileHeader(),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.04,
+                          height: MediaQuery.of(context).size.height * 0.03,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -995,7 +1012,7 @@ class _ProfileState extends State<Profile>
                           ],
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.025,
+                          height: MediaQuery.of(context).size.height * 0.02,
                         ),
                         buildProfileMenu(),
                       ],
@@ -1020,7 +1037,7 @@ class _ProfileState extends State<Profile>
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.only(
-                                top: MediaQuery.of(context).size.width * 0.05),
+                                top: MediaQuery.of(context).size.width * 0.02),
                             child: buildProfilePosts(),
                           ),
                         ],

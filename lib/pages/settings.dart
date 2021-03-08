@@ -16,14 +16,14 @@ class ProfileSettings extends StatefulWidget {
 }
 
 class _SettingsState extends State<ProfileSettings> {
-  static String _projectVersion = '2.1.1';
+  static String _projectVersion = '2.1.2';
   static String _appName = 'YBB';
 
   @override
   initState() {
     super.initState();
 
-    _projectVersion = "2.1.1";
+    _projectVersion = "2.1.2";
     _appName = "YBB";
 
     initPlatformState();
@@ -40,7 +40,7 @@ class _SettingsState extends State<ProfileSettings> {
       projectVersion = packageInfo.version;
     } catch (e) {
       appName = "YBB";
-      projectVersion = "2.1.1";
+      projectVersion = "2.1.2";
     }
 
     if (!mounted) return;

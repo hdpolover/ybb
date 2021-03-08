@@ -191,16 +191,6 @@ class _UploadPostState extends State<UploadPost>
       mediaUrl = "";
     }
 
-    if (descController.text.toString().trim().isEmpty) {
-      setState(() {
-        _uploadValid = false;
-      });
-    } else {
-      setState(() {
-        _uploadValid = true;
-      });
-    }
-
     await createPostInFirestore(
       desc: descController.text,
       mediaUrl: mediaUrl,
@@ -226,21 +216,6 @@ class _UploadPostState extends State<UploadPost>
     //     Navigator.pop(context);
     //   },
     // );
-  }
-
-  bool isNotFilled() {
-    return _image == null && descController.text.isEmpty ? true : false;
-  }
-
-  showError() {
-    setState(() {
-      _uploadValid = false;
-    });
-
-    SnackBar snackBar = SnackBar(
-        backgroundColor: Colors.blue,
-        content: Text("Please fill out at least one of the fields first!"));
-    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   @override
@@ -273,7 +248,7 @@ class _UploadPostState extends State<UploadPost>
               ),
             ),
             child: FlatButton(
-              onPressed: isNotFilled()
+              onPressed: _image == null && descController.text.trim().isEmpty
                   ? null
                   : isUploading
                       ? null
@@ -281,7 +256,9 @@ class _UploadPostState extends State<UploadPost>
               child: Text(
                 'POST',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: _image == null && descController.text.trim().isEmpty
+                      ? Colors.white38
+                      : Colors.white,
                   fontFamily: fontName,
                   fontWeight: FontWeight.bold,
                 ),

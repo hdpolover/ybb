@@ -138,9 +138,7 @@ class _ActivityFeedState extends State<ActivityFeed>
             'assets/images/no_notif.svg',
             height: MediaQuery.of(context).size.width * 0.4,
           ),
-          SizedBox(
-            height: 30,
-          ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.05),
           Text(
             "You are all caught up. Nothing to see here.",
             textAlign: TextAlign.center,

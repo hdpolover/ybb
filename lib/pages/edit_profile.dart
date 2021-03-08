@@ -54,7 +54,6 @@ class _EditProfileState extends State<EditProfile> {
 
   List<String> allUsernames = [];
   String currentUsername = "";
-
   String downloadUrl;
 
   File _image;
@@ -231,7 +230,7 @@ class _EditProfileState extends State<EditProfile> {
         controller: occupationController,
         minLines: 1,
         maxLines: 3,
-        maxLength: 30,
+        maxLength: 50,
         decoration: InputDecoration(
           hintStyle: TextStyle(fontFamily: fontName),
           errorStyle: TextStyle(fontFamily: fontName),
@@ -302,7 +301,7 @@ class _EditProfileState extends State<EditProfile> {
         controller: bioController,
         minLines: 1,
         maxLines: 30,
-        maxLength: 400,
+        maxLength: 500,
         decoration: InputDecoration(
           hintStyle: TextStyle(
             fontFamily: fontName,
@@ -413,6 +412,23 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  bool checkFields() {
+    try {
+      return user.bio == bioController.text.trim() &&
+          user.username == usernameController.text.trim() &&
+          user.displayName == displayNameController.text.trim() &&
+          user.occupation == occupationController.text.trim() &&
+          user.interests == interestController.text.trim() &&
+          user.showContacts == showContacts &&
+          user.phoneNumber == phoneNumberController.text.trim() &&
+          user.instagram == instagramController.text.trim() &&
+          user.facebook == facebookController.text.trim() &&
+          user.website == websiteController.text.trim();
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -430,10 +446,26 @@ class _EditProfileState extends State<EditProfile> {
               ),
               onPressed: null,
             ),
-            child: IconButton(
-              icon: Icon(Icons.save),
-              onPressed: updateProfileData,
+            child: FlatButton(
+              //onPressed: checkFields() ? null : () => updateProfileData(),
+              onPressed: () => updateProfileData(),
+              child: Text(
+                'UPDATE',
+                style: TextStyle(
+                  //color: checkFields() ? Colors.white38 : Colors.white,
+                  color: Colors.white,
+                  fontFamily: fontName,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
+            // child: IconButton(
+            //   icon: Icon(
+            //     Icons.save,
+            //     color: checkFields() ? Colors.white38 : Colors.white,
+            //   ),
+            //   onPressed: checkFields() ? null : updateProfileData,
+            // ),
           ),
         ],
         backgroundColor: Theme.of(context).primaryColor,

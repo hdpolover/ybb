@@ -264,7 +264,7 @@ class _PostDetailState extends State<PostDetail> {
             height: 20,
           ),
           Text(
-            "Be the first one to comment.",
+            "Be the first person to comment.",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: fontName,

@@ -278,7 +278,7 @@ class _TimelineState extends State<Timeline>
                     child: buildNoFeed(),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(15.0, 15, 15, 0),
+                    padding: const EdgeInsets.fromLTRB(20.0, 20, 20, 0),
                     controller: _scrollController,
                     itemCount: shownPosts.length,
                     itemBuilder: (context, index) {

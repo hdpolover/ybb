@@ -92,7 +92,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                   //categories
                   Container(
                     padding: EdgeInsets.only(top: 5.0, left: 5.0),
-                    height: MediaQuery.of(context).size.height * 0.06,
+                    height: MediaQuery.of(context).size.height * 0.07,
                     child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
@@ -111,7 +111,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                   _loading
                       ? NewsCategoryShimmer()
                       : Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(15.0),
                           child: ListView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
