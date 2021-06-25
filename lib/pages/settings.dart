@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -8,6 +9,7 @@ import 'package:ybb/pages/settings/my_account.dart';
 import 'package:ybb/pages/settings/privacy_policies.dart';
 import 'package:ybb/pages/settings/send_feedback.dart';
 import 'package:ybb/pages/settings/terms_cons.dart';
+import 'package:ybb/pages/summit_portal/sp_home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 
 class ProfileSettings extends StatefulWidget {
@@ -141,7 +143,7 @@ class _SettingsState extends State<ProfileSettings> {
       child: ConnectivityWidgetWrapper(
         stacked: false,
         offlineWidget: Padding(
-          padding: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
           child: FlatButton(
             highlightColor: null,
             child: Container(
@@ -163,7 +165,7 @@ class _SettingsState extends State<ProfileSettings> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
           child: FlatButton(
             highlightColor: null,
             child: Container(
@@ -190,13 +192,57 @@ class _SettingsState extends State<ProfileSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultAppBar(context,
-          titleText: "Settings", removeBackButton: false),
+      appBar:
+          defaultAppBar(context, titleText: "Others", removeBackButton: false),
       body: ConnectivityScreenWrapper(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SPHome(),
+                ),
+              ),
+              child: Container(
+                child: Stack(
+                  children: <Widget>[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.0),
+                      child: CachedNetworkImage(
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          height: MediaQuery.of(context).size.height * 0.07,
+                          fit: BoxFit.cover,
+                          imageUrl:
+                              "https://images.unsplash.com/photo-1589463779377-26cb6db03a35?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80"),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      height: MediaQuery.of(context).size.height * 0.07,
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6.0),
+                        color: Colors.black12,
+                      ),
+                      child: Text(
+                        "Summit Portal",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "OpenSans",
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             buildSettingList(
                 Icon(Icons.account_circle_outlined), "My Account", 1),
             buildSettingList(

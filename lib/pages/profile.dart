@@ -932,14 +932,14 @@ class _ProfileState extends State<Profile>
                 stacked: false,
                 offlineWidget: IconButton(
                   icon: Icon(
-                    Icons.settings,
+                    Icons.menu,
                     color: Colors.white38,
                   ),
                   onPressed: null,
                 ),
                 child: IconButton(
                   icon: Icon(
-                    Icons.settings,
+                    Icons.menu,
                     color: Colors.white,
                   ),
                   onPressed: () {

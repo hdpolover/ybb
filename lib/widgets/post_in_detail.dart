@@ -125,7 +125,9 @@ class _PostInDetailState extends State<PostInDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        user.displayName,
+                        user.displayName.length > 25
+                            ? user.displayName.substring(0, 24) + "..."
+                            : user.displayName,
                         style: TextStyle(
                           color: Colors.grey[900],
                           fontSize: 16,

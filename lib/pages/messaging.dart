@@ -1,17 +1,7 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ybb/blocs/messaging/messaging_bloc.dart';
-import 'package:ybb/blocs/messaging/messaging_event.dart';
-import 'package:ybb/blocs/messaging/messaging_state.dart';
-import 'package:ybb/helpers/constants.dart';
-import 'package:ybb/models/message.dart';
 import 'package:ybb/models/user.dart';
-import 'package:ybb/repositories/messaging_repository.dart';
-import 'package:ybb/widgets/message.dart';
 import 'package:ybb/widgets/user_photo.dart';
 
 class Messaging extends StatefulWidget {
@@ -24,52 +14,7 @@ class Messaging extends StatefulWidget {
 }
 
 class _MessagingState extends State<Messaging> {
-  TextEditingController _messageTextController = TextEditingController();
-  MessagingRepository _messagingRepository = MessagingRepository();
-  MessagingBloc _messagingBloc;
   bool isValid = false;
-
-//  bool get isPopulated => _messageTextController.text.isNotEmpty;
-//
-//  bool isSubmitButtonEnabled(MessagingState state) {
-//    return isPopulated;
-//  }
-
-  @override
-  void initState() {
-    super.initState();
-    _messagingBloc = MessagingBloc(messagingRepository: _messagingRepository);
-
-    _messageTextController.text = '';
-    _messageTextController.addListener(() {
-      setState(() {
-        isValid = (_messageTextController.text.isEmpty) ? false : true;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _messageTextController.dispose();
-    super.dispose();
-  }
-
-  void _onFormSubmitted() {
-    print("Message Submitted");
-
-    _messagingBloc.add(
-      SendMessageEvent(
-        message: Message(
-          text: _messageTextController.text,
-          senderId: widget.currentUser.id,
-          senderName: widget.currentUser.displayName,
-          selectedUserId: widget.selectedUser.id,
-          photo: null,
-        ),
-      ),
-    );
-    _messageTextController.clear();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,145 +45,7 @@ class _MessagingState extends State<Messaging> {
           ],
         ),
       ),
-      body: BlocBuilder<MessagingBloc, MessagingState>(
-        cubit: _messagingBloc,
-        builder: (BuildContext context, MessagingState state) {
-          if (state is MessagingInitialState) {
-            _messagingBloc.add(
-              MessageStreamEvent(
-                  currentUserId: widget.currentUser.id,
-                  selectedUserId: widget.selectedUser.id),
-            );
-          }
-          if (state is MessagingLoadingState) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (state is MessagingLoadedState) {
-            Stream<QuerySnapshot> messageStream = state.messageStream;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                StreamBuilder<QuerySnapshot>(
-                  stream: messageStream,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Text(
-                        "Start the conversation?",
-                        style: TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold),
-                      );
-                    }
-                    if (snapshot.data.docs.isNotEmpty) {
-                      return Expanded(
-                        child: Column(
-                          children: <Widget>[
-                            Expanded(
-                              child: ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return MessageWidget(
-                                    currentUserId: widget.currentUser.id,
-                                    messageId: snapshot.data.docs[index].id,
-                                  );
-                                },
-                                itemCount: snapshot.data.docs.length,
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Center(
-                        child: Text(
-                          "Start the conversation ?",
-                          style: TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }
-                  },
-                ),
-                Container(
-                  width: size.width,
-                  height: size.height * 0.06,
-                  color: backgroundColor,
-                  child: Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () async {
-                          FilePickerResult result = await FilePicker.platform
-                              .pickFiles(type: FileType.image);
-
-                          if (result != null) {
-                            File file = File(result.files.single.path);
-
-                            _messagingBloc.add(
-                              SendMessageEvent(
-                                message: Message(
-                                    text: null,
-                                    senderName: widget.currentUser.displayName,
-                                    senderId: widget.currentUser.id,
-                                    photo: file,
-                                    selectedUserId: widget.selectedUser.id),
-                              ),
-                            );
-                          }
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: size.height * 0.005),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: size.height * 0.04,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: size.height * 0.05,
-                          padding: EdgeInsets.all(size.height * 0.01),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.circular(size.height * 0.04),
-                          ),
-                          child: Center(
-                            child: TextField(
-                              controller: _messageTextController,
-                              textInputAction: TextInputAction.send,
-                              maxLines: null,
-                              decoration: null,
-                              textAlignVertical: TextAlignVertical.center,
-                              cursorColor: backgroundColor,
-                              textCapitalization: TextCapitalization.sentences,
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: isValid ? _onFormSubmitted : null,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: size.height * 0.01),
-                          child: Icon(
-                            Icons.send,
-                            size: size.height * 0.04,
-                            color: isValid ? Colors.white : Colors.grey,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            );
-          }
-          return Container();
-        },
-      ),
+      body: Container(),
     );
   }
 }
