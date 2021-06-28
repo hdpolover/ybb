@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/summit_portal/iys/iys_main.dart';
-import 'package:ybb/pages/summit_portal/iys/summit_login.dart';
+import 'package:ybb/pages/summit_portal/summit_login.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 
 class SPHome extends StatefulWidget {
