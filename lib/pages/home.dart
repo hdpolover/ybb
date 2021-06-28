@@ -13,6 +13,7 @@ import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/post_detail.dart';
 import 'package:ybb/pages/profile.dart';
 import 'package:ybb/pages/search.dart';
+import 'package:ybb/pages/summit_portal/sp_home.dart';
 import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/widgets/dialog.dart';
 import 'package:ybb/pages/news.dart';
@@ -337,7 +338,7 @@ class _HomeState extends State<Home> {
   bool homeSelected = true;
   bool newsSelected = false;
   bool searchSelected = false;
-  bool activitySelected = false;
+  bool portalSelected = false;
   bool profileSelected = false;
 
   Scaffold buildAuthScreen() {
@@ -348,8 +349,7 @@ class _HomeState extends State<Home> {
           Timeline(currentUser: currentUser),
           News(),
           Search(),
-          ActivityFeed(currentUser: currentUser),
-          //UploadPost(currentUser: currentUser),
+          SPHome(),
           Profile(
             profileId: currentUser?.id,
             isFromOutside: false,
@@ -369,42 +369,42 @@ class _HomeState extends State<Home> {
                   homeSelected = true;
                   newsSelected = false;
                   searchSelected = false;
-                  activitySelected = false;
+                  portalSelected = false;
                   profileSelected = false;
                   break;
                 case 1:
                   homeSelected = false;
                   newsSelected = true;
                   searchSelected = false;
-                  activitySelected = false;
+                  portalSelected = false;
                   profileSelected = false;
                   break;
                 case 2:
                   homeSelected = false;
                   newsSelected = false;
                   searchSelected = true;
-                  activitySelected = false;
+                  portalSelected = false;
                   profileSelected = false;
                   break;
                 case 3:
                   homeSelected = false;
                   newsSelected = false;
                   searchSelected = false;
-                  activitySelected = true;
+                  portalSelected = true;
                   profileSelected = false;
                   break;
                 case 4:
                   homeSelected = false;
                   newsSelected = false;
                   searchSelected = false;
-                  activitySelected = false;
+                  portalSelected = false;
                   profileSelected = true;
                   break;
                 default:
                   homeSelected = true;
                   newsSelected = false;
                   searchSelected = false;
-                  activitySelected = false;
+                  portalSelected = false;
                   profileSelected = false;
                   break;
               }
@@ -437,10 +437,11 @@ class _HomeState extends State<Home> {
                 searchSelected ? Theme.of(context).primaryColor : Colors.grey,
           ),
           Icon(
-            Icons.notifications,
+            //Icons.confirmation_num,
+            Icons.local_play,
             size: 25,
             color:
-                activitySelected ? Theme.of(context).primaryColor : Colors.grey,
+                portalSelected ? Theme.of(context).primaryColor : Colors.grey,
           ),
           Icon(
             Icons.account_circle,
