@@ -66,6 +66,8 @@ dependencies:
   geocoding: ^1.0.5
   geolocator: ^6.1.1
   fluttertoast: ^7.1.8
+  country_picker: ^1.0.4
+  timeline_tile: 1.0.0
 
 dev_dependencies:
   flutter_test:

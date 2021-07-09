@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ybb/pages/summit_portal/iys/portal_main.dart';
+import 'package:ybb/pages/summit_portal/summit_regist/summit_register.dart';
 
 class SummitLogin extends StatefulWidget {
   final String summitName;
@@ -190,7 +192,14 @@ class _SummitLoginState extends State<SummitLogin> {
                   Padding(
                     padding: const EdgeInsets.only(left: 15.0, right: 15),
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PortalMain(),
+                          ),
+                        );
+                      },
                       child: Container(
                         height: 50.0,
                         width: 350.0,
@@ -211,40 +220,50 @@ class _SummitLoginState extends State<SummitLogin> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Not a participant?",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "OpenSans",
-                            fontSize: 13.0,
-                          ),
-                          textAlign: TextAlign.left,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SummitRegister(),
                         ),
-                        Text(
-                          " Be one by registering yourself",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "OpenSans",
-                            fontSize: 13.0,
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Not a participant?",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "OpenSans",
+                              fontSize: 13.0,
+                            ),
+                            textAlign: TextAlign.left,
                           ),
-                          textAlign: TextAlign.left,
-                        ),
-                        Text(
-                          " here.",
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontFamily: "OpenSans",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13.0,
+                          Text(
+                            " Be one by registering yourself",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "OpenSans",
+                              fontSize: 13.0,
+                            ),
+                            textAlign: TextAlign.left,
                           ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
+                          Text(
+                            " here.",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontFamily: "OpenSans",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13.0,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
