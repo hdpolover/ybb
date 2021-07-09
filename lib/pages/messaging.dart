@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/widgets/user_photo.dart';
 
@@ -22,15 +21,20 @@ class _MessagingState extends State<Messaging> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey,
-        elevation: size.height * 0.02,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             ClipOval(
               child: Container(
-                height: size.height * 0.06,
-                width: size.height * 0.06,
+                height: size.height * 0.05,
+                width: size.width * 0.12,
                 child: PhotoWidget(
                   photoLink: widget.selectedUser.photoUrl,
                 ),
@@ -40,10 +44,16 @@ class _MessagingState extends State<Messaging> {
               width: size.width * 0.03,
             ),
             Expanded(
-              child: Text(widget.selectedUser.displayName),
+              child: Text(
+                widget.selectedUser.displayName,
+                style: appBarTextStyle,
+              ),
             ),
           ],
         ),
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Container(),
     );

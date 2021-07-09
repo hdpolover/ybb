@@ -16,6 +16,7 @@ import 'package:ybb/widgets/post.dart';
 import 'package:ybb/widgets/shimmers/post_shimmer_layout.dart';
 
 List<String> idFollowing = [];
+List<String> idRecommendation = [];
 List<ArticleModel> newsFromTimeline;
 
 class Timeline extends StatefulWidget {
@@ -54,8 +55,6 @@ class _TimelineState extends State<Timeline>
   void initState() {
     super.initState();
 
-    getNews();
-
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
@@ -65,8 +64,42 @@ class _TimelineState extends State<Timeline>
       }
     });
 
+    getUserRecommendation();
     getRawPosts();
+    getNews();
   }
+
+  Future<void> getUserRecommendation() async {
+    QuerySnapshot snapshot = await userRecomsRef
+        .doc(currentUser.id)
+        .collection('userRecoms')
+        .orderBy('similarity', descending: true)
+        .get();
+
+    setState(() {
+      idRecommendation = snapshot.docs.map((doc) => doc.id).toList();
+    });
+  }
+
+  // addNewData() async {
+  //   for (int i = 0; i < RecData.ids.length; i++) {
+  //     try {
+  //       await usersRef.doc(RecData.ids[i]).update(
+  //         {
+  //           "mainOccupation": RecData.occupation[i],
+  //           "mainInterest": RecData.interest[i],
+  //           "birthdate": RecData.birthdate[i],
+  //           "latitude": RecData.latitude[i],
+  //           "longitude": RecData.longitude[i],
+  //         },
+  //       );
+
+  //       print("succes: " + i.toString());
+  //     } catch (e) {
+  //       print("non");
+  //     }
+  //   }
+  // }
 
   getNews() async {
     NewsData newsData = new NewsData();
@@ -166,56 +199,6 @@ class _TimelineState extends State<Timeline>
     print('last index: ' + lastIndex.toString());
   }
 
-  // getTimeline() async {
-  //   if (!hasMore) {
-  //     return;
-  //   }
-  //   if (isLoading) {
-  //     return;
-  //   }
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-
-  //   QuerySnapshot querySnapshot;
-  //   if (lastDocument == null) {
-  //     querySnapshot = await timelineRef
-  //         .doc(widget.currentUser.id)
-  //         .collection('timelinePosts')
-  //         .orderBy('timestamp', descending: true)
-  //         .limit(documentLimit)
-  //         .get();
-  //   } else {
-  //     querySnapshot = await timelineRef
-  //         .doc(widget.currentUser.id)
-  //         .collection('timelinePosts')
-  //         .orderBy('timestamp', descending: true)
-  //         .startAfterDocument(lastDocument)
-  //         .limit(documentLimit)
-  //         .get();
-  //   }
-
-  //   if (querySnapshot.docs.length < documentLimit) {
-  //     hasMore = false;
-  //   }
-
-  //   try {
-  //     lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
-  //   } catch (e) {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-
-  //   products.addAll(querySnapshot.docs);
-
-  //   List<Post> posts = products.map((doc) => Post.fromDocument(doc)).toList();
-  //   setState(() {
-  //     this.posts = posts;
-  //     isLoading = false;
-  //   });
-  // }
-
   getIdFollowing() async {
     // NewsData newsData = new NewsData();
 
@@ -304,40 +287,6 @@ class _TimelineState extends State<Timeline>
               : Container()
         ],
       );
-      // return Column(
-      //   children: [
-      //     Expanded(
-      //       child: products.length == 0
-      //           ? Center(
-      //               child: buildNoFeed(),
-      //             )
-      //           : ListView.builder(
-      //               padding: const EdgeInsets.fromLTRB(15.0, 15, 15, 0),
-      //               controller: _scrollController,
-      //               itemCount: products.length,
-      //               itemBuilder: (context, index) {
-      //                 return posts[index];
-      //               },
-      //             ),
-      //     ),
-      //     isLoading
-      //         ? Container(
-      //             width: MediaQuery.of(context).size.width,
-      //             padding: EdgeInsets.all(5),
-      //             color: Colors.blue,
-      //             child: Text(
-      //               'Loading',
-      //               textAlign: TextAlign.center,
-      //               style: TextStyle(
-      //                 color: Colors.white,
-      //                 fontFamily: fontName,
-      //                 letterSpacing: 1,
-      //               ),
-      //             ),
-      //           )
-      //         : Container()
-      //   ],
-      // );
     }
   }
 

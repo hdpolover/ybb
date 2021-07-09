@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/helpers/fcm_item.dart';
 import 'package:ybb/models/article.dart';
@@ -200,7 +199,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return isConnected
         ? CustomSplashscreen(
-            seconds: 3,
+            seconds: 2,
             navigateAfterSeconds:
                 isNewUser == null ? new OnboardingScreen() : new Home(),
             //navigateAfterFuture: loadFromFuture(),
@@ -208,23 +207,23 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: Colors.white,
             styleTextUnderTheLoader: new TextStyle(),
             photoSize: MediaQuery.of(context).size.width * 0.35,
-            useLoader: true,
+            useLoader: false,
             loaderColor: Theme.of(context).primaryColor,
-            loadingText: FutureBuilder(
-              future: longLoad,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Text("");
-                }
-                return Text(
-                  snapshot.data,
-                  style: TextStyle(
-                    fontFamily: fontName,
-                    color: Colors.black,
-                  ),
-                );
-              },
-            ),
+            // loadingText: FutureBuilder(
+            //   future: longLoad,
+            //   builder: (context, snapshot) {
+            //     if (!snapshot.hasData) {
+            //       return Text("");
+            //     }
+            //     return Text(
+            //       snapshot.data,
+            //       style: TextStyle(
+            //         fontFamily: fontName,
+            //         color: Colors.black,
+            //       ),
+            //     );
+            //   },
+            // ),
           )
         : NoInternet(isConnected: false);
   }

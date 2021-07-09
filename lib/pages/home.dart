@@ -9,10 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/curve_painter.dart';
 import 'package:ybb/models/user.dart';
-import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/post_detail.dart';
 import 'package:ybb/pages/profile.dart';
 import 'package:ybb/pages/search.dart';
+import 'package:ybb/pages/create_account.dart';
 import 'package:ybb/pages/summit_portal/sp_home.dart';
 import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/widgets/dialog.dart';
@@ -29,6 +29,8 @@ final followersRef = FirebaseFirestore.instance.collection('followers');
 final followingRef = FirebaseFirestore.instance.collection('following');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
 final feedbackRef = FirebaseFirestore.instance.collection('feedbacks');
+final userRecomsRef =
+    FirebaseFirestore.instance.collection('userRecommendations');
 
 //authentication
 final GoogleSignIn googleSignIn = new GoogleSignIn();
@@ -55,7 +57,7 @@ class _HomeState extends State<Home> {
   @override
   initState() {
     super.initState();
-
+    // addNewFields();
     getUserStatusToApp();
 
     pageController = PageController();
@@ -72,6 +74,26 @@ class _HomeState extends State<Home> {
       print('Error signing in: $err');
     });
   }
+
+  // addNewFields() async {
+  //   QuerySnapshot userIds = await usersRef.get();
+
+  //   List<String> ids = userIds.docs.map((doc) => doc.id).toList();
+  //   print(ids);
+
+  //   // for (int i = 0; i < ids.length; i++) {
+  //   //   await usersRef.doc(ids[i]).update(
+  //   //     {
+  //   //       "mainInterest": "-",
+  //   //       "mainOccupation": "-",
+  //   //       "residence": "-",
+  //   //       "birthdate": "-",
+  //   //       "latitude": "-",
+  //   //       "longitude": "-",
+  //   //     },
+  //   //   );
+  //   // }
+  // }
 
   getUserStatusToApp() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -233,6 +255,12 @@ class _HomeState extends State<Home> {
           "facebook": "-",
           "website": "-",
           "showContacts": false,
+          "mainInterest": "-",
+          "mainOccupation": "-",
+          "residence": "-",
+          "birthdate": "-",
+          "latitude": "-",
+          "longitude": "-",
         },
       );
 
@@ -240,50 +268,87 @@ class _HomeState extends State<Home> {
 
       isRegistered = false;
 
-      SnackBar snackBar = SnackBar(
-          backgroundColor: Colors.blue,
-          content: Text("Registered! Welcome $name!"));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
-
-      // 2) if the user doesn't exist, then we want to take them to the create account page
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => CreateAccount(currentUserId: firebaseUser.uid),
-      //   ),
-      // );
-
-      // Navigator.of(_keyLoader.currentContext, rootNavigator: true).pop();
-
-      // make new user their own follower (to include their posts in their timeline)
-      await followersRef
+      followersRef
           .doc(firebaseUser.uid)
           .collection('userFollowers')
           .doc(firebaseUser.uid)
           .set({});
 
-      await followersRef
+      followersRef
           .doc("ynD3p86rqVc2mOIO83YOpXdWGtX2")
           .collection('userFollowers')
           .doc(firebaseUser.uid)
           .set({});
 
-      await followingRef
+      followingRef
           .doc(firebaseUser.uid)
           .collection('userFollowing')
           .doc("ynD3p86rqVc2mOIO83YOpXdWGtX2")
           .set({});
 
-      await followingRef
+      followingRef
           .doc(firebaseUser.uid)
           .collection('userFollowing')
           .doc(firebaseUser.uid)
           .set({});
 
       doc = await usersRef.doc(firebaseUser.uid).get();
+
+      try {
+        currentUser = AppUser.fromDocument(doc);
+      } catch (e) {
+        currentUser = AppUser(
+          id: doc['id'],
+          email: doc['email'],
+          username: doc['username'],
+          photoUrl: doc['photoUrl'],
+          displayName: doc['displayName'],
+          bio: doc['bio'],
+          occupation: doc['occupation'],
+          interests: doc['interests'],
+          registerDate: doc['registerDate'].toDate(),
+          phoneNumber: doc['phoneNumber'],
+          showContacts: doc['showContacts'],
+          instagram: doc['instagram'],
+          facebook: doc['facebook'],
+          website: doc['website'],
+        );
+      }
+
+      SnackBar snackBar = SnackBar(
+          backgroundColor: Colors.blue,
+          content: Text("Registered! Welcome $name!"));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CreateAccount(currentUserId: currentUser.id),
+        ),
+      );
     }
 
-    currentUser = AppUser.fromDocument(doc);
+    try {
+      currentUser = AppUser.fromDocument(doc);
+    } catch (e) {
+      currentUser = AppUser(
+        id: doc['id'],
+        email: doc['email'],
+        username: doc['username'],
+        photoUrl: doc['photoUrl'],
+        displayName: doc['displayName'],
+        bio: doc['bio'],
+        occupation: doc['occupation'],
+        interests: doc['interests'],
+        registerDate: doc['registerDate'].toDate(),
+        phoneNumber: doc['phoneNumber'],
+        showContacts: doc['showContacts'],
+        instagram: doc['instagram'],
+        facebook: doc['facebook'],
+        website: doc['website'],
+      );
+    }
+
     name = currentUser.displayName;
 
     if (isRegistered) {
@@ -451,41 +516,8 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      // bottomNavigationBar: CupertinoTabBar(
-      //   currentIndex: pageIndex,
-      //   onTap: onTap,
-      //   activeColor: Theme.of(context).primaryColor,
-      //   items: [
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.home_filled),
-      //       label: "Home",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.whatshot),
-      //       label: "News",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.search),
-      //       label: "Search",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.notifications_active),
-      //       label: "Activity",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.person),
-      //       label: "Profile",
-      //     ),
-      //   ],
-      // ),
     );
   }
-
-  // void _togglevisibility() {
-  //   setState(() {
-  //     _showPassword = !_showPassword;
-  //   });
-  // }
 
   Scaffold buildUnAuthScreen() {
     return Scaffold(

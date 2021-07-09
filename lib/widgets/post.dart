@@ -116,7 +116,28 @@ class _PostState extends State<Post> {
           return PostHeaderShimmer();
         }
 
-        AppUser user = AppUser.fromDocument(snapshot.data);
+        AppUser user;
+        try {
+          user = AppUser.fromDocument(snapshot.data);
+        } catch (e) {
+          user = AppUser(
+            id: snapshot.data['id'],
+            email: snapshot.data['email'],
+            username: snapshot.data['username'],
+            photoUrl: snapshot.data['photoUrl'],
+            displayName: snapshot.data['displayName'],
+            bio: snapshot.data['bio'],
+            occupation: snapshot.data['occupation'],
+            interests: snapshot.data['interests'],
+            registerDate: snapshot.data['registerDate'].toDate(),
+            phoneNumber: snapshot.data['phoneNumber'],
+            showContacts: snapshot.data['showContacts'],
+            instagram: snapshot.data['instagram'],
+            facebook: snapshot.data['facebook'],
+            website: snapshot.data['website'],
+          );
+        }
+
         bool isPostOwner = currentUserId == ownerId;
 
         return Row(
@@ -461,12 +482,16 @@ class _PostState extends State<Post> {
   }
 
   Future<Null> getCommentCount() async {
-    QuerySnapshot snapshot =
-        await commentsRef.doc(postId).collection('comments').get();
+    try {
+      QuerySnapshot snapshot =
+          await commentsRef.doc(postId).collection('comments').get();
 
-    setState(() {
-      commentCount = snapshot.docs.length;
-    });
+      setState(() {
+        commentCount = snapshot.docs.length;
+      });
+    } catch (e) {
+      commentCount = 0;
+    }
   }
 
   List<String> likerIds = [];

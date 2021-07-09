@@ -84,9 +84,7 @@ class _ProfileState extends State<Profile>
         .doc(currentUserId)
         .get();
 
-    setState(() {
-      isFollowing = doc.exists;
-    });
+    isFollowing = doc.exists;
   }
 
   getFollowers() async {
@@ -104,9 +102,7 @@ class _ProfileState extends State<Profile>
       fixCount = ids.length;
     }
 
-    setState(() {
-      followerCount = fixCount;
-    });
+    followerCount = fixCount;
   }
 
   getFollowing() async {
@@ -124,15 +120,11 @@ class _ProfileState extends State<Profile>
       fixCount = ids.length;
     }
 
-    setState(() {
-      followingCount = fixCount;
-    });
+    followingCount = fixCount;
   }
 
   Future<Null> getProfilePosts() async {
-    setState(() {
-      isLoading = true;
-    });
+    isLoading = true;
 
     QuerySnapshot snapshot = await postsRef
         .doc(widget.profileId)
@@ -339,6 +331,18 @@ class _ProfileState extends State<Profile>
       "postId": "",
       "feedId": currentUserId,
     });
+
+    //delete user from user recommendation
+    userRecomsRef
+        .doc(currentUserId)
+        .collection('userRecoms')
+        .doc(widget.profileId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
   }
 
   buildProfileDashboard() {
@@ -349,7 +353,27 @@ class _ProfileState extends State<Profile>
           return ProfileDashboardShimmer();
         }
 
-        AppUser user = AppUser.fromDocument(snapshot.data);
+        AppUser user;
+        try {
+          user = AppUser.fromDocument(snapshot.data);
+        } catch (e) {
+          user = AppUser(
+            id: snapshot.data['id'],
+            email: snapshot.data['email'],
+            username: snapshot.data['username'],
+            photoUrl: snapshot.data['photoUrl'],
+            displayName: snapshot.data['displayName'],
+            bio: snapshot.data['bio'],
+            occupation: snapshot.data['occupation'],
+            interests: snapshot.data['interests'],
+            registerDate: snapshot.data['registerDate'].toDate(),
+            phoneNumber: snapshot.data['phoneNumber'],
+            showContacts: snapshot.data['showContacts'],
+            instagram: snapshot.data['instagram'],
+            facebook: snapshot.data['facebook'],
+            website: snapshot.data['website'],
+          );
+        }
 
         return Column(
           children: [
@@ -664,7 +688,27 @@ class _ProfileState extends State<Profile>
           return ProfileHeaderShimmer();
         }
 
-        AppUser user = AppUser.fromDocument(snapshot.data);
+        AppUser user;
+        try {
+          user = AppUser.fromDocument(snapshot.data);
+        } catch (e) {
+          user = AppUser(
+            id: snapshot.data['id'],
+            email: snapshot.data['email'],
+            username: snapshot.data['username'],
+            photoUrl: snapshot.data['photoUrl'],
+            displayName: snapshot.data['displayName'],
+            bio: snapshot.data['bio'],
+            occupation: snapshot.data['occupation'],
+            interests: snapshot.data['interests'],
+            registerDate: snapshot.data['registerDate'].toDate(),
+            phoneNumber: snapshot.data['phoneNumber'],
+            showContacts: snapshot.data['showContacts'],
+            instagram: snapshot.data['instagram'],
+            facebook: snapshot.data['facebook'],
+            website: snapshot.data['website'],
+          );
+        }
 
         return Row(
           children: <Widget>[
@@ -680,8 +724,8 @@ class _ProfileState extends State<Profile>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  user.displayName.length > 22
-                      ? user.displayName.substring(0, 21) + "..."
+                  user.displayName.length > 17
+                      ? user.displayName.substring(0, 17) + "..."
                       : user.displayName,
                   style: TextStyle(
                     color: Colors.white,
@@ -708,6 +752,19 @@ class _ProfileState extends State<Profile>
                   user.occupation.length > 29
                       ? user.occupation.substring(0, 28) + "..."
                       : user.occupation,
+                  style: TextStyle(
+                    color: Colors.white60,
+                    fontSize: MediaQuery.of(context).size.width * 0.035,
+                    fontFamily: fontName,
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.01,
+                ),
+                Text(
+                  user.residence.length > 29
+                      ? user.residence.substring(0, 28) + "..."
+                      : user.residence,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: MediaQuery.of(context).size.width * 0.035,
@@ -977,7 +1034,7 @@ class _ProfileState extends State<Profile>
               children: <Widget>[
                 Container(
                   color: Theme.of(context).primaryColor,
-                  height: MediaQuery.of(context).size.height * 0.32,
+                  height: MediaQuery.of(context).size.height * 0.34,
                   child: Padding(
                     padding: EdgeInsets.only(
                         left: MediaQuery.of(context).size.width * 0.07,

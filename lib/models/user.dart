@@ -16,6 +16,13 @@ class AppUser {
   final String website;
   final bool showContacts;
 
+  final String mainInterest;
+  final String mainOccupation;
+  final String residence;
+  final String birthdate;
+  final String latitude;
+  final String longitude;
+
   AppUser({
     this.id,
     this.username,
@@ -31,6 +38,12 @@ class AppUser {
     this.facebook,
     this.website,
     this.showContacts,
+    this.mainInterest,
+    this.mainOccupation,
+    this.residence,
+    this.birthdate,
+    this.latitude,
+    this.longitude,
   });
 
   factory AppUser.fromDocument(DocumentSnapshot doc) {
@@ -49,6 +62,12 @@ class AppUser {
       instagram: doc['instagram'],
       facebook: doc['facebook'],
       website: doc['website'],
+      mainInterest: doc['mainInterest'],
+      mainOccupation: doc['mainOccupation'],
+      residence: doc['residence'],
+      birthdate: doc['birthdate'],
+      latitude: doc['latitude'],
+      longitude: doc['longitude'],
     );
   }
 }

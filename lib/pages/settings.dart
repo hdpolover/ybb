@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -9,7 +8,6 @@ import 'package:ybb/pages/settings/my_account.dart';
 import 'package:ybb/pages/settings/privacy_policies.dart';
 import 'package:ybb/pages/settings/send_feedback.dart';
 import 'package:ybb/pages/settings/terms_cons.dart';
-import 'package:ybb/pages/summit_portal/sp_home.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 
 class ProfileSettings extends StatefulWidget {

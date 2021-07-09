@@ -2,6 +2,7 @@ import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/activity_feed.dart';
+import 'package:ybb/pages/messages.dart';
 import 'package:ybb/pages/upload_post.dart';
 
 AppBar header(context,
@@ -39,6 +40,13 @@ AppBar header(context,
               ),
               onPressed: null,
             ),
+            IconButton(
+              icon: Icon(
+                Icons.message,
+                color: Colors.white38,
+              ),
+              onPressed: null,
+            ),
           ],
         ),
         child: Row(
@@ -70,6 +78,23 @@ AppBar header(context,
                   MaterialPageRoute(
                     builder: (context) => ActivityFeed(
                       currentUser: currentUser,
+                    ),
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.message,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Messages(
+                      currentUser: currentUser,
+                      userId: currentUser.id,
                     ),
                   ),
                 );
