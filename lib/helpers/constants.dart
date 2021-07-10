@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 const backgroundColor = Colors.blueGrey;
+const primaryColor = Colors.blue;
+final greyColor = Color(0xffaeaeae);
+final greyColor2 = Color(0xffE8E8E8);
 
 final fontName = "OpenSans";
 

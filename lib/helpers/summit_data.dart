@@ -1,11 +1,7 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ybb/models/article.dart';
 import 'package:http/http.dart' as http;
-import 'package:html/parser.dart';
 import 'package:ybb/models/summit_participant.dart';
-import 'package:ybb/pages/home.dart';
 
 class SummitData {
   SummitParticipant participant;

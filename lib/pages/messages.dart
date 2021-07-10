@@ -6,6 +6,8 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/create_new_message.dart';
+import 'package:ybb/widgets/message_list.dart';
+import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
 
 import 'home.dart';
 
@@ -19,22 +21,64 @@ class Messages extends StatefulWidget {
   _MessagesState createState() => _MessagesState();
 }
 
-class _MessagesState extends State<Messages>
-    with AutomaticKeepAliveClientMixin<Messages> {
+class _MessagesState extends State<Messages> {
   var refreshkey = GlobalKey<RefreshIndicatorState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<String> chatList = [];
+  List<MessageList> finalMessages = [];
+  List<String> followings = [];
+  String currentUserId;
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.currentUser == null) {
-      getUser();
-    } else {
-      getActivityFeed();
-    }
+    currentUserId = currentUser.id;
+  }
+
+  buildMessageList() {
+    return StreamBuilder(
+      stream: messageListsRef
+          .doc(currentUserId)
+          .collection("lastMessage")
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return CommentShimmer();
+        }
+
+        // List<MessageList> finalMessages = List<MessageList>.from(
+        //     snapshot.data.docs.map((doc) => MessageList.fromDocument(doc)));
+
+        finalMessages = [];
+        snapshot.data.documents.forEach(
+          (doc) {
+            finalMessages.add(MessageList.fromDocument(doc));
+          },
+        );
+
+        return finalMessages.length == 0
+            ? buildNoFeed()
+            : ListView.builder(
+                itemCount: finalMessages.length,
+                itemBuilder: (context, index) {
+                  return finalMessages[index];
+                },
+              );
+      },
+    );
+  }
+
+  Future<void> getFollowing() async {
+    QuerySnapshot snapshot = await followingRef
+        .doc(currentUser.id)
+        .collection('userFollowing')
+        .get();
+
+    setState(() {
+      followings = snapshot.docs.map((doc) => doc.id).toList();
+    });
   }
 
   buildAppbar() {
@@ -69,50 +113,6 @@ class _MessagesState extends State<Messages>
     );
   }
 
-  getUser() async {
-    QuerySnapshot snapshot = await activityFeedRef
-        .doc(widget.userId)
-        .collection('feedItems')
-        .orderBy(
-          'timestamp',
-          descending: true,
-        )
-        .limit(50)
-        .get();
-
-    // feedItems = [];
-    // snapshot.docs.forEach((doc) {
-    //   ActivityFeedItem item = ActivityFeedItem.fromDocument(doc);
-    //   feedIds.add(item.feedId);
-
-    //   feedItems.add(item);
-    // });
-
-    return false;
-  }
-
-  getActivityFeed() async {
-    QuerySnapshot snapshot = await activityFeedRef
-        .doc(widget.currentUser.id)
-        .collection('feedItems')
-        .orderBy(
-          'timestamp',
-          descending: true,
-        )
-        .limit(50)
-        .get();
-
-    // feedItems = [];
-    // snapshot.docs.forEach((doc) {
-    //   ActivityFeedItem item = ActivityFeedItem.fromDocument(doc);
-    //   feedIds.add(item.feedId);
-
-    //   feedItems.add(item);
-    // });
-
-    return false;
-  }
-
   buildNoFeed() {
     return Container(
       margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.3),
@@ -141,17 +141,17 @@ class _MessagesState extends State<Messages>
   Future<Null> refreshActivityFeed() async {
     refreshkey.currentState?.show(atTop: true);
 
-    chatList = [];
+    setState(() {
+      finalMessages = [];
+    });
 
-    //await buildMessagesMain();
+    await buildMessageList();
   }
 
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -180,17 +180,7 @@ class _MessagesState extends State<Messages>
         key: refreshkey,
         onRefresh: refreshActivityFeed,
         child: ConnectivityScreenWrapper(
-          child: SingleChildScrollView(
-            clipBehavior: Clip.none,
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                buildNoFeed(),
-              ],
-            ),
-          ),
+          child: buildMessageList(),
         ),
       ),
     );

@@ -31,6 +31,8 @@ final timelineRef = FirebaseFirestore.instance.collection('timeline');
 final feedbackRef = FirebaseFirestore.instance.collection('feedbacks');
 final userRecomsRef =
     FirebaseFirestore.instance.collection('userRecommendations');
+final messagesRef = FirebaseFirestore.instance.collection('messages');
+final messageListsRef = FirebaseFirestore.instance.collection('messageLists');
 
 //authentication
 final GoogleSignIn googleSignIn = new GoogleSignIn();

@@ -51,7 +51,13 @@ class _SearchState extends State<Search>
 
     focusNode = FocusNode();
 
-    followingList = idFollowing;
+    getFollowing();
+    if (followingList == null) {
+      followingList = idFollowing;
+    } else {
+      getFollowing();
+    }
+
     recommendationList = idRecommendation;
     //getUserRecommendation();
     //checkUserRecoms();
@@ -148,57 +154,57 @@ class _SearchState extends State<Search>
     // }
   }
 
-  buildUserToFollowRandom() {
-    return StreamBuilder(
-      stream: usersRef.snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return UserSuggestionShimmer();
-        }
+  // buildUserToFollowRandom() {
+  //   return StreamBuilder(
+  //     stream: usersRef.snapshots(),
+  //     builder: (context, snapshot) {
+  //       if (!snapshot.hasData) {
+  //         return UserSuggestionShimmer();
+  //       }
 
-        snapshot.data.documents.forEach(
-          (doc) {
-            try {
-              AppUser user = AppUser.fromDocument(doc);
+  //       snapshot.data.documents.forEach(
+  //         (doc) {
+  //           try {
+  //             AppUser user = AppUser.fromDocument(doc);
 
-              final bool isAuthUser = currentUser.id == user.id;
-              final bool isFollowingUser = followingList.contains(user.id);
-              // remove auth user from recommended list
-              if (isAuthUser) {
-                return;
-              } else if (isFollowingUser) {
-                return;
-              } else {
-                UserToFollow userResult = UserToFollow(user);
+  //             final bool isAuthUser = currentUser.id == user.id;
+  //             final bool isFollowingUser = followingList.contains(user.id);
+  //             // remove auth user from recommended list
+  //             if (isAuthUser) {
+  //               return;
+  //             } else if (isFollowingUser) {
+  //               return;
+  //             } else {
+  //               UserToFollow userResult = UserToFollow(user);
 
-                backupUsers.add(userResult);
+  //               backupUsers.add(userResult);
 
-                if (backupUsers.length > 0) {
-                  isAllUsersFollowed = false;
-                } else {
-                  isAllUsersFollowed = true;
-                }
-              }
-            } catch (e) {
-              print(e);
-            }
-          },
-        );
+  //               if (backupUsers.length > 0) {
+  //                 isAllUsersFollowed = false;
+  //               } else {
+  //                 isAllUsersFollowed = true;
+  //               }
+  //             }
+  //           } catch (e) {
+  //             print(e);
+  //           }
+  //         },
+  //       );
 
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.3,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 20,
-            padding: const EdgeInsets.only(top: 10.0),
-            itemBuilder: (context, index) {
-              return backupUsers[index];
-            },
-          ),
-        );
-      },
-    );
-  }
+  //       return Container(
+  //         height: MediaQuery.of(context).size.height * 0.3,
+  //         child: ListView.builder(
+  //           scrollDirection: Axis.horizontal,
+  //           itemCount: 20,
+  //           padding: const EdgeInsets.only(top: 10.0),
+  //           itemBuilder: (context, index) {
+  //             return backupUsers[index];
+  //           },
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   buildUsersToFollow() {
     return StreamBuilder(

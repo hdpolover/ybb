@@ -15,9 +15,9 @@ import 'package:ybb/widgets/header.dart';
 import 'package:ybb/widgets/post.dart';
 import 'package:ybb/widgets/shimmers/post_shimmer_layout.dart';
 
-List<String> idFollowing = [];
 List<String> idRecommendation = [];
 List<ArticleModel> newsFromTimeline;
+List<String> idFollowing;
 
 class Timeline extends StatefulWidget {
   final AppUser currentUser;
@@ -67,6 +67,7 @@ class _TimelineState extends State<Timeline>
     getUserRecommendation();
     getRawPosts();
     getNews();
+    getFollowing();
   }
 
   Future<void> getUserRecommendation() async {
@@ -213,6 +214,10 @@ class _TimelineState extends State<Timeline>
         .get();
 
     followingList = snapshot.docs.map((doc) => doc.id).toList();
+
+    setState(() {
+      idFollowing = followingList;
+    });
   }
 
   // getTimeline() async {

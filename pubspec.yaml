@@ -68,6 +68,7 @@ dependencies:
   fluttertoast: ^7.1.8
   country_picker: ^1.0.4
   timeline_tile: 1.0.0
+  photo_view: 0.10.3
 
 dev_dependencies:
   flutter_test:
@@ -107,6 +108,7 @@ flutter:
     - assets/images/no_content.svg
     - assets/images/ybb_logo.png
     - assets/images/1.png
+    - assets/images/img_not_available.jpeg
     - assets/images/no_comment.svg
     - assets/images/no_notif.svg
     - assets/images/no_search.svg

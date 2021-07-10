@@ -117,7 +117,6 @@ class UserNewMessage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => Messaging(
-                    currentUser: currentUser,
                     selectedUser: user,
                   ),
                 ),
