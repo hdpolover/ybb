@@ -10,13 +10,13 @@ class FullPhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'FULL PHOTO',
-          style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     'FULL PHOTO',
+      //     style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+      //   ),
+      //   centerTitle: true,
+      // ),
       body: FullPhotoScreen(url: url),
     );
   }
@@ -43,6 +43,36 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: PhotoView(imageProvider: NetworkImage(url)));
+    return Container(
+      color: Colors.black,
+      child: PhotoView(
+        minScale: PhotoViewComputedScale.contained * 1,
+        maxScale: PhotoViewComputedScale.covered * 2,
+        loadingBuilder: (context, event) => Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.5,
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  backgroundColor: Colors.blue,
+                  value: event == null
+                      ? 0
+                      : event.cumulativeBytesLoaded / event.expectedTotalBytes,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  "Loading image...",
+                  style: messageTextStyle,
+                ),
+              ],
+            ),
+          ),
+        ),
+        imageProvider: NetworkImage(url),
+      ),
+    );
   }
 }

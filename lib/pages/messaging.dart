@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
+import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/widgets/full_photo.dart';
 import 'package:ybb/widgets/user_photo.dart';
 
@@ -127,7 +128,7 @@ class _MessagingState extends State<Messaging> {
       width: double.infinity,
       height: 50.0,
       decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+          border: Border(top: BorderSide(color: Colors.white, width: 0.5)),
           color: Colors.white),
     );
   }
@@ -275,101 +276,82 @@ class _MessagingState extends State<Messaging> {
                     padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                     width: 200.0,
                     decoration: BoxDecoration(
-                        color: greyColor2,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(8.0)),
                     margin: EdgeInsets.only(
                         bottom: isLastMessageRight(index) ? 20.0 : 10.0,
                         right: 10.0),
                   )
-                : document.get('type') == 1
-                    // Image
-                    ? Container(
-                        child: OutlinedButton(
-                          child: Material(
-                            child: Image.network(
-                              document.get("content"),
-                              loadingBuilder: (BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    color: greyColor2,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(8.0),
-                                    ),
-                                  ),
-                                  width: 200.0,
-                                  height: 200.0,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      backgroundColor: primaryColor,
-                                      value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null &&
-                                              loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
-                                    ),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, object, stackTrace) {
-                                return Material(
-                                  child: Image.asset(
-                                    'images/img_not_available.jpeg',
-                                    width: 200.0,
-                                    height: 200.0,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8.0),
-                                  ),
-                                  clipBehavior: Clip.hardEdge,
-                                );
-                              },
+                : Container(
+                    child: OutlinedButton(
+                      child: Material(
+                        child: Image.network(
+                          document.get("content"),
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: greyColor2,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8.0),
+                                ),
+                              ),
                               width: 200.0,
                               height: 200.0,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.0)),
-                            clipBehavior: Clip.hardEdge,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FullPhoto(
-                                  url: document.get('content'),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  backgroundColor: primaryColor,
+                                  value: loadingProgress.expectedTotalBytes !=
+                                              null &&
+                                          loadingProgress.expectedTotalBytes !=
+                                              null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes
+                                      : null,
                                 ),
                               ),
                             );
                           },
-                          style: ButtonStyle(
-                              padding: MaterialStateProperty.all<EdgeInsets>(
-                                  EdgeInsets.all(0))),
-                        ),
-                        margin: EdgeInsets.only(
-                            bottom: isLastMessageRight(index) ? 20.0 : 10.0,
-                            right: 10.0),
-                      )
-                    // Sticker
-                    : Container(
-                        child: Image.asset(
-                          'images/${document.get('content')}.gif',
-                          width: 100.0,
-                          height: 100.0,
+                          errorBuilder: (context, object, stackTrace) {
+                            return Material(
+                              child: Image.asset(
+                                'images/img_not_available.jpeg',
+                                width: 200.0,
+                                height: 200.0,
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                            );
+                          },
+                          width: 200.0,
+                          height: 200.0,
                           fit: BoxFit.cover,
                         ),
-                        margin: EdgeInsets.only(
-                            bottom: isLastMessageRight(index) ? 20.0 : 10.0,
-                            right: 10.0),
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        clipBehavior: Clip.hardEdge,
                       ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FullPhoto(
+                              url: document.get('content'),
+                            ),
+                          ),
+                        );
+                      },
+                      style: ButtonStyle(
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                              EdgeInsets.all(0))),
+                    ),
+                    margin: EdgeInsets.only(
+                        bottom: isLastMessageRight(index) ? 20.0 : 10.0,
+                        right: 10.0),
+                  )
           ],
           mainAxisAlignment: MainAxisAlignment.end,
         );
@@ -430,91 +412,76 @@ class _MessagingState extends State<Messaging> {
                               borderRadius: BorderRadius.circular(8.0)),
                           margin: EdgeInsets.only(left: 10.0),
                         )
-                      : document.get('type') == 1
-                          ? Container(
-                              child: TextButton(
-                                child: Material(
-                                  child: Image.network(
-                                    document.get('content'),
-                                    loadingBuilder: (BuildContext context,
-                                        Widget child,
-                                        ImageChunkEvent loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          color: greyColor2,
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(8.0),
-                                          ),
-                                        ),
-                                        width: 200.0,
-                                        height: 200.0,
-                                        child: Center(
-                                          child: CircularProgressIndicator(
-                                            backgroundColor: primaryColor,
-                                            value: loadingProgress
-                                                            .expectedTotalBytes !=
-                                                        null &&
-                                                    loadingProgress
-                                                            .expectedTotalBytes !=
-                                                        null
-                                                ? loadingProgress
-                                                        .cumulativeBytesLoaded /
-                                                    loadingProgress
-                                                        .expectedTotalBytes
-                                                : null,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    errorBuilder:
-                                        (context, object, stackTrace) =>
-                                            Material(
-                                      child: Image.asset(
-                                        'assets/images/img_not_available.jpeg',
-                                        width: 200.0,
-                                        height: 200.0,
-                                        fit: BoxFit.cover,
-                                      ),
+                      : Container(
+                          child: TextButton(
+                            child: Material(
+                              child: Image.network(
+                                document.get('content'),
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(8.0),
                                       ),
-                                      clipBehavior: Clip.hardEdge,
                                     ),
+                                    width: 200.0,
+                                    height: 200.0,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: primaryColor,
+                                        value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null &&
+                                                loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes
+                                            : null,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                errorBuilder: (context, object, stackTrace) =>
+                                    Material(
+                                  child: Image.asset(
+                                    'assets/images/img_not_available.jpeg',
                                     width: 200.0,
                                     height: 200.0,
                                     fit: BoxFit.cover,
                                   ),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8.0)),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0),
+                                  ),
                                   clipBehavior: Clip.hardEdge,
                                 ),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => FullPhoto(
-                                              url: document.get('content'))));
-                                },
-                                style: ButtonStyle(
-                                    padding:
-                                        MaterialStateProperty.all<EdgeInsets>(
-                                            EdgeInsets.all(0))),
-                              ),
-                              margin: EdgeInsets.only(left: 10.0),
-                            )
-                          : Container(
-                              child: Image.asset(
-                                'images/${document.get('content')}.gif',
-                                width: 100.0,
-                                height: 100.0,
+                                width: 200.0,
+                                height: 200.0,
                                 fit: BoxFit.cover,
                               ),
-                              margin: EdgeInsets.only(
-                                  bottom:
-                                      isLastMessageRight(index) ? 20.0 : 10.0,
-                                  right: 10.0),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0)),
+                              clipBehavior: Clip.hardEdge,
                             ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => FullPhoto(
+                                          url: document.get('content'))));
+                            },
+                            style: ButtonStyle(
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                    EdgeInsets.all(0))),
+                          ),
+                          margin: EdgeInsets.only(left: 10.0),
+                        )
                 ],
               ),
 
@@ -576,39 +543,57 @@ class _MessagingState extends State<Messaging> {
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            ClipOval(
-              child: Container(
-                height: size.height * 0.05,
-                width: size.width * 0.12,
-                child: PhotoWidget(
-                  photoLink: widget.selectedUser.photoUrl,
+        title: GestureDetector(
+          onTap: () => showProfile(context, profileId: widget.selectedUser.id),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              ClipOval(
+                child: Container(
+                  height: size.height * 0.04,
+                  width: size.width * 0.09,
+                  child: PhotoWidget(
+                    photoLink: widget.selectedUser.photoUrl,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: size.width * 0.03,
-            ),
-            Expanded(
-              child: Text(
-                widget.selectedUser.displayName,
-                style: appBarTextStyle,
+              SizedBox(
+                width: size.width * 0.03,
               ),
-            ),
-          ],
+              Expanded(
+                child: Text(
+                  widget.selectedUser.displayName,
+                  style: messageTextStyle,
+                ),
+              ),
+            ],
+          ),
         ),
         elevation: 0,
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // List of messages
-          buildListMessage(),
-          // Input content
-          buildInput(),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height -
+                MediaQuery.of(context).size.height * 0.06,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/chat_bg.jpg"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Column(
+            children: [
+              // List of messages
+              buildListMessage(),
+              // Input content
+              buildInput(),
+            ],
+          ),
         ],
       ),
     );

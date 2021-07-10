@@ -9,6 +9,7 @@ import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/comments.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/post_likers.dart';
+import 'package:ybb/widgets/full_photo.dart';
 import 'package:ybb/widgets/shimmers/post_header_shimmer_layout.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -548,10 +549,14 @@ class _PostState extends State<Post> {
     );
   }
 
-  buildPostImage() {
+  buildPostDescription() {
     return GestureDetector(
-      onTap: () {},
-      onDoubleTap: handleLikePost,
+      onTap: () => showComments(
+        context,
+        postId: postId,
+        ownerId: ownerId,
+        mediaUrl: mediaUrl,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -569,10 +574,31 @@ class _PostState extends State<Post> {
               ),
             ),
           ),
+          SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  buildPostImage() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FullPhoto(url: mediaUrl),
+          ),
+        );
+      },
+      onDoubleTap: handleLikePost,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
           CachedNetworkImage(
             imageUrl: mediaUrl,
             fit: BoxFit.cover,
           ),
+          SizedBox(height: 20),
         ],
       ),
     );
@@ -678,8 +704,8 @@ class _PostState extends State<Post> {
         children: <Widget>[
           buildPostHeader(),
           SizedBox(height: 10),
-          buildPostImage(),
-          SizedBox(height: 20),
+          buildPostDescription(),
+          mediaUrl.isNotEmpty ? buildPostImage() : Container(),
           buildLikeAndComment(),
           SizedBox(height: 15),
           buildPostFooter()

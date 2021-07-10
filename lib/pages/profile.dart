@@ -11,6 +11,7 @@ import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/edit_profile.dart';
 import 'package:ybb/pages/follows.dart';
 import 'package:ybb/pages/home.dart';
+import 'package:ybb/pages/messaging.dart';
 import 'package:ybb/pages/settings.dart';
 import 'package:ybb/pages/upload_post.dart';
 import 'package:ybb/widgets/post.dart';
@@ -43,8 +44,11 @@ class _ProfileState extends State<Profile>
 
   bool removeBackButton;
   bool removeSettingButton;
+  bool addChatButton;
 
   String profileMenu = "dashboard";
+
+  AppUser selUser;
 
   @override
   void initState() {
@@ -52,6 +56,7 @@ class _ProfileState extends State<Profile>
 
     manageAppbar();
 
+    getUser();
     getProfilePosts();
     getFollowers();
     getFollowing();
@@ -63,16 +68,19 @@ class _ProfileState extends State<Profile>
       setState(() {
         removeBackButton = true;
         removeSettingButton = false;
+        addChatButton = true;
       });
     } else if (currentUserId == widget.profileId && widget.isFromOutside) {
       setState(() {
         removeBackButton = false;
         removeSettingButton = false;
+        addChatButton = false;
       });
     } else {
       setState(() {
         removeBackButton = false;
         removeSettingButton = true;
+        addChatButton = true;
       });
     }
   }
@@ -969,6 +977,30 @@ class _ProfileState extends State<Profile>
 
   bool get wantKeepAlive => true;
 
+  getUser() async {
+    DocumentSnapshot doc = await usersRef.doc(widget.profileId).get();
+    try {
+      selUser = AppUser.fromDocument(doc);
+    } catch (e) {
+      selUser = AppUser(
+        id: doc['id'],
+        email: doc['email'],
+        username: doc['username'],
+        photoUrl: doc['photoUrl'],
+        displayName: doc['displayName'],
+        bio: doc['bio'],
+        occupation: doc['occupation'],
+        interests: doc['interests'],
+        registerDate: doc['registerDate'].toDate(),
+        phoneNumber: doc['phoneNumber'],
+        showContacts: doc['showContacts'],
+        instagram: doc['instagram'],
+        facebook: doc['facebook'],
+        website: doc['website'],
+      );
+    }
+  }
+
   buildAppbar() {
     return AppBar(
       automaticallyImplyLeading: true,
@@ -983,6 +1015,34 @@ class _ProfileState extends State<Profile>
               onPressed: () => Navigator.of(context).pop(),
             ),
       actions: <Widget>[
+        addChatButton
+            ? ConnectivityWidgetWrapper(
+                stacked: false,
+                offlineWidget: IconButton(
+                  icon: Icon(
+                    Icons.message,
+                    color: Colors.white38,
+                  ),
+                  onPressed: null,
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.message,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Messaging(
+                          selectedUser: selUser,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              )
+            : Text(''),
         removeSettingButton
             ? Text('')
             : ConnectivityWidgetWrapper(

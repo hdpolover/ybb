@@ -55,3 +55,10 @@ final appBarTextStyle = TextStyle(
   fontSize: 20.0,
   letterSpacing: 1,
 );
+
+final messageTextStyle = TextStyle(
+  color: Colors.white,
+  fontFamily: "SFProText",
+  fontSize: 18.0,
+  letterSpacing: 1,
+);

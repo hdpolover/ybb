@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/models/user.dart';
-import 'package:ybb/pages/activity_feed.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:ybb/pages/messaging.dart';
@@ -85,7 +84,7 @@ class _MessageListState extends State<MessageList> {
           );
         }
 
-        return GestureDetector(
+        return ListTile(
           onTap: () {
             Navigator.push(
               context,
@@ -96,91 +95,54 @@ class _MessageListState extends State<MessageList> {
               ),
             );
           },
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () => showProfile(context, profileId: user.id),
-                        child: CircleAvatar(
-                          backgroundImage:
-                              CachedNetworkImageProvider(user.photoUrl),
-                          backgroundColor: Colors.grey,
-                          radius: 25,
-                        ),
+          leading: CircleAvatar(
+            backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+            backgroundColor: Colors.grey,
+            radius: 25,
+          ),
+          title: Text(
+            user.displayName.length > 18
+                ? user.displayName.substring(0, 18) + "..."
+                : user.displayName,
+            style: TextStyle(
+              color: Colors.grey[900],
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              fontFamily: fontName,
+              letterSpacing: 1,
+            ),
+          ),
+          subtitle: type == "1"
+              ? Row(
+                  children: [
+                    Icon(
+                      Icons.image,
+                      color: greyColor,
+                    ),
+                    Text(
+                      " image",
+                      style: TextStyle(
+                        color: greyColor,
+                        fontFamily: fontName,
                       ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            user.displayName.length > 27
-                                ? user.displayName.substring(0, 26) + "..."
-                                : user.displayName,
-                            style: TextStyle(
-                              color: Colors.grey[900],
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: fontName,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          type == "1"
-                              ? Row(
-                                  children: [
-                                    Icon(
-                                      Icons.image,
-                                      color: greyColor,
-                                    ),
-                                    Text(
-                                      " image",
-                                      style: TextStyle(
-                                        color: greyColor,
-                                        fontFamily: fontName,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Text(
-                                  content,
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontFamily: fontName,
-                                  ),
-                                ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.4,
-                              ),
-                              Text(
-                                timeago.format(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        int.parse(timestamp))),
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontFamily: fontName,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
-                    ],
+                    ),
+                  ],
+                )
+              : Text(
+                  content.length > 30
+                      ? content.substring(0, 30) + "..."
+                      : content,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontFamily: fontName,
                   ),
-                ],
-              ),
+                ),
+          trailing: Text(
+            timeago.format(
+                DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp))),
+            style: TextStyle(
+              color: Colors.grey,
+              fontFamily: fontName,
             ),
           ),
         );

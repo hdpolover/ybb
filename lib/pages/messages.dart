@@ -26,7 +26,6 @@ class _MessagesState extends State<Messages> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<MessageList> finalMessages = [];
-  List<String> followings = [];
   String currentUserId;
 
   @override
@@ -34,7 +33,34 @@ class _MessagesState extends State<Messages> {
     super.initState();
 
     currentUserId = currentUser.id;
+    getMessageList();
   }
+
+  getMessageList() async {
+    QuerySnapshot list = await messageListsRef
+        .doc(currentUserId)
+        .collection("lastMessage")
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    setState(() {
+      list.docs.forEach(
+        (doc) {
+          finalMessages.add(MessageList.fromDocument(doc));
+        },
+      );
+    });
+  }
+
+  // buildMessageAll() {
+  //   if (finalMessages == null) {
+  //     return CommentShimmer();
+  //   } else if (finalMessages.length == 0) {
+  //     return CommentShimmer();
+  //   } else {
+  //     return buildMessageList();
+  //   }
+  // }
 
   buildMessageList() {
     return StreamBuilder(
@@ -45,40 +71,31 @@ class _MessagesState extends State<Messages> {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return CommentShimmer();
+          return Container();
         }
 
         // List<MessageList> finalMessages = List<MessageList>.from(
         //     snapshot.data.docs.map((doc) => MessageList.fromDocument(doc)));
 
-        finalMessages = [];
-        snapshot.data.documents.forEach(
-          (doc) {
-            finalMessages.add(MessageList.fromDocument(doc));
-          },
-        );
+        // finalMessages = [];
+        // snapshot.data.documents.forEach(
+        //   (doc) {
+        //     finalMessages.add(MessageList.fromDocument(doc));
+        //   },
+        // );
 
-        return finalMessages.length == 0
-            ? buildNoFeed()
-            : ListView.builder(
-                itemCount: finalMessages.length,
-                itemBuilder: (context, index) {
-                  return finalMessages[index];
-                },
-              );
+        return finalMessages == null
+            ? CommentShimmer()
+            : finalMessages.length == 0
+                ? buildNoFeed()
+                : ListView.builder(
+                    itemCount: finalMessages.length,
+                    itemBuilder: (context, index) {
+                      return finalMessages[index];
+                    },
+                  );
       },
     );
-  }
-
-  Future<void> getFollowing() async {
-    QuerySnapshot snapshot = await followingRef
-        .doc(currentUser.id)
-        .collection('userFollowing')
-        .get();
-
-    setState(() {
-      followings = snapshot.docs.map((doc) => doc.id).toList();
-    });
   }
 
   buildAppbar() {
@@ -90,32 +107,12 @@ class _MessagesState extends State<Messages> {
         style: appBarTextStyle,
       ),
       elevation: 0,
-      // actions: <Widget>[
-      //   ConnectivityWidgetWrapper(
-      //     stacked: false,
-      //     offlineWidget: IconButton(
-      //       icon: Icon(Icons.delete, color: Colors.white38),
-      //       onPressed: null,
-      //     ),
-      //     child: IconButton(
-      //       icon: Icon(
-      //         Icons.delete,
-      //         color: feedItems == null || feedItems.isEmpty
-      //             ? Colors.white38
-      //             : Colors.white,
-      //       ),
-      //       onPressed: feedItems == null || feedItems.isEmpty
-      //           ? null
-      //           : () => handleDeleteFeed(context),
-      //     ),
-      //   ),
-      // ],
     );
   }
 
   buildNoFeed() {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.3),
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05),
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -126,13 +123,12 @@ class _MessagesState extends State<Messages> {
           ),
           SizedBox(height: MediaQuery.of(context).size.height * 0.05),
           Text(
-            "You are all caught up. Nothing to see here.",
+            "Start a new chat with people you're following.",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: fontName,
             ),
           ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.4),
         ],
       ),
     );
@@ -145,7 +141,8 @@ class _MessagesState extends State<Messages> {
       finalMessages = [];
     });
 
-    await buildMessageList();
+    await getMessageList();
+    buildMessageList();
   }
 
   bool get wantKeepAlive => true;
