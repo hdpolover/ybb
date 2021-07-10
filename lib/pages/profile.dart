@@ -68,7 +68,7 @@ class _ProfileState extends State<Profile>
       setState(() {
         removeBackButton = true;
         removeSettingButton = false;
-        addChatButton = true;
+        addChatButton = false;
       });
     } else if (currentUserId == widget.profileId && widget.isFromOutside) {
       setState(() {

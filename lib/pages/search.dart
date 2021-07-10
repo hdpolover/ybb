@@ -50,6 +50,8 @@ class _SearchState extends State<Search>
     super.initState();
 
     focusNode = FocusNode();
+    //getPosts();
+    getAllUserIds();
 
     getFollowing();
     if (followingList == null) {
@@ -154,58 +156,6 @@ class _SearchState extends State<Search>
     // }
   }
 
-  // buildUserToFollowRandom() {
-  //   return StreamBuilder(
-  //     stream: usersRef.snapshots(),
-  //     builder: (context, snapshot) {
-  //       if (!snapshot.hasData) {
-  //         return UserSuggestionShimmer();
-  //       }
-
-  //       snapshot.data.documents.forEach(
-  //         (doc) {
-  //           try {
-  //             AppUser user = AppUser.fromDocument(doc);
-
-  //             final bool isAuthUser = currentUser.id == user.id;
-  //             final bool isFollowingUser = followingList.contains(user.id);
-  //             // remove auth user from recommended list
-  //             if (isAuthUser) {
-  //               return;
-  //             } else if (isFollowingUser) {
-  //               return;
-  //             } else {
-  //               UserToFollow userResult = UserToFollow(user);
-
-  //               backupUsers.add(userResult);
-
-  //               if (backupUsers.length > 0) {
-  //                 isAllUsersFollowed = false;
-  //               } else {
-  //                 isAllUsersFollowed = true;
-  //               }
-  //             }
-  //           } catch (e) {
-  //             print(e);
-  //           }
-  //         },
-  //       );
-
-  //       return Container(
-  //         height: MediaQuery.of(context).size.height * 0.3,
-  //         child: ListView.builder(
-  //           scrollDirection: Axis.horizontal,
-  //           itemCount: 20,
-  //           padding: const EdgeInsets.only(top: 10.0),
-  //           itemBuilder: (context, index) {
-  //             return backupUsers[index];
-  //           },
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   buildUsersToFollow() {
     return StreamBuilder(
       stream: usersRef.snapshots(),
@@ -266,7 +216,6 @@ class _SearchState extends State<Search>
                   return;
                 }
               } else {
-                print("ii");
                 UserToFollow userResult = UserToFollow(user);
                 if (userToFollow.length > 20) {
                   return;
@@ -299,9 +248,9 @@ class _SearchState extends State<Search>
         //   userToFollow.addAll(tempUserToFollow);
         // }
 
-        print("ind" + ind.length.toString());
-        print("us" + userToFollow.length.toString());
-        print("temp" + tempUserToFollow.length.toString());
+        // print("ind" + ind.length.toString());
+        // print("us" + userToFollow.length.toString());
+        // print("temp" + tempUserToFollow.length.toString());
 
         return Container(
           height: MediaQuery.of(context).size.height * 0.3,
@@ -444,38 +393,29 @@ class _SearchState extends State<Search>
 
   tryali() {
     return FutureBuilder(
-      future: postsRef.get(),
+      future: pos(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return PostShimmer();
         }
 
-        List<Post> rawPosts = [];
-        // List<Post> completePosts = [];
+        // List<Post> a = [];
+        // snapshot.data.forEach((x) {
+        //   a.add(x);
+        // });
 
-        // rawPosts.addAll(snapshot.data.documents
-        //     .map((doc) => Post.fromDocument(doc))
-        //     .toList());
+        //return Text(snapshot.data.length.toString());
 
-        // Comparator<Post> sortByTimePosted =
-        //     (a, b) => a.postId.compareTo(b.postId);
-        // rawPosts.sort(sortByTimePosted);
-
-        // completePosts = rawPosts.reversed.toList();
-        snapshot.data.docs.forEach((el) {
-          el.map((doc) => Post.fromDocument(doc)).toList();
-          print(el);
-          rawPosts.addAll(el);
-        });
-
-        return Text(rawPosts.length.toString());
-
-        // return Expanded(
+        return Flexible(
+            child: Column(
+          children: snapshot.data,
+        ));
+        // return Flexible(
         //   child: ListView.builder(
         //     padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-        //     itemCount: searchPosts.length,
+        //     itemCount: snapshot.data.length,
         //     itemBuilder: (context, index) {
-        //       return searchPosts[index];
+        //       return snapshot.data[index];
         //     },
         //   ),
         // );
@@ -483,7 +423,7 @@ class _SearchState extends State<Search>
     );
   }
 
-  Container buildNoContent() {
+  buildNoContent() {
     return Container(
       child: ListView(
         children: <Widget>[
@@ -491,7 +431,7 @@ class _SearchState extends State<Search>
           buildUsersToFollow(),
           SizedBox(height: MediaQuery.of(context).size.height * 0.1),
           //buildPostsForSearchPage(),
-          //tryali(),
+          tryali(),
           Container(
             child: Column(
               children: [
@@ -596,62 +536,113 @@ class _SearchState extends State<Search>
     );
   }
 
-  Future getPostsForSearchPage() async {
-    List<Post> rawPosts = [];
-    List<Post> completePosts = [];
+  // Future getPostsForSearchPage() async {
+  //   List<Post> rawPosts = [];
+  //   List<Post> completePosts = [];
 
+  //   await getAllUserIds();
+
+  //   for (int i = 0; i < allUids.length; i++) {
+  //     try {
+  //       QuerySnapshot snapshot = await postsRef
+  //           .doc(allUids[i])
+  //           .collection('userPosts')
+  //           .orderBy('timestamp', descending: true)
+  //           .get();
+
+  //       rawPosts.addAll(
+  //           snapshot.docs.map((doc) => Post.fromDocument(doc)).toList());
+  //     } catch (e) {
+  //       print(e);
+  //     }
+  //   }
+
+  //   Comparator<Post> sortByTimePosted = (a, b) => a.postId.compareTo(b.postId);
+  //   rawPosts.sort(sortByTimePosted);
+
+  //   completePosts = rawPosts.reversed.toList();
+
+  //   List<Post> a = [];
+
+  //   for (int i = 0; i < completePosts.length; i++) {
+  //     for (int j = 0; j < followingList.length; j++) {
+  //       if (completePosts[i].ownerId == followingList[j]) {
+  //         break;
+  //       } else {
+  //         a.add(completePosts[i]);
+  //       }
+  //     }
+  //   }
+
+  //   setState(() {
+  //     searchPosts = a;
+  //   });
+
+  //   return searchPosts;
+
+  //   // setState(() {
+  //   //   searchPosts = rawPosts.reversed.toList();
+  //   // });
+  // }
+
+  getAllUserIds() async {
+    QuerySnapshot snapshot = await usersRef.get();
+
+    allUids = [];
+    snapshot.docs.forEach((element) {
+      setState(() {
+        allUids.add(element['id']);
+      });
+    });
+
+    print(allUids.length.toString());
+  }
+
+  getPosts() async {
     await getAllUserIds();
 
     for (int i = 0; i < allUids.length; i++) {
       try {
-        QuerySnapshot snapshot = await postsRef
-            .doc(allUids[i])
-            .collection('userPosts')
-            .orderBy('timestamp', descending: true)
-            .get();
+        QuerySnapshot doc =
+            await postsRef.doc(allUids[i]).collection("userPosts").get();
+        doc.docs.forEach((element) {
+          Post p = Post.fromDocument(element);
+          print(p.timestamp);
+        });
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
 
-        rawPosts.addAll(
-            snapshot.docs.map((doc) => Post.fromDocument(doc)).toList());
+  Future<List<Post>> pos() async {
+    List<Post> temp = [];
+    for (int i = 0; i < allUids.length; i++) {
+      try {
+        QuerySnapshot doc =
+            await postsRef.doc(allUids[i]).collection("userPosts").get();
+        doc.docs.forEach((element) {
+          Post p = Post.fromDocument(element);
+          temp.add(p);
+          print(p.timestamp);
+        });
       } catch (e) {
         print(e);
       }
     }
 
-    Comparator<Post> sortByTimePosted = (a, b) => a.postId.compareTo(b.postId);
-    rawPosts.sort(sortByTimePosted);
-
-    completePosts = rawPosts.reversed.toList();
-
-    List<Post> a = [];
-
-    for (int i = 0; i < completePosts.length; i++) {
-      for (int j = 0; j < followingList.length; j++) {
-        if (completePosts[i].ownerId == followingList[j]) {
-          break;
-        } else {
-          a.add(completePosts[i]);
-        }
-      }
-    }
-
     setState(() {
-      searchPosts = a;
+      searchPosts = temp;
     });
 
-    return searchPosts;
-
-    // setState(() {
-    //   searchPosts = rawPosts.reversed.toList();
-    // });
+    return Future<List<Post>>.value(searchPosts);
   }
 
-  getAllUserIds() async {
-    QuerySnapshot snapshot = await usersRef.get();
-
-    snapshot.docs.forEach((element) {
-      allUids.add(element['id']);
-    });
-  }
+  // d() {
+  //   return StreamBuilder(stream: ,builder: (context, snapshot) {
+  //     return null;
+  //   });
+  // }
 
   Future<void> getFollowing() async {
     QuerySnapshot snapshot = await followingRef
