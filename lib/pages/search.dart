@@ -51,7 +51,7 @@ class _SearchState extends State<Search>
 
     focusNode = FocusNode();
     //getPosts();
-    getAllUserIds();
+    //getAllUserIds();
 
     getFollowing();
     if (followingList == null) {
@@ -431,7 +431,7 @@ class _SearchState extends State<Search>
           buildUsersToFollow(),
           SizedBox(height: MediaQuery.of(context).size.height * 0.1),
           //buildPostsForSearchPage(),
-          tryali(),
+          //tryali(),
           Container(
             child: Column(
               children: [
@@ -496,7 +496,6 @@ class _SearchState extends State<Search>
         ? buildNoSearchResult()
         : ListView(
             children: tempSearchStore.map((e) {
-              print(e);
               return buildResultLayout(e);
             }).toList(),
           );

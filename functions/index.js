@@ -288,6 +288,7 @@ exports.onCreateActivityFeedItem = functions.firestore
     const ref1 = admin.firestore().doc(`users/${id}`)
     const doc1 = await ref1.get()
     const name = doc1.data().displayName
+    const titleNotif = ""
 
     if (androidNotificationToken) {
       //send notif
@@ -303,12 +304,15 @@ exports.onCreateActivityFeedItem = functions.firestore
       switch (activityFeedItem.type) {
         case 'comment':
           body = `${name} commented: "${activityFeedItem.commentData}" on your post`
+          title = 'New comment'
           break
         case 'like':
           body = `${name} liked your post`
+          title = 'New like'
           break
         case 'follow':
           body = `${name} started following you`
+          title = 'New follow'
           break
         default:
           break
@@ -316,7 +320,10 @@ exports.onCreateActivityFeedItem = functions.firestore
 
       //create message for push notif
       const message = {
-        notification: { body },
+        notification: {
+          title: title,
+          body: body
+        },
         token: androidNotificationToken,
         data: { recipient: userId , postId: postId}
       }
@@ -332,4 +339,70 @@ exports.onCreateActivityFeedItem = functions.firestore
           console.log('error', error)
         })
     }
+  })
+
+  exports.sendNotification = functions.firestore
+  .document('messages/{groupId1}/{groupId2}/{message}')
+  .onCreate((snap, context) => {
+    console.log('----------------start function--------------------')
+
+    const doc = snap.data()
+    console.log(doc)
+
+    const idFrom = doc.idFrom
+    const idTo = doc.idTo
+    contentMessage = ""
+    const type = doc.type
+
+    if (type == 0) {
+      contentMessage = doc.content
+    } else {
+      contentMessage = "image received"
+    }
+
+    // Get push token user to (receive)
+    admin
+      .firestore()
+      .collection('users')
+      .where('id', '==', idTo)
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(userTo => {
+          console.log(`Found user to: ${userTo.data().displayName}`)
+          if (userTo.data().androidNotificationToken && userTo.data().chattingWith !== idFrom) {
+            // Get info user from (sent)
+            admin
+              .firestore()
+              .collection('users')
+              .where('id', '==', idFrom)
+              .get()
+              .then(querySnapshot2 => {
+                querySnapshot2.forEach(userFrom => {
+                  console.log(`Found user from: ${userFrom.data().displayName}`)
+                  const payload = {
+                    notification: {
+                      title: `New message from ${userFrom.data().displayName}`,
+                      body: contentMessage,
+                      badge: '1',
+                      sound: 'default'
+                    }
+                  }
+                  // Let push to the target device
+                  admin
+                    .messaging()
+                    .sendToDevice(userTo.data().androidNotificationToken, payload)
+                    .then(response => {
+                      console.log('Successfully sent message:', response)
+                    })
+                    .catch(error => {
+                      console.log('Error sending message:', error)
+                    })
+                })
+              })
+          } else {
+            console.log('Can not find pushToken target user')
+          }
+        })
+      })
+    return null
   })

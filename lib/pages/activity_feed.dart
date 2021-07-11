@@ -424,25 +424,22 @@ class ActivityFeedItem extends StatelessWidget {
         child: Container(
           color: Colors.white54,
           child: ListTile(
-            title: GestureDetector(
-              onTap: () => showProfile(context, profileId: userId),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildUserName(),
-                  RichText(
-                    overflow: TextOverflow.visible,
-                    text: TextSpan(
-                      text: activityItemText,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: fontName,
-                      ),
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildUserName(),
+                RichText(
+                  overflow: TextOverflow.visible,
+                  text: TextSpan(
+                    text: activityItemText,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: fontName,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             leading: buildUserPhoto(context),
             subtitle: Text(

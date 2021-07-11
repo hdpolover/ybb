@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +27,9 @@ class Messaging extends StatefulWidget {
 }
 
 class _MessagingState extends State<Messaging> {
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   bool isValid = false;
 
   String currentUserId = currentUser.id;
@@ -59,7 +65,17 @@ class _MessagingState extends State<Messaging> {
     selectedUserId = widget.selectedUser.id;
     selectedUserPhoto = widget.selectedUser.photoUrl;
 
+    registerNotification();
+    configLocalNotification();
+
     createGroupChatId();
+  }
+
+  Future<bool> onBackPressed() {
+    usersRef.doc(currentUserId).update({'chattingWith': null});
+    Navigator.pop(context);
+
+    return Future.value(false);
   }
 
   createGroupChatId() async {
@@ -69,6 +85,8 @@ class _MessagingState extends State<Messaging> {
       groupChatId = '$selectedUserId-$currentUserId';
     }
     print(groupChatId);
+
+    await usersRef.doc(currentUserId).update({'chattingWith': selectedUserId});
 
     // FirebaseFirestore.instance
     //     .collection('users')
@@ -269,9 +287,31 @@ class _MessagingState extends State<Messaging> {
             document.get('type') == 0
                 // Text
                 ? Container(
-                    child: Text(
-                      document.get('content'),
-                      style: TextStyle(color: Colors.blue),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          document.get('content'),
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                        SizedBox(height: 5),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.24,
+                            ),
+                            Text(
+                              DateFormat('dd MMM kk:mm').format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      int.parse(document.get('timestamp')))),
+                              style: TextStyle(
+                                  color: greyColor,
+                                  fontSize: 12.0,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                     width: 200.0,
@@ -282,75 +322,96 @@ class _MessagingState extends State<Messaging> {
                         bottom: isLastMessageRight(index) ? 20.0 : 10.0,
                         right: 10.0),
                   )
-                : Container(
-                    child: OutlinedButton(
-                      child: Material(
-                        child: Image.network(
-                          document.get("content"),
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: greyColor2,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8.0),
-                                ),
-                              ),
+                : Stack(
+                    children: [
+                      Container(
+                        child: OutlinedButton(
+                          child: Material(
+                            child: Image.network(
+                              document.get("content"),
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: greyColor2,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                  ),
+                                  width: 200.0,
+                                  height: 200.0,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      backgroundColor: primaryColor,
+                                      value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null &&
+                                              loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes
+                                          : null,
+                                    ),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, object, stackTrace) {
+                                return Material(
+                                  child: Image.asset(
+                                    'assets/images/img_not_available.jpeg',
+                                    width: 200.0,
+                                    height: 200.0,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0),
+                                  ),
+                                  clipBehavior: Clip.hardEdge,
+                                );
+                              },
                               width: 200.0,
                               height: 200.0,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  backgroundColor: primaryColor,
-                                  value: loadingProgress.expectedTotalBytes !=
-                                              null &&
-                                          loadingProgress.expectedTotalBytes !=
-                                              null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes
-                                      : null,
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0)),
+                            clipBehavior: Clip.hardEdge,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FullPhoto(
+                                  url: document.get('content'),
                                 ),
                               ),
                             );
                           },
-                          errorBuilder: (context, object, stackTrace) {
-                            return Material(
-                              child: Image.asset(
-                                'images/img_not_available.jpeg',
-                                width: 200.0,
-                                height: 200.0,
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8.0),
-                              ),
-                              clipBehavior: Clip.hardEdge,
-                            );
-                          },
-                          width: 200.0,
-                          height: 200.0,
-                          fit: BoxFit.cover,
+                          style: ButtonStyle(
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.all(0))),
                         ),
-                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        clipBehavior: Clip.hardEdge,
+                        margin: EdgeInsets.only(
+                            bottom: isLastMessageRight(index) ? 20.0 : 10.0,
+                            right: 10.0),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FullPhoto(
-                              url: document.get('content'),
-                            ),
-                          ),
-                        );
-                      },
-                      style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                              EdgeInsets.all(0))),
-                    ),
-                    margin: EdgeInsets.only(
-                        bottom: isLastMessageRight(index) ? 20.0 : 10.0,
-                        right: 10.0),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(120, 175, 0, 0),
+                        child: Text(
+                          DateFormat('dd MMM kk:mm').format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  int.parse(document.get('timestamp')))),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12.0,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                    ],
                   )
           ],
           mainAxisAlignment: MainAxisAlignment.end,
@@ -362,48 +423,73 @@ class _MessagingState extends State<Messaging> {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  isLastMessageLeft(index)
-                      ? Material(
-                          child: Image.network(
-                            selectedUserPhoto,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  backgroundColor: primaryColor,
-                                  value: loadingProgress.expectedTotalBytes !=
-                                              null &&
-                                          loadingProgress.expectedTotalBytes !=
-                                              null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes
-                                      : null,
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, object, stackTrace) {
-                              return Icon(
-                                Icons.account_circle,
-                                size: 35,
-                                color: greyColor,
-                              );
-                            },
-                            width: 35,
-                            height: 35,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(18.0),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                        )
-                      : Container(width: 35.0),
+                  // isLastMessageLeft(index)
+                  //     ? Material(
+                  //         child: Image.network(
+                  //           selectedUserPhoto,
+                  //           loadingBuilder: (BuildContext context, Widget child,
+                  //               ImageChunkEvent loadingProgress) {
+                  //             if (loadingProgress == null) return child;
+                  //             return Center(
+                  //               child: CircularProgressIndicator(
+                  //                 backgroundColor: primaryColor,
+                  //                 value: loadingProgress.expectedTotalBytes !=
+                  //                             null &&
+                  //                         loadingProgress.expectedTotalBytes !=
+                  //                             null
+                  //                     ? loadingProgress.cumulativeBytesLoaded /
+                  //                         loadingProgress.expectedTotalBytes
+                  //                     : null,
+                  //               ),
+                  //             );
+                  //           },
+                  //           errorBuilder: (context, object, stackTrace) {
+                  //             return Icon(
+                  //               Icons.account_circle,
+                  //               size: 35,
+                  //               color: greyColor,
+                  //             );
+                  //           },
+                  //           width: 35,
+                  //           height: 35,
+                  //           fit: BoxFit.cover,
+                  //         ),
+                  //         borderRadius: BorderRadius.all(
+                  //           Radius.circular(18.0),
+                  //         ),
+                  //         clipBehavior: Clip.hardEdge,
+                  //       )
+                  //     : Container(width: 35.0),
+
                   document.get('type') == 0
                       ? Container(
-                          child: Text(
-                            document.get('content'),
-                            style: TextStyle(color: Colors.white),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                document.get('content'),
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.24,
+                                  ),
+                                  Text(
+                                    DateFormat('dd MMM kk:mm').format(
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                            int.parse(
+                                                document.get('timestamp')))),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12.0,
+                                        fontStyle: FontStyle.italic),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                           padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                           width: 200.0,
@@ -412,95 +498,114 @@ class _MessagingState extends State<Messaging> {
                               borderRadius: BorderRadius.circular(8.0)),
                           margin: EdgeInsets.only(left: 10.0),
                         )
-                      : Container(
-                          child: TextButton(
-                            child: Material(
-                              child: Image.network(
-                                document.get('content'),
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
+                      : Stack(
+                          children: [
+                            Container(
+                              child: TextButton(
+                                child: Material(
+                                  child: Image.network(
+                                    document.get('content'),
+                                    loadingBuilder: (BuildContext context,
+                                        Widget child,
+                                        ImageChunkEvent loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(8.0),
+                                          ),
+                                        ),
+                                        width: 200.0,
+                                        height: 200.0,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            backgroundColor: primaryColor,
+                                            value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null &&
+                                                    loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    loadingProgress
+                                                        .expectedTotalBytes
+                                                : null,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder:
+                                        (context, object, stackTrace) =>
+                                            Material(
+                                      child: Image.asset(
+                                        'assets/images/img_not_available.jpeg',
+                                        width: 200.0,
+                                        height: 200.0,
+                                        fit: BoxFit.cover,
+                                      ),
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(8.0),
                                       ),
+                                      clipBehavior: Clip.hardEdge,
                                     ),
-                                    width: 200.0,
-                                    height: 200.0,
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        backgroundColor: primaryColor,
-                                        value: loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null &&
-                                                loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes
-                                            : null,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                errorBuilder: (context, object, stackTrace) =>
-                                    Material(
-                                  child: Image.asset(
-                                    'assets/images/img_not_available.jpeg',
                                     width: 200.0,
                                     height: 200.0,
                                     fit: BoxFit.cover,
                                   ),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8.0),
-                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8.0)),
                                   clipBehavior: Clip.hardEdge,
                                 ),
-                                width: 200.0,
-                                height: 200.0,
-                                fit: BoxFit.cover,
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FullPhoto(
+                                              url: document.get('content'))));
+                                },
+                                style: ButtonStyle(
+                                    padding:
+                                        MaterialStateProperty.all<EdgeInsets>(
+                                            EdgeInsets.all(0))),
                               ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8.0)),
-                              clipBehavior: Clip.hardEdge,
+                              margin: EdgeInsets.only(left: 10.0),
                             ),
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => FullPhoto(
-                                          url: document.get('content'))));
-                            },
-                            style: ButtonStyle(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                    EdgeInsets.all(0))),
-                          ),
-                          margin: EdgeInsets.only(left: 10.0),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(130, 175, 0, 0),
+                              child: Text(
+                                DateFormat('dd MMM kk:mm').format(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        int.parse(document.get('timestamp')))),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12.0,
+                                    fontStyle: FontStyle.italic),
+                              ),
+                            ),
+                          ],
                         )
                 ],
               ),
 
               // Time
-              isLastMessageLeft(index)
-                  ? Container(
-                      child: Text(
-                        DateFormat('dd MMM kk:mm').format(
-                            DateTime.fromMillisecondsSinceEpoch(
-                                int.parse(document.get('timestamp')))),
-                        style: TextStyle(
-                            color: greyColor,
-                            fontSize: 12.0,
-                            fontStyle: FontStyle.italic),
-                      ),
-                      margin:
-                          EdgeInsets.only(left: 50.0, top: 5.0, bottom: 5.0),
-                    )
-                  : Container()
+              // isLastMessageLeft(index)
+              //     ? Container(
+              //         child: Text(
+              //           DateFormat('dd MMM kk:mm').format(
+              //               DateTime.fromMillisecondsSinceEpoch(
+              //                   int.parse(document.get('timestamp')))),
+              //           style: TextStyle(
+              //               color: greyColor,
+              //               fontSize: 12.0,
+              //               fontStyle: FontStyle.italic),
+              //         ),
+              //         margin:
+              //             EdgeInsets.only(left: 50.0, top: 5.0, bottom: 5.0),
+              //       )
+              //     : Container()
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
           ),
@@ -530,71 +635,134 @@ class _MessagingState extends State<Messaging> {
     }
   }
 
+  void registerNotification() {
+    firebaseMessaging.requestNotificationPermissions();
+
+    firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
+      print('onMessage: $message');
+      Platform.isAndroid
+          ? showNotification(message['notification'])
+          : showNotification(message['aps']['alert']);
+      return;
+    }, onResume: (Map<String, dynamic> message) {
+      print('onResume: $message');
+      return;
+    }, onLaunch: (Map<String, dynamic> message) {
+      print('onLaunch: $message');
+      return;
+    });
+
+    firebaseMessaging.getToken().then((token) {
+      print('token: $token');
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .update({'androidNotificationToken': token});
+    }).catchError((err) {
+      Fluttertoast.showToast(msg: err.message.toString());
+    });
+  }
+
+  void showNotification(message) async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      Platform.isAndroid
+          ? 'com.hdpolover.ybbproject'
+          : 'com.hdpolover.ybbproject',
+      'YBB',
+      'You have a new message',
+      playSound: true,
+      enableVibration: true,
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
+        message['body'].toString(), platformChannelSpecifics,
+        payload: json.encode(message));
+  }
+
+  void configLocalNotification() {
+    AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings();
+    InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Colors.white,
+    return WillPopScope(
+      onWillPop: onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: Colors.white,
+            ),
+            onPressed: onBackPressed,
           ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: GestureDetector(
-          onTap: () => showProfile(context, profileId: widget.selectedUser.id),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              ClipOval(
-                child: Container(
-                  height: size.height * 0.04,
-                  width: size.width * 0.09,
-                  child: PhotoWidget(
-                    photoLink: widget.selectedUser.photoUrl,
+          title: GestureDetector(
+            onTap: () =>
+                showProfile(context, profileId: widget.selectedUser.id),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                ClipOval(
+                  child: Container(
+                    height: size.height * 0.04,
+                    width: size.width * 0.09,
+                    child: PhotoWidget(
+                      photoLink: widget.selectedUser.photoUrl,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: size.width * 0.03,
-              ),
-              Expanded(
-                child: Text(
-                  widget.selectedUser.displayName,
-                  style: messageTextStyle,
+                SizedBox(
+                  width: size.width * 0.03,
                 ),
-              ),
-            ],
-          ),
-        ),
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: Stack(
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height -
-                MediaQuery.of(context).size.height * 0.06,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/chat_bg.jpg"),
-                fit: BoxFit.cover,
-              ),
+                Expanded(
+                  child: Text(
+                    widget.selectedUser.displayName,
+                    style: messageTextStyle,
+                  ),
+                ),
+              ],
             ),
           ),
-          Column(
-            children: [
-              // List of messages
-              buildListMessage(),
-              // Input content
-              buildInput(),
-            ],
-          ),
-        ],
+          elevation: 0,
+          centerTitle: true,
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        body: Stack(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).size.height * 0.06,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/chat_bg.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Column(
+              children: [
+                // List of messages
+                buildListMessage(),
+                // Input content
+                buildInput(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
