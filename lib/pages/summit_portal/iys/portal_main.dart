@@ -1,11 +1,16 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:ybb/helpers/api/summit_models/summit_participant.dart';
 import 'package:ybb/pages/summit_portal/iys/portal_home.dart';
 import 'package:ybb/pages/summit_portal/iys/portal_payment.dart';
 import 'package:ybb/pages/summit_portal/iys/portal_profile.dart';
 import 'package:ybb/pages/summit_portal/iys/portal_timeline.dart';
 
 class PortalMain extends StatefulWidget {
+  final SummitParticipant participant;
+
+  PortalMain({@required this.participant});
+
   @override
   _PortalMainState createState() => _PortalMainState();
 }
@@ -20,6 +25,8 @@ class _PortalMainState extends State<PortalMain> {
     super.initState();
     pageController = PageController();
   }
+
+  getParticipantDetails() {}
 
   @override
   void dispose() {

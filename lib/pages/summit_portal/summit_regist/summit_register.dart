@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ybb/helpers/api/summit_data.dart';
+import 'package:ybb/helpers/api/summit_models/summit.dart';
 import 'package:ybb/pages/summit_portal/summit_regist/register_1.dart';
 
 class SummitRegister extends StatefulWidget {
@@ -7,6 +9,19 @@ class SummitRegister extends StatefulWidget {
 }
 
 class _SummitRegisterState extends State<SummitRegister> {
+  List<Summit> summitList = [];
+  String a;
+
+  @override
+  void initState() {
+    super.initState();
+    SummitData.getSummits().then((value) {
+      summitList = value;
+
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +71,7 @@ class _SummitRegisterState extends State<SummitRegister> {
                     padding: EdgeInsets.fromLTRB(
                         MediaQuery.of(context).size.width * 0.05, 10, 20, 10),
                     child: Text(
-                      "Summit Registration",
+                      a == null ? "Summit" : summitList[0].desc,
                       style: TextStyle(
                         color: Colors.white,
                         fontFamily: "SFProText",

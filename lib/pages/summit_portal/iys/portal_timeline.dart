@@ -15,8 +15,7 @@ class _PortalTimelineState extends State<PortalTimeline> {
           defaultAppBar(context, titleText: "Timeline", removeBackButton: true),
       body: Container(
         color: Colors.white,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: ListView(
           children: <Widget>[
             TimelineTile(
               alignment: TimelineAlign.start,
