@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ybb/helpers/api/summit_data.dart';
-import 'package:ybb/helpers/api/summit_models/summit.dart';
+import 'package:ybb/helpers/api/summit.dart';
 import 'package:ybb/pages/summit_portal/summit_regist/register_1.dart';
 
 class SummitRegister extends StatefulWidget {
@@ -15,7 +14,7 @@ class _SummitRegisterState extends State<SummitRegister> {
   @override
   void initState() {
     super.initState();
-    SummitData.getSummits().then((value) {
+    Summit.getSummits().then((value) {
       summitList = value;
 
       setState(() {});

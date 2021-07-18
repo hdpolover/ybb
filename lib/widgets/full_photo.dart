@@ -10,13 +10,20 @@ class FullPhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(
-      //     'FULL PHOTO',
-      //     style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
-      //   ),
-      //   centerTitle: true,
-      // ),
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        elevation: 0,
+        backgroundColor: Colors.black,
+      ),
       body: FullPhotoScreen(url: url),
     );
   }

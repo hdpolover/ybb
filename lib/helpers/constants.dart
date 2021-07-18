@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const baseUrl = "http://192.168.1.3/";
+
 const backgroundColor = Colors.blueGrey;
 const primaryColor = Colors.blue;
 final greyColor = Color(0xffaeaeae);
@@ -61,4 +63,16 @@ final messageTextStyle = TextStyle(
   fontFamily: "SFProText",
   fontSize: 18.0,
   letterSpacing: 1,
+);
+
+final commonText = TextStyle(
+  fontFamily: "SFProText",
+  letterSpacing: 0.5,
+);
+
+final commonTitleText = TextStyle(
+  fontFamily: "OpenSans",
+  letterSpacing: 0.5,
+  fontSize: 18,
+  fontWeight: FontWeight.bold,
 );

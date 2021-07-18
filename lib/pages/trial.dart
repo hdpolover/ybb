@@ -9,7 +9,7 @@ final GoogleSignIn googleSignIn = new GoogleSignIn();
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 User firebaseUser;
-AppUser currentUser;
+AppUser sss;
 
 class Trial extends StatefulWidget {
   Trial({Key key}) : super(key: key);

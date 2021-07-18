@@ -1,15 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:ybb/helpers/api/summit_data.dart';
-import 'package:ybb/helpers/api/summit_models/summit.dart';
-import 'package:ybb/helpers/api/summit_models/summit_participant.dart';
+import 'package:ybb/helpers/api/summit.dart';
+import 'package:ybb/helpers/api/summit_participant.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/home.dart';
-import 'package:ybb/pages/summit_portal/iys/portal_main.dart';
+import 'package:ybb/pages/summit_portal/pages/portal_main.dart';
 import 'package:ybb/pages/summit_portal/summit_login.dart';
 import 'package:ybb/widgets/dialog.dart';
-import 'package:ybb/widgets/shimmers/summit_shimmer_layout.dart';
 
 class SPHome extends StatefulWidget {
   SPHome({Key key}) : super(key: key);
@@ -105,16 +103,19 @@ class _SPHomeState extends State<SPHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: defaultAppBar(context,
-      //     titleText: "Summit Portal", removeBackButton: true),
-      body: Column(
+      appBar: AppBar(
+        toolbarHeight: 0,
+        backgroundColor: Colors.blue,
+        brightness: Brightness.light,
+      ),
+      body: ListView(
         children: [
           Stack(
             children: [
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).size.height * 0.06,
+                    MediaQuery.of(context).size.height * 0.07,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/images/portal.jpg"),
@@ -127,7 +128,7 @@ class _SPHomeState extends State<SPHome> {
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).size.height * 0.06,
+                      MediaQuery.of(context).size.height * 0.07,
                   decoration: BoxDecoration(
                     gradient: new LinearGradient(
                       colors: [
@@ -158,7 +159,7 @@ class _SPHomeState extends State<SPHome> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.35,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -175,10 +176,14 @@ class _SPHomeState extends State<SPHome> {
                     SizedBox(
                         height: MediaQuery.of(context).size.height * 0.015),
                     FutureBuilder(
-                      future: SummitData.getSummits(),
+                      future: Summit.getSummits(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return SummitShimmer();
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.height * 0.1),
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         List<Summit> summits = snapshot.data;

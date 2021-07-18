@@ -11,8 +11,8 @@ class _PortalTimelineState extends State<PortalTimeline> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          defaultAppBar(context, titleText: "Timeline", removeBackButton: true),
+      appBar: defaultAppBar(context,
+          titleText: "Summit Timeline", removeBackButton: true),
       body: Container(
         color: Colors.white,
         child: ListView(

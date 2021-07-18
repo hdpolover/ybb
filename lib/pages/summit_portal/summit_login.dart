@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:ybb/helpers/api/summit_models/summit_participant.dart';
+import 'package:ybb/helpers/api/summit_participant.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/home.dart';
-import 'package:ybb/pages/summit_portal/iys/portal_main.dart';
+import 'package:ybb/pages/summit_portal/pages/portal_main.dart';
 import 'package:ybb/widgets/dialog.dart';
 
 class SummitLogin extends StatefulWidget {
@@ -259,7 +259,7 @@ class _SummitLoginState extends State<SummitLogin> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 15),
+                  SizedBox(height: 30),
                   // Padding(
                   //   padding: EdgeInsets.all(16.0),
                   //   child: Container(

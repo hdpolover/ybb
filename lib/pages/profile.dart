@@ -148,27 +148,32 @@ class _ProfileState extends State<Profile>
     });
   }
 
-  Column buildCountColumn(String label, int count) {
-    return Column(
-      children: <Widget>[
-        Text(
-          count.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: MediaQuery.of(context).size.height * 0.02,
-            fontWeight: FontWeight.bold,
-            fontFamily: fontName,
-          ),
+  Container buildCountColumn(String label, int count) {
+    return Container(
+      child: ConnectivityWidgetWrapper(
+        offlineWidget: Container(),
+        child: Column(
+          children: <Widget>[
+            Text(
+              count.toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: MediaQuery.of(context).size.height * 0.02,
+                fontWeight: FontWeight.bold,
+                fontFamily: fontName,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: MediaQuery.of(context).size.height * 0.014,
+                fontFamily: fontName,
+              ),
+            ),
+          ],
         ),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: MediaQuery.of(context).size.height * 0.014,
-            fontFamily: fontName,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -186,7 +191,7 @@ class _ProfileState extends State<Profile>
         offlineWidget: GestureDetector(
           onTap: null,
           child: Container(
-            width: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width * 0.4,
             decoration: BoxDecoration(
               color: isFollowing && currentUserId != widget.profileId
                   ? Colors.white38

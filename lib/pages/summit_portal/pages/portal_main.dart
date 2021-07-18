@@ -1,10 +1,10 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:ybb/helpers/api/summit_models/summit_participant.dart';
-import 'package:ybb/pages/summit_portal/iys/portal_home.dart';
-import 'package:ybb/pages/summit_portal/iys/portal_payment.dart';
-import 'package:ybb/pages/summit_portal/iys/portal_profile.dart';
-import 'package:ybb/pages/summit_portal/iys/portal_timeline.dart';
+import 'package:ybb/helpers/api/summit_participant.dart';
+import 'package:ybb/pages/summit_portal/pages/portal_home.dart';
+import 'package:ybb/pages/summit_portal/pages/portal_payment.dart';
+import 'package:ybb/pages/summit_portal/pages/portal_profile.dart';
+import 'package:ybb/pages/summit_portal/pages/portal_timeline.dart';
 
 class PortalMain extends StatefulWidget {
   final SummitParticipant participant;

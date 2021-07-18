@@ -1,0 +1,370 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:ybb/helpers/api/payment.dart';
+import 'package:ybb/helpers/api/summit.dart';
+import 'package:ybb/helpers/constants.dart';
+import 'package:ybb/pages/home.dart';
+import 'package:ybb/widgets/dialog.dart';
+
+class Pay extends StatefulWidget {
+  final int summitId;
+  final String type;
+  final int paymentTypeId;
+
+  Pay({
+    @required this.summitId,
+    @required this.type,
+    @required this.paymentTypeId,
+  });
+
+  @override
+  _PayState createState() => _PayState();
+}
+
+class _PayState extends State<Pay> {
+  TextEditingController accountNameController = new TextEditingController();
+  TextEditingController sourceNameController = new TextEditingController();
+  TextEditingController paymentDateController = new TextEditingController();
+  TextEditingController amountController = new TextEditingController();
+
+  File imageFile;
+  double paymentAmount = 0;
+
+  final GlobalKey<State> _key = GlobalKey<State>();
+
+  @override
+  void initState() {
+    super.initState();
+    getPaymentAmount();
+  }
+
+  getPaymentAmount() async {
+    List<Summit> s = await Summit.getSummitById(widget.summitId);
+
+    double amount = 0;
+    if (widget.type == "regist_fee") {
+      amount = double.parse(s[0].registFee);
+    } else {
+      amount = double.parse(s[0].programFee) / 2;
+    }
+    setState(() {
+      paymentAmount = amount;
+    });
+  }
+
+  buildPay() {
+    return ListView(
+      padding: EdgeInsets.all(20),
+      children: [
+        buildPaymentDateField(),
+        buildAccountNameField(),
+        buildSourceNameField(),
+        buildAmountField(),
+        buildProofField(),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+        GestureDetector(
+          onTap: () {
+            checkForms();
+          },
+          child: Container(
+            height: 50.0,
+            width: 350.0,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(7.0),
+            ),
+            child: Center(
+              child: Text(
+                "SUBMIT",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  checkForms() {
+    if (accountNameController.text.trim().isNotEmpty &&
+        paymentDateController.text.trim().isNotEmpty &&
+        sourceNameController.text.trim().isNotEmpty &&
+        amountController.text.trim().isNotEmpty &&
+        imageFile != null) {
+      if (double.parse(amountController.text) != paymentAmount) {
+        Fluttertoast.showToast(
+            msg: "Payment amount is not correct!",
+            toastLength: Toast.LENGTH_SHORT,
+            timeInSecForIosWeb: 1);
+      } else {
+        sendPayment();
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: "Please complete the input fields first!",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1);
+    }
+  }
+
+  sendPayment() async {
+    Dialogs.showLoadingDialog(context, _key);
+    //Navigator.of(context).pop();
+
+    Map<String, dynamic> data = {
+      'id_participant': currentUser.id,
+      'id_payment_type': widget.paymentTypeId.toString(),
+      'account_name': accountNameController.text.trim(),
+      'bank_name': sourceNameController.text.trim(),
+      'amount': amountController.text.trim(),
+      'payment_date': paymentDateController.text.trim(),
+    };
+
+    await Payment.makePayment(data, imageFile);
+
+    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.of(context).pop();
+
+    Fluttertoast.showToast(
+        msg: "Payment has been made. Pull down to refresh page.",
+        toastLength: Toast.LENGTH_LONG,
+        timeInSecForIosWeb: 1);
+  }
+
+  Padding buildAccountNameField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 25),
+      child: TextFormField(
+        style: TextStyle(fontFamily: fontName),
+        controller: accountNameController,
+        keyboardType: TextInputType.name,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          errorStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Account Name",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: "Input account name",
+        ),
+      ),
+    );
+  }
+
+  Padding buildAmountField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 25),
+      child: Column(
+        children: [
+          TextFormField(
+            style: TextStyle(fontFamily: fontName),
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(fontFamily: fontName),
+              errorStyle: TextStyle(fontFamily: fontName),
+              border: OutlineInputBorder(),
+              labelText: "Amount",
+              labelStyle: TextStyle(fontFamily: fontName),
+              hintText: "Input payment amount",
+            ),
+          ),
+          SizedBox(height: 5),
+          RichText(
+            softWrap: true,
+            textAlign: TextAlign.justify,
+            text: TextSpan(
+              style: TextStyle(color: Colors.black),
+              children: <TextSpan>[
+                TextSpan(
+                  text: 'Note: ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: fontName,
+                    color: Colors.grey,
+                  ),
+                ),
+                TextSpan(
+                  text: "payment amount must be exactly " +
+                      NumberFormat.simpleCurrency(
+                              locale: 'eu', decimalDigits: 0, name: '')
+                          .format(paymentAmount) +
+                      "IDR",
+                  style: TextStyle(
+                    fontFamily: fontName,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Padding buildSourceNameField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 25),
+      child: Column(
+        children: [
+          TextFormField(
+            style: TextStyle(fontFamily: fontName),
+            controller: sourceNameController,
+            keyboardType: TextInputType.name,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(fontFamily: fontName),
+              errorStyle: TextStyle(fontFamily: fontName),
+              border: OutlineInputBorder(),
+              labelText: "Source/Bank Name",
+              labelStyle: TextStyle(fontFamily: fontName),
+              hintText: "Input payment source/bank name",
+            ),
+          ),
+          SizedBox(height: 5),
+          RichText(
+            softWrap: true,
+            textAlign: TextAlign.justify,
+            text: TextSpan(
+              style: TextStyle(color: Colors.black),
+              children: <TextSpan>[
+                TextSpan(
+                  text: 'Note: ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: fontName,
+                    color: Colors.grey,
+                  ),
+                ),
+                TextSpan(
+                  text:
+                      'payment source could be from bank accounts, PayPal, or digital wallets (OVO, DANA, GoPay, etc.)',
+                  style: TextStyle(
+                    fontFamily: fontName,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Padding buildPaymentDateField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 25),
+      child: TextFormField(
+        readOnly: true,
+        controller: paymentDateController,
+        onTap: () async {
+          var date = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2020),
+              lastDate: DateTime.now());
+
+          setState(() {
+            paymentDateController.text = DateFormat('yyyy-MM-dd').format(date);
+          });
+        },
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          errorStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Payment Date",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText: "Choose payment date",
+        ),
+      ),
+    );
+  }
+
+  Future getImage() async {
+    ImagePicker imagePicker = ImagePicker();
+    PickedFile pickedFile;
+
+    pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  Container buildProofField() {
+    return Container(
+      child: Column(
+        children: [
+          imageFile == null
+              ? Container()
+              : Container(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                        image: FileImage(imageFile), fit: BoxFit.cover),
+                  ),
+                ),
+          SizedBox(height: 20),
+          GestureDetector(
+            onTap: () {
+              getImage();
+            },
+            child: Container(
+              height: 40.0,
+              width: MediaQuery.of(context).size.width * 0.55,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(7.0),
+              ),
+              child: Center(
+                child: Text(
+                  "Choose Payment Proof File",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: Text(
+          "Payment",
+          style: appBarTextStyle,
+        ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        elevation: 0,
+        backgroundColor: Colors.blue,
+      ),
+      body: buildPay(),
+    );
+  }
+}

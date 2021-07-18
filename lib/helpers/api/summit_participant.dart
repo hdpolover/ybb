@@ -3,6 +3,8 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
+import '../constants.dart';
+
 class SummitParticipant {
   //participant main
   final String participantId;
@@ -25,7 +27,7 @@ class SummitParticipant {
 
   factory SummitParticipant.fromJSON(Map<String, dynamic> data) {
     return SummitParticipant(
-      participantId: data['id_participant'].toString(),
+      participantId: data['id_participant'],
       summitId: int.parse(data['id_summit']),
       email: data['email'],
       status: int.parse(data['status']),
@@ -36,8 +38,7 @@ class SummitParticipant {
   }
 
   static Future<SummitParticipant> getParticipant(String id) async {
-    String url =
-        "http://192.168.1.9/ybbadminweb/api/participant/?id_participant=" + id;
+    String url = baseUrl + "ybbadminweb/api/participant/?id_participant=" + id;
 
     final response = await http.get(url);
 
@@ -49,14 +50,14 @@ class SummitParticipant {
       List<dynamic> data = (jsonData as Map<String, dynamic>)['data'];
       return SummitParticipant.fromJSON(data[0]);
     } else {
-      print(response.statusCode);
-      throw Exception('Unexpected error occured!');
+      print(response.statusCode.toString() + ": error");
+      return null;
     }
   }
 
   static Future<SummitParticipant> registerParticipant(
       Map<String, dynamic> participantData) async {
-    String url = "http://192.168.1.9/ybbadminweb/api/participant";
+    String url = baseUrl + "ybbadminweb/api/participant";
 
     final response = await http.post(
       url,
@@ -74,6 +75,28 @@ class SummitParticipant {
 
       List<dynamic> data = (jsonData as Map<String, dynamic>)['data'];
       return SummitParticipant.fromJSON(data[0]);
+    } else {
+      print(response.statusCode);
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
+  static updateParticipantStatus(String id, String status) async {
+    String url = baseUrl + "ybbadminweb/api/participant";
+
+    final response = await http.put(
+      url,
+      body: {
+        "id_participant": id,
+        "status": status,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      print(jsonData);
+      return true;
     } else {
       print(response.statusCode);
       throw Exception('Unexpected error occured!');
