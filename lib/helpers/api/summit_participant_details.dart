@@ -100,8 +100,7 @@ class SummitParticipantDetails {
 
   static Future<SummitParticipantDetails> getParticipantDetails(
       String id) async {
-    String url =
-        baseUrl + "ybbadminweb/api/participant_detail/?id_participant=" + id;
+    String url = baseUrl + "/api/participant_detail/?id_participant=" + id;
 
     final response = await http.get(url);
 
@@ -119,7 +118,7 @@ class SummitParticipantDetails {
   }
 
   static addParticipantDetails(Map<String, dynamic> data, File image) async {
-    String url = baseUrl + "ybbadminweb/api/participant_detail";
+    String url = baseUrl + "/api/participant_detail";
 
     Uri apiUrl = Uri.parse(url);
 

@@ -56,7 +56,7 @@ class _ViewPaymentState extends State<ViewPayment> {
 
   buildPaymentProof() {
     String url = baseUrl +
-        "ybbadminweb/assets/img/payments/" +
+        "/assets/img/payments/" +
         p.paymentTypeId.toString() +
         "/" +
         p.paymentProof;

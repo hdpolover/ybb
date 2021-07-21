@@ -258,7 +258,7 @@ class _SummitRegister5State extends State<SummitRegister5> {
     } else {
       Fluttertoast.showToast(
         msg:
-            "Some field are still empty. Please fill them out before continuing.",
+            "Some fields are still empty. Please fill them out before continuing.",
         toastLength: Toast.LENGTH_LONG,
         timeInSecForIosWeb: 2,
       );

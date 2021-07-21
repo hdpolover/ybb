@@ -44,7 +44,7 @@ class SummitContent {
   }
 
   static Future<List<SummitContent>> getSummitContents() async {
-    String url = baseUrl + "ybbadminweb/api/summit_content/";
+    String url = baseUrl + "/api/summit_content/";
 
     final response = await http.get(url);
 

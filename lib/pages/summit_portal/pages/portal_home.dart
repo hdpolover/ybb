@@ -93,7 +93,7 @@ class SummitInfoTile extends StatelessWidget {
     var height = MediaQuery.of(context).size.height;
 
     String url = baseUrl +
-        "ybbadminweb/assets/img/summit_contents/" +
+        "/assets/img/summit_contents/" +
         content.idSummit.toString() +
         "/" +
         content.filePath;

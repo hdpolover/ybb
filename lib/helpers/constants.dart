@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const baseUrl = "http://192.168.1.3/";
+const baseUrl = "https://ybbfoundation.com";
 
 const backgroundColor = Colors.blueGrey;
 const primaryColor = Colors.blue;

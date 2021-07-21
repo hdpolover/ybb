@@ -274,8 +274,7 @@ class _PortalProfileState extends State<PortalProfile> {
   }
 
   buildParticipantComplete(SummitParticipantDetails data) {
-    String url =
-        baseUrl + 'ybbadminweb/assets/img/profile/participants/' + data.photo;
+    String url = baseUrl + '/assets/img/profile/participants/' + data.photo;
 
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;

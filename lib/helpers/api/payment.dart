@@ -55,7 +55,7 @@ class Payment {
   static Future<List<Payment>> getPaymentStatus(
       String participantId, int paymentTypeId) async {
     String url = baseUrl +
-        "ybbadminweb/api/payment/?id_participant=" +
+        "/api/payment/?id_participant=" +
         participantId +
         "&id_payment_type=" +
         paymentTypeId.toString();
@@ -79,7 +79,7 @@ class Payment {
   }
 
   static makePayment(Map<String, dynamic> data, File image) async {
-    String url = baseUrl + "ybbadminweb/api/payment";
+    String url = baseUrl + "/api/payment";
 
     Uri apiUrl = Uri.parse(url);
 
@@ -106,12 +106,11 @@ class Payment {
       final response = await http.Response.fromStream(streamedResponse);
       if (response.statusCode != 200) {
         print("errrr: " + response.statusCode.toString());
-        return null;
+        var responseData = await json.decode(json.encode(response.body));
+        print(responseData);
+        return responseData;
+        //return null;
       }
-      //final Map<String, dynamic> responseData = json.decode(response.body);
-      var responseData = await json.decode(json.encode(response.body));
-      print(responseData);
-      return responseData;
     } catch (e) {
       print(e);
       return null;

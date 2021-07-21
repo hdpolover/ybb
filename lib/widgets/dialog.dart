@@ -113,8 +113,7 @@ class Dialogs {
             }
 
             SummitParticipant s = snapshot.data;
-            String url =
-                baseUrl + "ybbadminweb/assets/img/qr_codes/" + s.qrCode;
+            String url = baseUrl + "/assets/img/qr_codes/" + s.qrCode;
             return SimpleDialog(
               key: key,
               elevation: 0,

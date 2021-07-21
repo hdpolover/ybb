@@ -174,7 +174,7 @@ class _SummitLoginState extends State<SummitLogin> {
               height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/images/portal.jpg"),
+                  image: AssetImage("assets/images/iys_regist.jpg"),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -225,7 +225,7 @@ class _SummitLoginState extends State<SummitLogin> {
                     ),
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.15,
+                    height: MediaQuery.of(context).size.height * 0.35,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(20.0),

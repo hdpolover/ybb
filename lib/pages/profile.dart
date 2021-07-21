@@ -775,9 +775,11 @@ class _ProfileState extends State<Profile>
                   height: MediaQuery.of(context).size.height * 0.01,
                 ),
                 Text(
-                  user.residence.length > 29
-                      ? user.residence.substring(0, 28) + "..."
-                      : user.residence,
+                  user.residence != null
+                      ? user.residence.length > 29
+                          ? user.residence.substring(0, 28) + "..."
+                          : user.residence
+                      : "-",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: MediaQuery.of(context).size.width * 0.035,

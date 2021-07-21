@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:ybb/helpers/constants.dart';
 
 class Summit {
   String summitId;
@@ -28,7 +29,7 @@ class Summit {
   }
 
   static Future<List<Summit>> getSummits() async {
-    String url = "http://192.168.1.3/ybbadminweb/api/summit";
+    String url = baseUrl + "/api/summit";
 
     final response = await http.get(url);
 
@@ -49,8 +50,7 @@ class Summit {
   }
 
   static Future<List<Summit>> getSummitById(int summitId) async {
-    String url = "http://192.168.1.3/ybbadminweb/api/summit/?id_summit=" +
-        summitId.toString();
+    String url = baseUrl + "/api/summit/?id_summit=" + summitId.toString();
 
     final response = await http.get(url);
 

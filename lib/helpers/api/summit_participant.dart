@@ -38,7 +38,7 @@ class SummitParticipant {
   }
 
   static Future<SummitParticipant> getParticipant(String id) async {
-    String url = baseUrl + "ybbadminweb/api/participant/?id_participant=" + id;
+    String url = baseUrl + "/api/participant/?id_participant=" + id;
 
     final response = await http.get(url);
 
@@ -57,7 +57,7 @@ class SummitParticipant {
 
   static Future<SummitParticipant> registerParticipant(
       Map<String, dynamic> participantData) async {
-    String url = baseUrl + "ybbadminweb/api/participant";
+    String url = baseUrl + "/api/participant";
 
     final response = await http.post(
       url,
@@ -82,7 +82,7 @@ class SummitParticipant {
   }
 
   static updateParticipantStatus(String id, String status) async {
-    String url = baseUrl + "ybbadminweb/api/participant";
+    String url = baseUrl + "/api/participant";
 
     final response = await http.put(
       url,

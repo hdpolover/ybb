@@ -33,7 +33,7 @@ class PaymentType {
   }
 
   static Future<List<PaymentType>> getPaymentTypes() async {
-    String url = baseUrl + "ybbadminweb/api/payment_type";
+    String url = baseUrl + "/api/payment_type";
 
     final response = await http.get(url);
 

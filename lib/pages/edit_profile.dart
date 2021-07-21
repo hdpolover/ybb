@@ -505,9 +505,11 @@ class _EditProfileState extends State<EditProfile> {
                         },
                       )
                     : Text(
-                        residenceString == "-"
+                        residenceString == null
                             ? "No residence specified"
-                            : residenceString,
+                            : residenceString == "-"
+                                ? "No residence specified"
+                                : residenceString,
                         style: TextStyle(
                           fontFamily: fontName,
                           color: residenceString == "-"

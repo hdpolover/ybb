@@ -241,6 +241,8 @@ class _SummitRegister4State extends State<SummitRegister4> {
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             GestureDetector(
               onTap: () {
+                saveProgress();
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
