@@ -12,6 +12,7 @@ class SummitRegister4 extends StatefulWidget {
 class _SummitRegister4State extends State<SummitRegister4> {
   TextEditingController sourceNameController = TextEditingController();
   TextEditingController videoLinkController = TextEditingController();
+  TextEditingController proofLinkController = TextEditingController();
 
   List _sources = [
     "Instagram",
@@ -43,6 +44,7 @@ class _SummitRegister4State extends State<SummitRegister4> {
       sourcesValue = prefs.getString("know_program_from");
     });
     videoLinkController.text = prefs.getString("video_link");
+    proofLinkController.text = prefs.getString("proof_link");
 
     progress = prefs.getInt("filledCount");
   }
@@ -53,6 +55,7 @@ class _SummitRegister4State extends State<SummitRegister4> {
     prefs.setString("source_account_name", sourceNameController.text);
     prefs.setString("know_program_from", sourcesValue);
     prefs.setString("video_link", videoLinkController.text);
+    prefs.setString("proof_link", proofLinkController.text);
 
     if (progress <= 8) {
       prefs.setInt("filledCount", 8);
@@ -159,6 +162,26 @@ class _SummitRegister4State extends State<SummitRegister4> {
     );
   }
 
+  Padding buildProofLinkField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: TextFormField(
+        style: TextStyle(fontFamily: fontName),
+        controller: proofLinkController,
+        keyboardType: TextInputType.name,
+        decoration: InputDecoration(
+          hintStyle: TextStyle(fontFamily: fontName),
+          errorStyle: TextStyle(fontFamily: fontName),
+          border: OutlineInputBorder(),
+          labelText: "Share Requirement Proof Link",
+          labelStyle: TextStyle(fontFamily: fontName),
+          hintText:
+              "Input the link to your Google Drive folder containing proofs (screenshots)",
+        ),
+      ),
+    );
+  }
+
   Padding buildIntroField() {
     return Padding(
       padding: EdgeInsets.only(bottom: 30),
@@ -237,8 +260,167 @@ class _SummitRegister4State extends State<SummitRegister4> {
             buildIntroField(),
             buildKnowProgramFromField(),
             buildSourceField(),
+            RichText(
+              softWrap: true,
+              textAlign: TextAlign.justify,
+              text: TextSpan(
+                style: TextStyle(color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Note: ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: fontName,
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text:
+                        "Paste the link to your motivation video about why you want to participate in the 5th Istanbul Youth Summit. The video can uploaded to Instagram or Youtube.",
+                    style: TextStyle(
+                      fontFamily: fontName,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
             buildVideoLinkField(),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            RichText(
+              softWrap: true,
+              textAlign: TextAlign.justify,
+              text: TextSpan(
+                style: TextStyle(color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Note: ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: fontName,
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text:
+                        "As mentioned on the Registration Guidelines, you need to do the followings: ",
+                    style: TextStyle(
+                      fontFamily: fontName,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: RichText(
+                softWrap: true,
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  style: TextStyle(color: Colors.black),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: "- follow ",
+                      style: TextStyle(
+                        fontFamily: fontName,
+                        color: Colors.black,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "Istanbul Youth Summit ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontFamily: fontName,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "and  ",
+                      style: TextStyle(
+                        fontFamily: fontName,
+                        color: Colors.black,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "Youth Break the Boundaries ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontFamily: fontName,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "on Instagram.",
+                      style: TextStyle(
+                        fontFamily: fontName,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: RichText(
+                softWrap: true,
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  style: TextStyle(color: Colors.black),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: "- tag 5 of your friends on your Instagram post.",
+                      style: TextStyle(
+                        fontFamily: fontName,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: RichText(
+                softWrap: true,
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  style: TextStyle(color: Colors.black),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: "- share the event to 3 WhatsApp Groups",
+                      style: TextStyle(
+                        fontFamily: fontName,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: RichText(
+                softWrap: true,
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  style: TextStyle(color: Colors.black),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text:
+                          "Take a screenshot of each of the actions above and upload them to your Google Drive. Copy the link and paste it in the input form below. (Make sure the folder is accessible by public)",
+                      style: TextStyle(
+                        fontFamily: fontName,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            buildProofLinkField(),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             GestureDetector(
               onTap: () {
                 saveProgress();

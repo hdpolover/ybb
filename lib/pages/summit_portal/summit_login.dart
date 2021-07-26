@@ -256,6 +256,14 @@ class _SummitLoginState extends State<SummitLogin> {
                           ),
                           onPressed: () => openInstagram(),
                         ),
+                        IconButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.whatsapp,
+                            color: Colors.white,
+                          ),
+                          onPressed: () async =>
+                              await launch("https://wa.me/$adminNumber?text="),
+                        ),
                       ],
                     ),
                   ),

@@ -32,7 +32,8 @@ class _PayState extends State<Pay> {
   TextEditingController amountController = new TextEditingController();
 
   File imageFile;
-  double paymentAmount = 0;
+  double paymentAmountIDR = 0;
+  double paymentAmountUSD = 0;
 
   final GlobalKey<State> _key = GlobalKey<State>();
 
@@ -46,13 +47,21 @@ class _PayState extends State<Pay> {
     List<Summit> s = await Summit.getSummitById(widget.summitId);
 
     double amount = 0;
+    double usd = 0;
     if (widget.type == "regist_fee") {
       amount = double.parse(s[0].registFee);
-    } else {
-      amount = double.parse(s[0].programFee) / 2;
+      usd = 10;
+    } else if (widget.type == "program_fee_1") {
+      amount = 2000000;
+      usd = 140;
+    } else if (widget.type == "program_fee_2") {
+      amount = 3500000;
+      usd = 240;
     }
+
     setState(() {
-      paymentAmount = amount;
+      paymentAmountIDR = amount;
+      paymentAmountUSD = usd;
     });
   }
 
@@ -98,13 +107,24 @@ class _PayState extends State<Pay> {
         sourceNameController.text.trim().isNotEmpty &&
         amountController.text.trim().isNotEmpty &&
         imageFile != null) {
-      if (double.parse(amountController.text) != paymentAmount) {
-        Fluttertoast.showToast(
-            msg: "Payment amount is not correct!",
-            toastLength: Toast.LENGTH_SHORT,
-            timeInSecForIosWeb: 1);
+      if (sourceNameController.text.trim().toLowerCase() == "paypal") {
+        if (double.parse(amountController.text) != paymentAmountUSD) {
+          Fluttertoast.showToast(
+              msg: "Payment amount is not correct!",
+              toastLength: Toast.LENGTH_SHORT,
+              timeInSecForIosWeb: 1);
+        } else {
+          sendPayment();
+        }
       } else {
-        sendPayment();
+        if (double.parse(amountController.text) != paymentAmountIDR) {
+          Fluttertoast.showToast(
+              msg: "Payment amount is not correct!",
+              toastLength: Toast.LENGTH_SHORT,
+              timeInSecForIosWeb: 1);
+        } else {
+          sendPayment();
+        }
       }
     } else {
       Fluttertoast.showToast(
@@ -194,8 +214,13 @@ class _PayState extends State<Pay> {
                   text: "payment amount must be exactly " +
                       NumberFormat.simpleCurrency(
                               locale: 'eu', decimalDigits: 0, name: '')
-                          .format(paymentAmount) +
-                      "IDR",
+                          .format(paymentAmountIDR) +
+                      "IDR" +
+                      " / " +
+                      NumberFormat.simpleCurrency(
+                              locale: 'eu', decimalDigits: 0, name: '')
+                          .format(paymentAmountUSD) +
+                      "USD",
                   style: TextStyle(
                     fontFamily: fontName,
                     color: Colors.grey,

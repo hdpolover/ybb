@@ -52,8 +52,8 @@ class _SummitRegister1State extends State<SummitRegister1> {
   ];
 
   List _genders = [
-    "M",
-    "F",
+    "Male",
+    "Female",
   ];
 
   @override
@@ -126,7 +126,7 @@ class _SummitRegister1State extends State<SummitRegister1> {
           border: OutlineInputBorder(),
           labelText: "WhatsApp Number",
           labelStyle: TextStyle(fontFamily: fontName),
-          hintText: "Include the country code, e.g +62XXX",
+          hintText: "Include the country code, e.g 62XXX",
         ),
       ),
     );
@@ -164,7 +164,7 @@ class _SummitRegister1State extends State<SummitRegister1> {
           border: OutlineInputBorder(),
           labelText: "Instagram Account",
           labelStyle: TextStyle(fontFamily: fontName),
-          hintText: "Specify your instagram account",
+          hintText: "Specify your instagram account username",
         ),
       ),
     );

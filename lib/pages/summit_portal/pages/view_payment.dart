@@ -91,18 +91,29 @@ class _ViewPaymentState extends State<ViewPayment> {
         children: [
           Text(
             title,
-            style: commonTitleText,
+            style: titleStyle,
           ),
           Text(
             content,
             textAlign: TextAlign.justify,
             softWrap: true,
-            style: commonTextStyle,
+            style: contentStyle,
           ),
         ],
       ),
     );
   }
+
+  TextStyle titleStyle = new TextStyle(
+    fontFamily: fontName,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 1,
+  );
+
+  TextStyle contentStyle = new TextStyle(
+    fontFamily: fontName,
+    letterSpacing: 0.7,
+  );
 
   @override
   Widget build(BuildContext context) {

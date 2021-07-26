@@ -9,6 +9,7 @@ class Summit {
   String registFee;
   String programFee;
   int status;
+  int registStatus;
 
   Summit({
     this.summitId,
@@ -16,6 +17,7 @@ class Summit {
     this.registFee,
     this.programFee,
     this.status,
+    this.registStatus,
   });
 
   factory Summit.fromJSON(Map<String, dynamic> data) {
@@ -25,6 +27,7 @@ class Summit {
       registFee: data['regist_fee'],
       programFee: data['program_fee'],
       status: int.parse(data['status']),
+      registStatus: int.parse(data['regist_status']),
     );
   }
 

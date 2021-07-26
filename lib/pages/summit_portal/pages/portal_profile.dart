@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ybb/helpers/api/summit_participant.dart';
 import 'package:ybb/helpers/api/summit_participant_details.dart';
 import 'package:ybb/helpers/constants.dart';
@@ -13,13 +15,15 @@ import 'package:ybb/pages/summit_portal/pages/view_participant_detail.dart';
 import 'package:ybb/pages/summit_portal/summit_regist/register_1.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/dialog.dart';
+import 'package:ybb/widgets/shimmers/summit_profile_shimmer_layout.dart';
 
 class PortalProfile extends StatefulWidget {
   @override
   _PortalProfileState createState() => _PortalProfileState();
 }
 
-class _PortalProfileState extends State<PortalProfile> {
+class _PortalProfileState extends State<PortalProfile>
+    with AutomaticKeepAliveClientMixin<PortalProfile> {
   var refreshkey = GlobalKey<RefreshIndicatorState>();
   int formCount = 10;
 
@@ -37,10 +41,8 @@ class _PortalProfileState extends State<PortalProfile> {
   String info =
       "There are 5 sections of forms that you need to fill out. However you can always take a break and continue filling out the form another time if need be. Do that by clicking the icon on the AppBar.";
 
-  SummitParticipant sp;
-  SummitParticipantDetails spd;
-
   final GlobalKey<State> _key = GlobalKey<State>();
+  SummitParticipant sp;
 
   @override
   void initState() {
@@ -224,6 +226,10 @@ class _PortalProfileState extends State<PortalProfile> {
   Future<Null> refreshProfile() async {
     refreshkey.currentState?.show(atTop: true);
 
+    setState(() {
+      sp = null;
+    });
+
     await buildProfile();
   }
 
@@ -273,45 +279,56 @@ class _PortalProfileState extends State<PortalProfile> {
     );
   }
 
-  buildParticipantComplete(SummitParticipantDetails data) {
-    String url = baseUrl + '/assets/img/profile/participants/' + data.photo;
-
+  buildParticipantComplete() {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
 
-    return ListView(
-      children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(
-            width * 0.2,
-            30,
-            width * 0.2,
-            20,
-          ),
-          height: height * 0.3,
-          width: width * 0.5,
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            image: DecorationImage(
-              image: NetworkImage(url),
-              fit: BoxFit.cover,
+    return FutureBuilder(
+      future: SummitParticipantDetails.getParticipantDetails(currentUser.id),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return SummitProfileShimmer();
+        }
+
+        SummitParticipantDetails data = snapshot.data;
+
+        String url = baseUrl + '/assets/img/profile/participants/' + data.photo;
+
+        return ListView(
+          children: [
+            Container(
+              margin: EdgeInsets.fromLTRB(
+                width * 0.2,
+                30,
+                width * 0.2,
+                20,
+              ),
+              height: height * 0.3,
+              width: width * 0.5,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                image: DecorationImage(
+                  image: NetworkImage(url),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-          ),
-        ),
-        SizedBox(height: 10),
-        Center(
-          child: Text(
-            data.fullName.toUpperCase(),
-            style: commonTitleText,
-          ),
-        ),
-        SizedBox(height: 20),
-        buildProfileChip(),
-        SizedBox(height: 20),
-        buildParticipantDetails(data),
-        SizedBox(height: 30),
-        buildFooter(),
-      ],
+            SizedBox(height: 10),
+            Center(
+              child: Text(
+                data.fullName.toUpperCase(),
+                style: commonTitleText,
+              ),
+            ),
+            SizedBox(height: 20),
+            buildProfileChip(),
+            SizedBox(height: 20),
+            buildParticipantDetails(data),
+            SizedBox(height: 30),
+            buildFooter(),
+          ],
+        );
+      },
     );
   }
 
@@ -334,7 +351,7 @@ class _PortalProfileState extends State<PortalProfile> {
                   color: Colors.grey,
                   size: 20,
                 ),
-                onPressed: () {},
+                onPressed: () => openWeb(),
               ),
               IconButton(
                 icon: FaIcon(
@@ -342,7 +359,7 @@ class _PortalProfileState extends State<PortalProfile> {
                   color: Colors.grey,
                   size: 20,
                 ),
-                onPressed: () {},
+                onPressed: () => openInstagram(),
               ),
               IconButton(
                 icon: FaIcon(
@@ -350,7 +367,7 @@ class _PortalProfileState extends State<PortalProfile> {
                   color: Colors.grey,
                   size: 20,
                 ),
-                onPressed: () {},
+                onPressed: () => openFacebook(),
               ),
             ],
           ),
@@ -361,21 +378,27 @@ class _PortalProfileState extends State<PortalProfile> {
 
   buildProfile() {
     return FutureBuilder(
-      future: SummitParticipantDetails.getParticipantDetails(currentUser.id),
+      future: SummitParticipant.getParticipant(currentUser.id),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return buildNewParticipant();
+          return SummitProfileShimmer();
         }
 
-        SummitParticipantDetails spd = snapshot.data;
+        sp = snapshot.data;
 
-        return buildParticipantComplete(spd);
+        if (sp.status == 0) {
+          return buildNewParticipant();
+        } else {
+          return buildParticipantComplete();
+        }
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       appBar: defaultAppBar(context,
           titleText: "Participant Profile", removeBackButton: true),
@@ -461,11 +484,62 @@ class _PortalProfileState extends State<PortalProfile> {
                   ],
                 ),
               ),
-              onPressed: () {},
+              onPressed: () async =>
+                  await launch("https://wa.me/$adminNumber?text="),
             ),
           ),
         ],
       ),
     );
   }
+
+  openInstagram() async {
+    var url = "https://www.instagram.com/istanbulyouthsummit/";
+
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        universalLinksOnly: true,
+      );
+    } else {
+      Fluttertoast.showToast(
+          msg: 'There was a problem to open the url: $url',
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1);
+    }
+  }
+
+  openFacebook() async {
+    var url = "https://www.facebook.com/Istanbulyouthsummit/";
+
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        universalLinksOnly: true,
+      );
+    } else {
+      Fluttertoast.showToast(
+          msg: 'There was a problem to open the url: $url',
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1);
+    }
+  }
+
+  openWeb() async {
+    var url = "https://www.iys.youthbreaktheboundaries.com/";
+
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        universalLinksOnly: true,
+      );
+    } else {
+      Fluttertoast.showToast(
+          msg: 'There was a problem to open the url: $url',
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1);
+    }
+  }
+
+  bool get wantKeepAlive => true;
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ybb/helpers/api/summit.dart';
 import 'package:ybb/helpers/api/summit_participant.dart';
+import 'package:ybb/helpers/api/summit_timeline.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/summit_portal/pages/portal_main.dart';
@@ -22,7 +23,15 @@ class _SPHomeState extends State<SPHome> {
     super.initState();
   }
 
-  buildSummitTile(String summitLogo, String imgUrl, Widget pageTo, int status) {
+  checkRegist() async {
+    SummitTimeline st = await SummitTimeline.getTimelinebyId("1");
+    DateTime current = new DateTime.now();
+    bool isRegistrationPassed = st.endTimeline.isBefore(current);
+    return isRegistrationPassed;
+  }
+
+  buildSummitTile(String summitLogo, String imgUrl, Widget pageTo, int status,
+      int registStatus) {
     return GestureDetector(
       onTap: status == 0
           ? () {
@@ -35,29 +44,47 @@ class _SPHomeState extends State<SPHome> {
           : () async {
               Dialogs.showLoadingDialog(context, key);
 
-              await SummitParticipant.getParticipant(currentUser.id)
-                  .then((value) {
-                SummitParticipant p = value;
-                setState(() {});
+              await SummitParticipant.getParticipant(currentUser.id).then(
+                (value) {
+                  SummitParticipant p = value;
+                  setState(() {});
 
-                if (p != null) {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PortalMain(participant: p),
-                    ),
-                  );
-                } else {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => pageTo,
-                    ),
-                  );
-                }
-              });
+                  if (p != null) {
+                    Navigator.of(context, rootNavigator: true).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PortalMain(participant: p),
+                      ),
+                    );
+                  } else {
+                    // Navigator.of(context, rootNavigator: true).pop();
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => pageTo,
+                    //   ),
+                    // );
+                    if (registStatus == 0) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      Fluttertoast.showToast(
+                        msg:
+                            "Apologies. Seems like the registration is already closed!",
+                        timeInSecForIosWeb: 1,
+                        toastLength: Toast.LENGTH_LONG,
+                      );
+                    } else {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => pageTo,
+                        ),
+                      );
+                    }
+                  }
+                },
+              );
             },
       child: Container(
         padding: EdgeInsets.fromLTRB(15, 10, 0, 10),
@@ -263,6 +290,7 @@ class _SPHomeState extends State<SPHome> {
                                     summitId: int.parse(summits[0].summitId),
                                   ),
                                   summits[0].status,
+                                  summits[0].registStatus,
                                 ),
                                 buildSummitTile(
                                   "ays_logo.png",
@@ -274,6 +302,7 @@ class _SPHomeState extends State<SPHome> {
                                     summitId: int.parse(summits[1].summitId),
                                   ),
                                   summits[1].status,
+                                  summits[1].registStatus,
                                 ),
                               ],
                             ),
@@ -289,6 +318,7 @@ class _SPHomeState extends State<SPHome> {
                                     summitId: int.parse(summits[2].summitId),
                                   ),
                                   summits[2].status,
+                                  summits[2].registStatus,
                                 ),
                                 buildSummitTile(
                                   "soon_text.png",
@@ -300,6 +330,7 @@ class _SPHomeState extends State<SPHome> {
                                     summitId: int.parse(summits[3].summitId),
                                   ),
                                   summits[3].status,
+                                  summits[3].registStatus,
                                 ),
                               ],
                             ),

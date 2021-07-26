@@ -46,7 +46,8 @@ class _SummitRegister5State extends State<SummitRegister5> {
       subthemeValue,
       sourceName,
       sourcesValue,
-      videoLink;
+      videoLink,
+      proofLink;
 
   @override
   void initState() {
@@ -227,6 +228,7 @@ class _SummitRegister5State extends State<SummitRegister5> {
       sourceName = prefs.getString("source_account_name");
       sourcesValue = prefs.getString("know_program_from");
       videoLink = prefs.getString("video_link");
+      proofLink = prefs.getString("proof_link");
     });
 
     if (fullName.trim().isNotEmpty &&
@@ -253,6 +255,7 @@ class _SummitRegister5State extends State<SummitRegister5> {
         sourceName.trim().isNotEmpty &&
         sourcesValue.trim().isNotEmpty &&
         videoLink.trim().isNotEmpty &&
+        proofLink.trim().isNotEmpty &&
         imageFile != null) {
       showConfirmDialog(context);
     } else {
@@ -345,7 +348,7 @@ class _SummitRegister5State extends State<SummitRegister5> {
 
                 Fluttertoast.showToast(
                   msg: "Success! Pull down to refresh page.",
-                  toastLength: Toast.LENGTH_SHORT,
+                  toastLength: Toast.LENGTH_LONG,
                   timeInSecForIosWeb: 1,
                 );
               },

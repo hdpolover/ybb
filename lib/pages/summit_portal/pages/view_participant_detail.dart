@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ybb/helpers/api/summit_participant_details.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/widgets/default_appbar.dart';
@@ -93,7 +95,9 @@ class _ViewParticipantDetailsState extends State<ViewParticipantDetails> {
         Padding(
           padding: const EdgeInsets.only(left: 30, top: 10),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              openBrowser(url);
+            },
             child: Text(url,
                 textAlign: TextAlign.justify,
                 softWrap: true,
@@ -105,6 +109,17 @@ class _ViewParticipantDetailsState extends State<ViewParticipantDetails> {
         ),
       ],
     );
+  }
+
+  openBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      Fluttertoast.showToast(
+          msg: "Error! Cannot launch link.",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1);
+    }
   }
 
   buildHorizontalField(String title, String content) {

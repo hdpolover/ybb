@@ -10,14 +10,15 @@ import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/summit_portal/pages/pay.dart';
 import 'package:ybb/pages/summit_portal/pages/view_payment.dart';
 import 'package:ybb/widgets/default_appbar.dart';
-import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
+import 'package:ybb/widgets/shimmers/summit_item_shimmer_layout.dart';
 
 class PortalPayment extends StatefulWidget {
   @override
   _PortalPaymentState createState() => _PortalPaymentState();
 }
 
-class _PortalPaymentState extends State<PortalPayment> {
+class _PortalPaymentState extends State<PortalPayment>
+    with AutomaticKeepAliveClientMixin<PortalPayment> {
   var refreshkey = GlobalKey<RefreshIndicatorState>();
   List<PaymentType> pt = [];
 
@@ -36,12 +37,21 @@ class _PortalPaymentState extends State<PortalPayment> {
       future: PaymentType.getPaymentTypes(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return CommentShimmer();
+          return SummitItemShimmer();
         }
 
-        List<PaymentType> rawPt = snapshot.data;
+        pt = snapshot.data;
+        List<PaymentType> p = [];
 
-        pt = rawPt.toList();
+        DateTime currentDate = new DateTime.now();
+
+        for (int i = 0; i < pt.length; i++) {
+          if (!pt[i].startDate.isAfter(currentDate)) {
+            p.add(pt[i]);
+          }
+        }
+
+        pt = p.toList();
 
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -59,6 +69,8 @@ class _PortalPaymentState extends State<PortalPayment> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       appBar: defaultAppBar(context,
           titleText: "Summit Payment", removeBackButton: true),
@@ -74,6 +86,8 @@ class _PortalPaymentState extends State<PortalPayment> {
       ),
     );
   }
+
+  bool get wantKeepAlive => true;
 }
 
 class PaymentTypeItem extends StatefulWidget {
@@ -98,39 +112,78 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
 
   _PaymentTypeItemState({this.pt, this.ctx});
 
-  buildPaymentAmount() {
-    return FutureBuilder(
-        future: Summit.getSummitById(pt.summitId),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Container();
-          }
+  SummitParticipant sp;
 
-          Summit s = snapshot.data[0];
-
-          double registFee = double.parse(s.registFee);
-          double programFee = double.parse(s.programFee);
-
-          double feeAmount = 0;
-          if (pt.type == "regist_fee") {
-            feeAmount = registFee;
-          } else {
-            feeAmount = programFee / 2;
-          }
-
-          String text = NumberFormat.simpleCurrency(
-                      locale: 'eu', decimalDigits: 0, name: '')
-                  .format(feeAmount) +
-              'IDR';
-
-          return Text(text);
-        });
+  @override
+  void initState() {
+    super.initState();
+    getSummitParticipant();
   }
 
-  checkPaymentAvailability(int summitId) async {
-    SummitParticipant sp =
+  getSummitParticipant() async {
+    SummitParticipant p =
         await SummitParticipant.getParticipant(currentUser.id);
 
+    setState(() {
+      sp = p;
+    });
+  }
+
+  buildPaymentAmount() {
+    return FutureBuilder(
+      future: Summit.getSummitById(pt.summitId),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Container();
+        }
+
+        Summit s = snapshot.data[0];
+
+        double registFee = double.parse(s.registFee);
+
+        String text = "";
+        double feeAmount = 0;
+        if (pt.type == "regist_fee") {
+          feeAmount = registFee;
+          text = NumberFormat.simpleCurrency(
+                      locale: 'eu', decimalDigits: 0, name: '')
+                  .format(feeAmount) +
+              'IDR' +
+              " / " +
+              NumberFormat.simpleCurrency(
+                      locale: 'eu', decimalDigits: 0, name: '')
+                  .format(10) +
+              'USD';
+        } else if (pt.type == "program_fee_1") {
+          feeAmount = 2000000;
+          text = NumberFormat.simpleCurrency(
+                      locale: 'eu', decimalDigits: 0, name: '')
+                  .format(feeAmount) +
+              'IDR' +
+              " / " +
+              NumberFormat.simpleCurrency(
+                      locale: 'eu', decimalDigits: 0, name: '')
+                  .format(140) +
+              'USD';
+        } else if (pt.type == "program_fee_2") {
+          feeAmount = 3500000;
+          text = NumberFormat.simpleCurrency(
+                      locale: 'eu', decimalDigits: 0, name: '')
+                  .format(feeAmount) +
+              'IDR' +
+              " / " +
+              NumberFormat.simpleCurrency(
+                      locale: 'eu', decimalDigits: 0, name: '')
+                  .format(240) +
+              'USD';
+        }
+
+        return Text(text);
+      },
+    );
+  }
+
+  checkPaymentAvailability(int summitId, SummitParticipant sp) async {
     if (sp.status == 0) {
       return Fluttertoast.showToast(
           msg: "Please complete the registration form first.",
@@ -208,7 +261,7 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
                       ? () {}
                       : isAvailable
                           ? () {
-                              checkPaymentAvailability(summitId);
+                              checkPaymentAvailability(summitId, sp);
                             }
                           : null,
                   child: Container(

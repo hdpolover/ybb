@@ -6,14 +6,15 @@ import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/full_pdf.dart';
 import 'package:ybb/widgets/full_photo.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:ybb/widgets/shimmers/comment_shimmer_layout.dart';
+import 'package:ybb/widgets/shimmers/summit_item_shimmer_layout.dart';
 
 class PortalHome extends StatefulWidget {
   @override
   _PortalHomeState createState() => _PortalHomeState();
 }
 
-class _PortalHomeState extends State<PortalHome> {
+class _PortalHomeState extends State<PortalHome>
+    with AutomaticKeepAliveClientMixin<PortalHome> {
   TextEditingController desc = TextEditingController();
 
   var refreshkey = GlobalKey<RefreshIndicatorState>();
@@ -24,7 +25,7 @@ class _PortalHomeState extends State<PortalHome> {
       future: SummitContent.getSummitContents(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return CommentShimmer();
+          return SummitItemShimmer();
         }
 
         List<SummitContent> rawSc = snapshot.data;
@@ -62,6 +63,8 @@ class _PortalHomeState extends State<PortalHome> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       appBar: defaultAppBar(context,
           titleText: "Summit Portal", removeBackButton: true),
@@ -77,6 +80,8 @@ class _PortalHomeState extends State<PortalHome> {
       ),
     );
   }
+
+  bool get wantKeepAlive => true;
 }
 
 class SummitInfoTile extends StatelessWidget {

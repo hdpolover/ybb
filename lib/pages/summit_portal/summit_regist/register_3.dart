@@ -220,7 +220,7 @@ class _SummitRegister3State extends State<SummitRegister3> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: fontName,
-                      color: Colors.grey,
+                      color: Colors.black,
                     ),
                   ),
                   TextSpan(
@@ -228,7 +228,7 @@ class _SummitRegister3State extends State<SummitRegister3> {
                         "Your essay length must be between 200 to 300 words. It is recommended that you write your essay on other platforms and paste it here.",
                     style: TextStyle(
                       fontFamily: fontName,
-                      color: Colors.grey,
+                      color: Colors.black,
                     ),
                   ),
                 ],
