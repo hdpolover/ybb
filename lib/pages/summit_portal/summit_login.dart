@@ -52,7 +52,11 @@ class _SummitLoginState extends State<SummitLogin> {
         universalLinksOnly: true,
       );
     } else {
-      throw 'There was a problem to open the url: $url';
+      Fluttertoast.showToast(
+        msg: 'There was a problem to open the url: $url',
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+      );
     }
   }
 
