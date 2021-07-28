@@ -44,6 +44,7 @@ class _SummitRegister1State extends State<SummitRegister1> {
     "L",
     "XL",
     "XXL",
+    "XXXL",
   ];
 
   List _vegetarians = [

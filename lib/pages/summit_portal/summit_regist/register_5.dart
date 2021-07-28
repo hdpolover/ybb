@@ -258,6 +258,11 @@ class _SummitRegister5State extends State<SummitRegister5> {
         proofLink.trim().isNotEmpty &&
         imageFile != null) {
       showConfirmDialog(context);
+      // Fluttertoast.showToast(
+      //   msg: "Ready to submit",
+      //   toastLength: Toast.LENGTH_LONG,
+      //   timeInSecForIosWeb: 1,
+      // );
     } else {
       Fluttertoast.showToast(
         msg:
@@ -302,7 +307,6 @@ class _SummitRegister5State extends State<SummitRegister5> {
               child: Text('YES, I AM SURE'),
               onPressed: () async {
                 Dialogs.showLoadingDialog(context, _key);
-                //Navigator.of(context).pop();
 
                 Map<String, dynamic> data = {
                   'id_participant': currentUser.id,
@@ -398,11 +402,14 @@ class _SummitRegister5State extends State<SummitRegister5> {
           buildPhotoField(),
           SizedBox(height: MediaQuery.of(context).size.height * 0.05),
           GestureDetector(
-            onTap: isAgreed
-                ? () {
-                    checkForms();
-                  }
-                : null,
+            // onTap: isAgreed
+            //     ? () {
+            //         checkForms();
+            //       }
+            //     : () {},
+            onTap: () {
+              checkForms();
+            },
             child: Container(
               height: 50.0,
               width: 350.0,

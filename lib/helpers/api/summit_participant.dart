@@ -68,7 +68,9 @@ class SummitParticipant {
       },
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 ||
+        response.statusCode == 200 ||
+        response.statusCode == 500) {
       var jsonData = jsonDecode(response.body);
 
       print(jsonData);

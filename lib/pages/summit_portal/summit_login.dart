@@ -40,11 +40,7 @@ class _SummitLoginState extends State<SummitLogin> {
   }
 
   openInstagram() async {
-    var url = widget.summitName == "Istanbul Youth Summit (IYS) 2022"
-        ? "https://www.instagram.com/istanbulyouthsummit/"
-        : widget.summitName == "Asia Youth Summit (AYS) 2021"
-            ? "https://www.instagram.com/asiayouthsummit/"
-            : "hdpolover";
+    var url = "https://www.instagram.com/istanbulyouthsummit/";
 
     if (await canLaunch(url)) {
       await launch(
@@ -141,6 +137,14 @@ class _SummitLoginState extends State<SummitLogin> {
                       ),
                     ),
                   );
+                }).catchError((onError) {
+                  print(onError);
+                  Navigator.of(context).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Fluttertoast.showToast(
+                      msg: "An error occured. Try again later.",
+                      toastLength: Toast.LENGTH_SHORT,
+                      timeInSecForIosWeb: 1);
                 });
                 // , onError: (e) {
                 //   Navigator.of(context).pop();

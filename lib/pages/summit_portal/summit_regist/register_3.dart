@@ -17,6 +17,7 @@ class _SummitRegister3State extends State<SummitRegister3> {
     "Education",
     "Public Policy",
     "Mental Health",
+    "Public Health",
   ];
 
   List<DropdownMenuItem<String>> _subthemesDropdownItems;

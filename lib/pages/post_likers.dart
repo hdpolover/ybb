@@ -31,7 +31,27 @@ class _PostLikersState extends State<PostLikers> {
         List<UserResult> userToFollow = [];
         snapshot.data.documents.forEach(
           (doc) {
-            AppUser user = AppUser.fromDocument(doc);
+            AppUser user;
+            try {
+              user = AppUser.fromDocument(doc);
+            } catch (e) {
+              user = AppUser(
+                id: doc['id'],
+                email: doc['email'],
+                username: doc['username'],
+                photoUrl: doc['photoUrl'],
+                displayName: doc['displayName'],
+                bio: doc['bio'],
+                occupation: doc['occupation'],
+                interests: doc['interests'],
+                registerDate: doc['registerDate'].toDate(),
+                phoneNumber: doc['phoneNumber'],
+                showContacts: doc['showContacts'],
+                instagram: doc['instagram'],
+                facebook: doc['facebook'],
+                website: doc['website'],
+              );
+            }
             final bool isLiker = widget.likerIds.contains(user.id);
             // remove auth user from recommended list
             if (isLiker) {

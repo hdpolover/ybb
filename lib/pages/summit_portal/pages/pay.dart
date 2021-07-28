@@ -65,10 +65,91 @@ class _PayState extends State<Pay> {
     });
   }
 
+  buildTextPaymentInfo() {
+    return RichText(
+      softWrap: true,
+      textAlign: TextAlign.justify,
+      text: TextSpan(
+        style: TextStyle(color: Colors.black),
+        children: <TextSpan>[
+          TextSpan(
+            text: "Payment fee is transferred to:\n",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+            ),
+          ),
+          TextSpan(
+            text: "Bank Central Asia(BCA)\n",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: "Account Holder: ",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+            ),
+          ),
+          TextSpan(
+            text: "Meldi Latifah Saraswati\n",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: "Account No.: ",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+            ),
+          ),
+          TextSpan(
+            text: "0374505145\n",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: "OR\n",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: "PayPal\n",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: "paypal.me/aldisubakti or Subaktialdi88@gmail.com\n",
+            style: TextStyle(
+              fontFamily: fontName,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   buildPay() {
     return ListView(
       padding: EdgeInsets.all(20),
       children: [
+        buildTextPaymentInfo(),
         buildPaymentDateField(),
         buildAccountNameField(),
         buildSourceNameField(),
@@ -207,7 +288,7 @@ class _PayState extends State<Pay> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: fontName,
-                    color: Colors.grey,
+                    color: Colors.black,
                   ),
                 ),
                 TextSpan(
@@ -223,7 +304,7 @@ class _PayState extends State<Pay> {
                       "USD",
                   style: TextStyle(
                     fontFamily: fontName,
-                    color: Colors.grey,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -264,7 +345,7 @@ class _PayState extends State<Pay> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: fontName,
-                    color: Colors.grey,
+                    color: Colors.black,
                   ),
                 ),
                 TextSpan(
@@ -272,7 +353,7 @@ class _PayState extends State<Pay> {
                       'payment source could be from bank accounts, PayPal, or digital wallets (OVO, DANA, GoPay, etc.)',
                   style: TextStyle(
                     fontFamily: fontName,
-                    color: Colors.grey,
+                    color: Colors.black,
                   ),
                 ),
               ],
