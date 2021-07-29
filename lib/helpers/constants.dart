@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-const baseUrl = "https://ybbfoundation.com";
-//const baseUrl = "http://192.168.1.2/ybbadminweb";
+//const baseUrl = "https://ybbfoundation.com";
+const baseUrl = "http://192.168.1.12/ybbadminweb";
 
 const adminNumber = "6281218463506";
 
