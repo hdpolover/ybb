@@ -7,8 +7,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:ybb/helpers/constants.dart';
-import 'package:ybb/helpers/news_data.dart';
-import 'package:ybb/models/article.dart';
 import 'package:ybb/models/user.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/header.dart';
@@ -16,7 +14,6 @@ import 'package:ybb/widgets/post.dart';
 import 'package:ybb/widgets/shimmers/post_shimmer_layout.dart';
 
 List<String> idRecommendation = [];
-List<ArticleModel> newsFromTimeline;
 List<String> idFollowing;
 
 class Timeline extends StatefulWidget {
@@ -66,7 +63,6 @@ class _TimelineState extends State<Timeline>
 
     getUserRecommendation();
     getRawPosts();
-    getNews();
     getFollowing();
   }
 
@@ -101,16 +97,6 @@ class _TimelineState extends State<Timeline>
   //     }
   //   }
   // }
-
-  getNews() async {
-    NewsData newsData = new NewsData();
-
-    newsFromTimeline = [];
-
-    await newsData.getArticles();
-
-    newsFromTimeline = newsData.articles;
-  }
 
   getRawPosts() async {
     await getIdFollowing();

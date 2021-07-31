@@ -160,20 +160,19 @@ class SummitParticipantDetails {
     imageUploadRequest.fields['subtheme'] = data['subtheme'];
     imageUploadRequest.fields['video_link'] = data['video_link'];
 
-    try {
-      final streamedResponse = await imageUploadRequest.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      if (response.statusCode != 200) {
-        print("errrr: " + response.statusCode.toString());
-        return null;
-      }
-      //final Map<String, dynamic> responseData = json.decode(response.body);
-      var responseData = await json.decode(json.encode(response.body));
-      print(responseData);
-      return responseData;
-    } catch (e) {
-      print(e);
-      return null;
+    final streamedResponse = await imageUploadRequest.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    // if (response.statusCode != 200) {
+    //   print("errrr: " + response.statusCode.toString());
+    //   return null;
+    // }
+    final statusCode = response.statusCode;
+    if (statusCode != 201 || response.body == null) {
+      throw new Exception("An error occured : [Status Code : $statusCode]");
     }
+
+    var responseData = await json.decode(json.encode(response.body));
+    print(responseData);
+    return responseData;
   }
 }

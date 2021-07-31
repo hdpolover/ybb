@@ -134,7 +134,8 @@ class _PayState extends State<Pay> {
             ),
           ),
           TextSpan(
-            text: "paypal.me/aldisubakti or Subaktialdi88@gmail.com\n",
+            text:
+                "paypal.me/istanbulyouthsummit\nistanbulyouthsummit@gmail.com\n",
             style: TextStyle(
               fontFamily: fontName,
               color: Colors.black,

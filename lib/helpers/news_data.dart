@@ -65,37 +65,39 @@ class NewsData {
     return articles;
   }
 
-  Future<void> getArticles() async {
+  Future<List<ArticleModel>> getArticles() async {
     String url =
         "https://youthbreaktheboundaries.com/wp-json/wp/v2/posts?_embed";
 
     final response = await http.get(url);
+    final responseBody = json.decode(response.body);
 
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-
-      jsonData.forEach((element) {
-        ArticleModel articleModel = ArticleModel(
-            title: element['title']['rendered'],
-            desc: parse((element['excerpt']['rendered']).toString())
-                .documentElement
-                .text,
-            content: parse((element['content']['rendered']).toString())
-                .documentElement
-                .text,
-            date: element['date'],
-            url: element['link'],
-            imageUrl: element['_embedded']['wp:featuredmedia'] == null
-                ? "https://i.postimg.cc/SK25RYGY/placeholder-ybb-news.jpg"
-                : element['_embedded']['wp:featuredmedia'][0]['source_url'],
-            category: element['categories'][0]
-            //"https://youthbreaktheboundaries.com/wp-content/uploads/2021/02/Salinan-dari-Copy-of-Scholarship-at-Columbia-University-by-The-Obama-Foundation-2021-02-01T082915.403.png",
-            );
-
-        articles.add(articleModel);
-      });
-    } else {
-      throw Exception('Unexpected error occured!');
+    final statusCode = response.statusCode;
+    if (statusCode != 200 || responseBody == null) {
+      throw new Exception("An error occured : [Status Code : $statusCode]");
     }
+
+    responseBody.forEach((element) {
+      ArticleModel articleModel = ArticleModel(
+          title: element['title']['rendered'],
+          desc: parse((element['excerpt']['rendered']).toString())
+              .documentElement
+              .text,
+          content: parse((element['content']['rendered']).toString())
+              .documentElement
+              .text,
+          date: element['date'],
+          url: element['link'],
+          imageUrl: element['_embedded']['wp:featuredmedia'] == null
+              ? "https://i.postimg.cc/SK25RYGY/placeholder-ybb-news.jpg"
+              : element['_embedded']['wp:featuredmedia'][0]['source_url'],
+          category: element['categories'][0]
+          //"https://youthbreaktheboundaries.com/wp-content/uploads/2021/02/Salinan-dari-Copy-of-Scholarship-at-Columbia-University-by-The-Obama-Foundation-2021-02-01T082915.403.png",
+          );
+
+      articles.add(articleModel);
+    });
+
+    return articles;
   }
 }

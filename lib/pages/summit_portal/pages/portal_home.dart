@@ -15,8 +15,6 @@ class PortalHome extends StatefulWidget {
 
 class _PortalHomeState extends State<PortalHome>
     with AutomaticKeepAliveClientMixin<PortalHome> {
-  TextEditingController desc = TextEditingController();
-
   var refreshkey = GlobalKey<RefreshIndicatorState>();
   List<SummitContent> sc = [];
 

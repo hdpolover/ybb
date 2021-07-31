@@ -61,7 +61,7 @@ class _PostLikersState extends State<PostLikers> {
           },
         );
 
-        return Column(children: userToFollow);
+        return ListView(children: userToFollow);
       },
     );
   }

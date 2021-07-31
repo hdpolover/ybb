@@ -42,7 +42,9 @@ class _PortalProfileState extends State<PortalProfile>
       "There are 5 sections of forms that you need to fill out. However you can always take a break and continue filling out the form another time if need be. Do that by clicking the icon on the AppBar.";
 
   final GlobalKey<State> _key = GlobalKey<State>();
+
   SummitParticipant sp;
+  SummitParticipantDetails spd;
 
   @override
   void initState() {
@@ -158,68 +160,50 @@ class _PortalProfileState extends State<PortalProfile>
     );
   }
 
-  buildProfileChip() {
-    return FutureBuilder(
-      future: SummitParticipant.getParticipant(currentUser.id),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 70, bottom: 50),
-            child: Center(
-              child: Container(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          );
-        }
+  buildProfileChip(SummitParticipant _sp) {
+    String statusDesc = "";
+    Color chipColor;
 
-        String statusDesc = "";
-        Color chipColor;
+    switch (_sp.status) {
+      case 0:
+        statusDesc = status[0];
+        chipColor = Colors.red;
+        break;
+      case 1:
+        statusDesc = status[1];
+        chipColor = Colors.red;
+        break;
+      case 2:
+        statusDesc = status[2];
+        chipColor = Colors.green;
+        break;
+      case 3:
+        statusDesc = status[3];
+        chipColor = Colors.blue;
+        break;
+      case 4:
+        statusDesc = status[4];
+        chipColor = Colors.blue;
+        break;
+    }
 
-        switch (snapshot.data.status) {
-          case 0:
-            statusDesc = status[0];
-            chipColor = Colors.red;
-            break;
-          case 1:
-            statusDesc = status[1];
-            chipColor = Colors.red;
-            break;
-          case 2:
-            statusDesc = status[2];
-            chipColor = Colors.green;
-            break;
-          case 3:
-            statusDesc = status[3];
-            chipColor = Colors.blue;
-            break;
-          case 4:
-            statusDesc = status[4];
-            chipColor = Colors.blue;
-            break;
-        }
-
-        return Chip(
-          elevation: 0,
-          padding: EdgeInsets.all(10),
-          backgroundColor: chipColor,
-          avatar: Icon(
-            Icons.access_alarm,
-            color: Colors.white,
-            size: 17,
-          ), //CircleAvatar
-          label: Text(
-            statusDesc,
-            style: TextStyle(
-              fontFamily: "SFProText",
-              letterSpacing: 0.5,
-              color: Colors.white,
-            ),
-          ), //Text
-        );
-      },
+    return Chip(
+      elevation: 0,
+      padding: EdgeInsets.all(10),
+      backgroundColor: chipColor,
+      avatar: Icon(
+        Icons.access_alarm,
+        color: Colors.white,
+        size: 17,
+      ), //CircleAvatar
+      label: Text(
+        statusDesc,
+        style: TextStyle(
+          fontFamily: "SFProText",
+          letterSpacing: 0.5,
+          color: Colors.white,
+        ),
+      ), //Text
     );
   }
 
@@ -228,6 +212,7 @@ class _PortalProfileState extends State<PortalProfile>
 
     setState(() {
       sp = null;
+      spd = null;
     });
 
     await buildProfile();
@@ -290,9 +275,9 @@ class _PortalProfileState extends State<PortalProfile>
           return SummitProfileShimmer();
         }
 
-        SummitParticipantDetails data = snapshot.data;
+        spd = snapshot.data;
 
-        String url = baseUrl + '/assets/img/profile/participants/' + data.photo;
+        String url = baseUrl + '/assets/img/profile/participants/' + spd.photo;
 
         return ListView(
           children: [
@@ -316,14 +301,14 @@ class _PortalProfileState extends State<PortalProfile>
             SizedBox(height: 10),
             Center(
               child: Text(
-                data.fullName.toUpperCase(),
+                spd.fullName.toUpperCase(),
                 style: commonTitleText,
               ),
             ),
             SizedBox(height: 20),
-            buildProfileChip(),
+            buildProfileChip(sp),
             SizedBox(height: 20),
-            buildParticipantDetails(data),
+            buildParticipantDetails(spd),
             SizedBox(height: 30),
             buildFooter(),
           ],

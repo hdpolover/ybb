@@ -336,25 +336,35 @@ class _SummitRegister5State extends State<SummitRegister5> {
                   'video_link': videoLink,
                 };
 
-                await SummitParticipantDetails.addParticipantDetails(
-                    data, imageFile);
+                try {
+                  await SummitParticipantDetails.addParticipantDetails(
+                      data, imageFile);
 
-                await SummitParticipant.updateParticipantStatus(
-                    currentUser.id, "1");
+                  await SummitParticipant.updateParticipantStatus(
+                      currentUser.id, "1");
 
-                Navigator.of(context).pop();
-                Navigator.of(context, rootNavigator: true).pop();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
 
-                Fluttertoast.showToast(
-                  msg: "Success! Pull down to refresh page.",
-                  toastLength: Toast.LENGTH_LONG,
-                  timeInSecForIosWeb: 1,
-                );
+                  Fluttertoast.showToast(
+                    msg: "Success! Pull down to refresh page.",
+                    toastLength: Toast.LENGTH_LONG,
+                    timeInSecForIosWeb: 1,
+                  );
+                } on Exception catch (e) {
+                  print(e);
+                  Navigator.of(context).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Fluttertoast.showToast(
+                      msg: "An error occured! Please try again later.",
+                      toastLength: Toast.LENGTH_LONG,
+                      timeInSecForIosWeb: 1);
+                }
               },
             ),
             FlatButton(

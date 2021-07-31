@@ -52,12 +52,13 @@ class Summit {
     }
   }
 
-  static Future<List<Summit>> getSummitById(int summitId) async {
+  static getSummitById(int summitId) async {
     String url = baseUrl + "/api/summit/?id_summit=" + summitId.toString();
 
     final response = await http.get(url);
 
-    if (response.statusCode == 200) {
+    final statusCode = response.statusCode;
+    if (statusCode == 200 || response.body != null) {
       var jsonData = jsonDecode(response.body);
 
       List<dynamic> summitList = (jsonData as Map<String, dynamic>)['data'];
@@ -69,7 +70,7 @@ class Summit {
 
       return summits;
     } else {
-      throw Exception('Unexpected error occured!');
+      throw new Exception("An error occured : [Status Code : $statusCode]");
     }
   }
 }

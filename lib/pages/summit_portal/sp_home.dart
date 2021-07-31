@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ybb/helpers/api/summit.dart';
 import 'package:ybb/helpers/api/summit_participant.dart';
@@ -168,6 +169,40 @@ class _SPHomeState extends State<SPHome> {
             // )
           ],
         ),
+      ),
+    );
+  }
+
+  buildError() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/images/no_internet.svg',
+            height: MediaQuery.of(context).size.width * 0.35,
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Container(
+              margin: EdgeInsets.only(
+                left: MediaQuery.of(context).size.width * 0.1,
+                right: MediaQuery.of(context).size.width * 0.1,
+              ),
+              child: Text(
+                "We are sorry. It seems like the web is down. Please try again later.",
+                style: TextStyle(
+                  fontFamily: fontName,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -343,46 +378,6 @@ class _SPHomeState extends State<SPHome> {
               ),
             ],
           ),
-
-          // SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-          // Text(
-          //   "Read more about the summits here",
-          //   style: TextStyle(
-          //     color: Colors.black,
-          //     fontFamily: "OpenSans",
-          //     fontSize: 15.0,
-          //   ),
-          //   textAlign: TextAlign.justify,
-          // ),
-          // SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-          // Row(
-          //   children: [
-          //     buildSummitTile(
-          //       "Istanbul Youth Summit 2022",
-          //       "https://images.unsplash.com/photo-1589463779377-26cb6db03a35?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80",
-          //       IYSMain(),
-          //     ),
-          //     buildSummitTile(
-          //       "Asia Youth Summit 2021",
-          //       "https://images.unsplash.com/photo-1589463779377-26cb6db03a35?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80",
-          //       SPHome(),
-          //     ),
-          //   ],
-          // ),
-          // Row(
-          //   children: [
-          //     buildSummitTile(
-          //       "DIgital Youth Summit",
-          //       "https://images.unsplash.com/photo-1589463779377-26cb6db03a35?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80",
-          //       SPHome(),
-          //     ),
-          //     buildSummitTile(
-          //       "Global Youth Ambassador",
-          //       "https://images.unsplash.com/photo-1589463779377-26cb6db03a35?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80",
-          //       SPHome(),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );

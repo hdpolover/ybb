@@ -134,7 +134,7 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
       future: Summit.getSummitById(pt.summitId),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Container();
+          return Text("Fetching payment amount...");
         }
 
         Summit s = snapshot.data[0];

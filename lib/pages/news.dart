@@ -2,13 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/news_categories.dart';
 import 'package:ybb/helpers/news_data.dart';
 import 'package:ybb/pages/news_category.dart';
 import 'package:ybb/pages/news_detail.dart';
-import 'package:ybb/pages/timeline.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/models/news_category.dart';
 import 'package:ybb/models/article.dart';
@@ -25,6 +28,7 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   var refreshkey = GlobalKey<RefreshIndicatorState>();
 
   bool _loading = true;
+  bool _isSuccess = false;
 
   @override
   void initState() {
@@ -35,20 +39,20 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
   }
 
   getNews() async {
+    NewsData newsData = new NewsData();
+
     try {
-      articles = newsFromTimeline;
-    } catch (e) {
-      print("empty");
-    }
+      var news = await newsData.getArticles();
 
-    if (articles == null || articles.isEmpty) {
-      NewsData newsData = new NewsData();
-
-      articles = [];
-
-      await newsData.getArticles();
-
-      articles = newsData.articles;
+      setState(() {
+        articles = news;
+        _isSuccess = true;
+      });
+    } on Exception catch (e) {
+      print('error caught: $e');
+      setState(() {
+        _isSuccess = false;
+      });
     }
 
     if (mounted) {
@@ -58,14 +62,87 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
     }
   }
 
+  buildErrorNews() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.2,
+          ),
+          SvgPicture.asset(
+            'assets/images/no_internet.svg',
+            height: MediaQuery.of(context).size.width * 0.35,
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Container(
+              margin: EdgeInsets.only(
+                left: MediaQuery.of(context).size.width * 0.1,
+                right: MediaQuery.of(context).size.width * 0.1,
+              ),
+              child: Text(
+                "We are sorry. It seems like the web is down. Please try again later.",
+                style: TextStyle(
+                  fontFamily: fontName,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          ConnectivityWidgetWrapper(
+            child: FlatButton(
+              textColor: Colors.blue,
+              color: Colors.white10,
+              onPressed: () => openWeb(),
+              child: Text(
+                'Go to the website',
+                style: TextStyle(
+                    fontFamily: fontName,
+                    color: Colors.blue,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+          ),
+        ],
+      ),
+    );
+  }
+
+  openWeb() async {
+    var url = "https://www.youthbreaktheboundaries.com/";
+
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        universalLinksOnly: true,
+      );
+    } else {
+      Fluttertoast.showToast(
+          msg: 'There was a problem opening $url',
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1);
+    }
+  }
+
   Future<Null> getNewsAgain() async {
     refreshkey.currentState?.show(atTop: true);
-    NewsData newsData = new NewsData();
 
     articles = [];
+    _loading = true;
 
-    await newsData.getArticles();
-    articles = newsData.articles;
+    await getNews();
   }
 
   bool get wantKeepAlive => true;
@@ -110,27 +187,29 @@ class _NewsState extends State<News> with AutomaticKeepAliveClientMixin<News> {
                   //articles
                   _loading
                       ? NewsCategoryShimmer()
-                      : Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
-                            itemCount: articles.length,
-                            itemBuilder: (context, index) {
-                              return ArticleTile(
-                                newsCategory: convertNewsCategory(
-                                    articles[index].category),
-                                newsImageUrl: articles[index].imageUrl,
-                                newsTitle: articles[index].title,
-                                newsDesc: articles[index].desc,
-                                newsUrl: articles[index].url,
-                                newsContent: articles[index].content,
-                                newsDate: articles[index].date,
-                              );
-                            },
-                          ),
-                        )
+                      : _isSuccess
+                          ? Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                physics: ClampingScrollPhysics(),
+                                itemCount: articles.length,
+                                itemBuilder: (context, index) {
+                                  return ArticleTile(
+                                    newsCategory: convertNewsCategory(
+                                        articles[index].category),
+                                    newsImageUrl: articles[index].imageUrl,
+                                    newsTitle: articles[index].title,
+                                    newsDesc: articles[index].desc,
+                                    newsUrl: articles[index].url,
+                                    newsContent: articles[index].content,
+                                    newsDate: articles[index].date,
+                                  );
+                                },
+                              ),
+                            )
+                          : buildErrorNews(),
                 ],
               ),
             ),

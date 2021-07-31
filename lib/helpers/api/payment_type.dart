@@ -37,20 +37,19 @@ class PaymentType {
 
     final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-
-      List<dynamic> paymentTypeList =
-          (jsonData as Map<String, dynamic>)['data'];
-
-      List<PaymentType> paymentTypes = [];
-      for (int i = 0; i < paymentTypeList.length; i++) {
-        paymentTypes.add(PaymentType.fromJSON(paymentTypeList[i]));
-      }
-
-      return paymentTypes;
-    } else {
-      throw Exception('Unexpected error occured!');
+    final statusCode = response.statusCode;
+    if (statusCode != 200 || response.body == null) {
+      throw new Exception("An error occured : [Status Code : $statusCode]");
     }
+    var jsonData = jsonDecode(response.body);
+
+    List<dynamic> paymentTypeList = (jsonData as Map<String, dynamic>)['data'];
+
+    List<PaymentType> paymentTypes = [];
+    for (int i = 0; i < paymentTypeList.length; i++) {
+      paymentTypes.add(PaymentType.fromJSON(paymentTypeList[i]));
+    }
+
+    return paymentTypes;
   }
 }
