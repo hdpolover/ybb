@@ -167,12 +167,13 @@ class SummitParticipantDetails {
     //   return null;
     // }
     final statusCode = response.statusCode;
-    if (statusCode != 201 || response.body == null) {
+    if (statusCode == 201 || statusCode == 200 || response.body != null) {
+      print(statusCode);
+      var responseData = await json.decode(json.encode(response.body));
+      print(responseData);
+      return responseData;
+    } else {
       throw new Exception("An error occured : [Status Code : $statusCode]");
     }
-
-    var responseData = await json.decode(json.encode(response.body));
-    print(responseData);
-    return responseData;
   }
 }

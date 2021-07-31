@@ -382,7 +382,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/YBB.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 26;
 				DEVELOPMENT_TEAM = WVQKBMZ2VY;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -399,7 +399,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hdpolover.ybbproject;
 				PRODUCT_NAME = YBB;
 				PROVISIONING_PROFILE_SPECIFIER = YBB;
@@ -528,7 +528,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/YBB.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 26;
 				DEVELOPMENT_TEAM = WVQKBMZ2VY;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -545,7 +545,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hdpolover.ybbproject;
 				PRODUCT_NAME = YBB;
 				PROVISIONING_PROFILE_SPECIFIER = YBB;
@@ -566,7 +566,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/YBB.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 26;
 				DEVELOPMENT_TEAM = WVQKBMZ2VY;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -583,7 +583,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hdpolover.ybbproject;
 				PRODUCT_NAME = YBB;
 				PROVISIONING_PROFILE_SPECIFIER = YBB;

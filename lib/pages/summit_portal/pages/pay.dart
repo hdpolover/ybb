@@ -229,15 +229,25 @@ class _PayState extends State<Pay> {
       'payment_date': paymentDateController.text.trim(),
     };
 
-    await Payment.makePayment(data, imageFile);
+    try {
+      await Payment.makePayment(data, imageFile);
 
-    Navigator.of(context, rootNavigator: true).pop();
-    Navigator.of(context).pop();
+      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context).pop();
 
-    Fluttertoast.showToast(
-        msg: "Payment has been made. Pull down to refresh page.",
-        toastLength: Toast.LENGTH_LONG,
-        timeInSecForIosWeb: 1);
+      Fluttertoast.showToast(
+          msg: "Payment has been made. Pull down to refresh page.",
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIosWeb: 1);
+    } on Exception catch (e) {
+      print(e);
+      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context).pop();
+      Fluttertoast.showToast(
+          msg: "An error occured! Please try again later.",
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIosWeb: 1);
+    }
   }
 
   Padding buildAccountNameField() {

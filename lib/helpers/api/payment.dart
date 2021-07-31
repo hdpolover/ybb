@@ -101,19 +101,17 @@ class Payment {
     imageUploadRequest.fields['amount'] = data['amount'];
     imageUploadRequest.fields['payment_date'] = data['payment_date'];
 
-    try {
-      final streamedResponse = await imageUploadRequest.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      if (response.statusCode != 200) {
-        print("errrr: " + response.statusCode.toString());
-        var responseData = await json.decode(json.encode(response.body));
-        print(responseData);
-        return responseData;
-        //return null;
-      }
-    } catch (e) {
-      print(e);
-      return null;
+    final streamedResponse = await imageUploadRequest.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    var statusCode = response.statusCode;
+    if (statusCode == 201 || statusCode == 200 || response.body != null) {
+      print(statusCode);
+      var responseData = await json.decode(json.encode(response.body));
+      print(responseData);
+      return responseData;
+    } else {
+      throw new Exception("An error occured : [Status Code : $statusCode]");
     }
   }
 }
