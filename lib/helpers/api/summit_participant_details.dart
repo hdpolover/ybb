@@ -159,6 +159,7 @@ class SummitParticipantDetails {
     imageUploadRequest.fields['achievements'] = data['achievements'];
     imageUploadRequest.fields['subtheme'] = data['subtheme'];
     imageUploadRequest.fields['video_link'] = data['video_link'];
+    imageUploadRequest.fields['referral_code'] = data['referral_code'];
 
     final streamedResponse = await imageUploadRequest.send();
     final response = await http.Response.fromStream(streamedResponse);

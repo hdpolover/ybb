@@ -26,7 +26,7 @@ class SummitTimeline {
     return SummitTimeline(
       summitTimelineId: data['id_summit_timeline'],
       summitId: data['id_summit'],
-      description: data['description'],
+      description: data['timeline_desc'],
       timeline: data['timeline'],
       startTimeline: DateTime.parse(data['start_timeline']),
       endTimeline: DateTime.parse(data['end_timeline']),

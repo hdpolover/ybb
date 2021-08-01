@@ -47,7 +47,8 @@ class _SummitRegister5State extends State<SummitRegister5> {
       sourceName,
       sourcesValue,
       videoLink,
-      proofLink;
+      proofLink,
+      referralCode;
 
   @override
   void initState() {
@@ -229,6 +230,7 @@ class _SummitRegister5State extends State<SummitRegister5> {
       sourcesValue = prefs.getString("know_program_from");
       videoLink = prefs.getString("video_link");
       proofLink = prefs.getString("proof_link");
+      referralCode = prefs.getString("referral_code");
     });
 
     if (fullName.trim().isNotEmpty &&
@@ -257,7 +259,16 @@ class _SummitRegister5State extends State<SummitRegister5> {
         videoLink.trim().isNotEmpty &&
         proofLink.trim().isNotEmpty &&
         imageFile != null) {
-      showConfirmDialog(context);
+      if (referralCode.trim().isEmpty) {
+        setState(() {
+          referralCode = "-";
+        });
+
+        showConfirmDialog(context);
+      } else {
+        showConfirmDialog(context);
+      }
+
       // Fluttertoast.showToast(
       //   msg: "Ready to submit",
       //   toastLength: Toast.LENGTH_LONG,
@@ -334,7 +345,10 @@ class _SummitRegister5State extends State<SummitRegister5> {
                   'achievements': achievements,
                   'subtheme': subthemeValue,
                   'video_link': videoLink,
+                  'referral_code': referralCode,
                 };
+
+                print(referralCode);
 
                 try {
                   await SummitParticipantDetails.addParticipantDetails(

@@ -25,6 +25,23 @@ class _SummitRegister1State extends State<SummitRegister1> {
   TextEditingController contactRelationController = TextEditingController();
   TextEditingController igAccountController = TextEditingController();
 
+  @override
+  void dispose() {
+    super.dispose();
+    fullnameController.dispose();
+    addressController.dispose();
+    occupationController.dispose();
+    institutionController.dispose();
+    fieldOfStudyController.dispose();
+    waNumberController.dispose();
+    emergencyContactController.dispose();
+    diseaseHistoryController.dispose();
+    birthdateController.dispose();
+    nationalityController.dispose();
+    contactRelationController.dispose();
+    igAccountController.dispose();
+  }
+
   List<DropdownMenuItem<String>> _tshirtSizeDropdownItems;
   String tshirtSizeValue;
   List<DropdownMenuItem<String>> _vegetarianDropdownItems;

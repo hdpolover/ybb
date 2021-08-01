@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ybb/helpers/api/influencer.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/summit_portal/summit_regist/register_5.dart';
 
@@ -13,6 +14,20 @@ class _SummitRegister4State extends State<SummitRegister4> {
   TextEditingController sourceNameController = TextEditingController();
   TextEditingController videoLinkController = TextEditingController();
   TextEditingController proofLinkController = TextEditingController();
+  TextEditingController refCodeController = new TextEditingController();
+  List<Influencer> refCodes = [];
+
+  bool isRefCodeAvailable = false;
+  String resultText = "";
+
+  @override
+  void dispose() {
+    super.dispose();
+    sourceNameController.dispose();
+    videoLinkController.dispose();
+    proofLinkController.dispose();
+    refCodeController.dispose();
+  }
 
   List _sources = [
     "Instagram",
@@ -26,12 +41,14 @@ class _SummitRegister4State extends State<SummitRegister4> {
   String sourcesValue;
 
   int progress;
+  bool isChecked = false;
 
   @override
   void initState() {
     super.initState();
 
     getProgress();
+    getInfluencers();
 
     _sourcesDropdownItems = getDropDownMenuItems(_sources);
   }
@@ -45,6 +62,7 @@ class _SummitRegister4State extends State<SummitRegister4> {
     });
     videoLinkController.text = prefs.getString("video_link");
     proofLinkController.text = prefs.getString("proof_link");
+    refCodeController.text = prefs.getString("referral_code");
 
     progress = prefs.getInt("filledCount");
   }
@@ -56,6 +74,8 @@ class _SummitRegister4State extends State<SummitRegister4> {
     prefs.setString("know_program_from", sourcesValue);
     prefs.setString("video_link", videoLinkController.text);
     prefs.setString("proof_link", proofLinkController.text);
+    prefs.setString(
+        "referral_code", refCodeController.text.trim().toUpperCase());
 
     if (progress <= 8) {
       prefs.setInt("filledCount", 8);
@@ -204,6 +224,101 @@ class _SummitRegister4State extends State<SummitRegister4> {
           ),
         ],
       ),
+    );
+  }
+
+  getInfluencers() async {
+    List<Influencer> p = await Influencer.getInfluencerRefCodes();
+
+    setState(() {
+      refCodes = p;
+    });
+  }
+
+  compareInputRefCode(String str) {
+    String code = str.trim().toUpperCase();
+    print(code);
+
+    for (int i = 0; i < refCodes.length; i++) {
+      if (refCodes[i].referralCode.compareTo(code) == 0) {
+        print(refCodes[i].referralCode);
+        print("matched");
+        setState(() {
+          isRefCodeAvailable = true;
+          resultText = "Congratulations! Your referral code is applied.";
+        });
+        break;
+      } else {
+        print(refCodes[i].referralCode);
+        print("not matched");
+        setState(() {
+          isRefCodeAvailable = false;
+          resultText = "Oops! Your referral code is invalid.";
+        });
+      }
+    }
+
+    if (!isRefCodeAvailable) {
+      refCodeController.text = "-";
+    }
+  }
+
+  Column buildRefCodesField() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.all(0),
+          title: TextFormField(
+            style: TextStyle(fontFamily: fontName),
+            controller: refCodeController,
+            keyboardType: TextInputType.name,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(fontFamily: fontName),
+              border: OutlineInputBorder(),
+              labelText: "Referral Code",
+              labelStyle: TextStyle(fontFamily: fontName),
+              hintText: "Input your referral code",
+            ),
+          ),
+          trailing: GestureDetector(
+            onTap: () {
+              compareInputRefCode(refCodeController.text.trim().toUpperCase());
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.2,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                border: Border.all(
+                  color: Colors.blue,
+                ),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    "APPLY",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontFamily: fontName,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          resultText != "" ? resultText : '',
+          style: TextStyle(
+            color: isRefCodeAvailable ? Colors.blue : Colors.red,
+          ),
+        ),
+      ],
     );
   }
 
@@ -420,7 +535,34 @@ class _SummitRegister4State extends State<SummitRegister4> {
               ),
             ),
             buildProofLinkField(),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            RichText(
+              softWrap: true,
+              textAlign: TextAlign.justify,
+              text: TextSpan(
+                style: TextStyle(color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Note: ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: fontName,
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text:
+                        "If you have the referral code of an IYS influencer, you can input it below. If not, just leave it empty.",
+                    style: TextStyle(
+                      fontFamily: fontName,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            buildRefCodesField(),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             GestureDetector(
               onTap: () {
                 saveProgress();
