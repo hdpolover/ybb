@@ -588,15 +588,19 @@ class _ProfileState extends State<Profile>
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.04),
-                                  Text(
-                                    user.website,
-                                    style: TextStyle(
-                                      fontSize:
-                                          MediaQuery.of(context).size.width *
-                                              0.04,
-                                      color: Colors.grey[800],
-                                      letterSpacing: .7,
-                                      fontFamily: fontName,
+                                  Expanded(
+                                    child: Text(
+                                      user.website,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.04,
+                                        color: Colors.grey[800],
+                                        letterSpacing: .7,
+                                        fontFamily: fontName,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -723,72 +727,76 @@ class _ProfileState extends State<Profile>
           );
         }
 
-        return Row(
-          children: <Widget>[
-            CircleAvatar(
-              radius: MediaQuery.of(context).size.height * 0.06,
-              backgroundColor: Colors.grey,
-              backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.055,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  user.displayName.length > 17
-                      ? user.displayName.substring(0, 17) + "..."
-                      : user.displayName,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: MediaQuery.of(context).size.width * 0.045,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: fontName,
-                  ),
+        return Expanded(
+          child: Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: MediaQuery.of(context).size.height * 0.06,
+                backgroundColor: Colors.grey,
+                backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.055,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      user.displayName,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: MediaQuery.of(context).size.width * 0.045,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: fontName,
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.01,
+                    ),
+                    Text(
+                      "@" + user.username,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white60,
+                        fontSize: MediaQuery.of(context).size.width * 0.035,
+                        fontFamily: fontName,
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.04,
+                    ),
+                    Text(
+                      user.occupation,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white60,
+                        fontSize: MediaQuery.of(context).size.width * 0.035,
+                        fontFamily: fontName,
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.01,
+                    ),
+                    Text(
+                      user.residence != null
+                          ? user.residence.length > 29
+                              ? user.residence.substring(0, 28) + "..."
+                              : user.residence
+                          : "-",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: MediaQuery.of(context).size.width * 0.035,
+                        fontFamily: fontName,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.01,
-                ),
-                Text(
-                  "@" + user.username,
-                  style: TextStyle(
-                    color: Colors.white60,
-                    fontSize: MediaQuery.of(context).size.width * 0.035,
-                    fontFamily: fontName,
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.04,
-                ),
-                Text(
-                  user.occupation.length > 29
-                      ? user.occupation.substring(0, 28) + "..."
-                      : user.occupation,
-                  style: TextStyle(
-                    color: Colors.white60,
-                    fontSize: MediaQuery.of(context).size.width * 0.035,
-                    fontFamily: fontName,
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.01,
-                ),
-                Text(
-                  user.residence != null
-                      ? user.residence.length > 29
-                          ? user.residence.substring(0, 28) + "..."
-                          : user.residence
-                      : "-",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: MediaQuery.of(context).size.width * 0.035,
-                    fontFamily: fontName,
-                  ),
-                ),
-              ],
-            )
-          ],
+              )
+            ],
+          ),
         );
       },
     );

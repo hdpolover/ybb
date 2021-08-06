@@ -9,6 +9,7 @@ import 'package:ybb/helpers/api/summit.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/widgets/dialog.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class Pay extends StatefulWidget {
   final int summitId;
@@ -409,12 +410,29 @@ class _PayState extends State<Pay> {
     PickedFile pickedFile;
 
     pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
-
+    File compressedImage = await compressFile(File(pickedFile.path));
     if (pickedFile != null) {
       setState(() {
-        imageFile = File(pickedFile.path);
+        imageFile = compressedImage;
       });
     }
+  }
+
+  Future<File> compressFile(File file) async {
+    final filePath = file.absolute.path;
+    // Create output file path
+    // eg:- "Volume/VM/abcd_out.jpeg"
+    final lastIndex = filePath.lastIndexOf(new RegExp(r'.jp'));
+    final splitted = filePath.substring(0, (lastIndex));
+    final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      outPath,
+      quality: 50,
+    );
+    print(file.lengthSync());
+    print(result.lengthSync());
+    return result;
   }
 
   Container buildProofField() {

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -193,12 +194,30 @@ class _SummitRegister5State extends State<SummitRegister5> {
     PickedFile pickedFile;
 
     pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
-
+    File compressedImage = await compressFile(File(pickedFile.path));
     if (pickedFile != null) {
       setState(() {
-        imageFile = File(pickedFile.path);
+        // imageFile = File(pickedFile.path);
+        imageFile = compressedImage;
       });
     }
+  }
+
+  Future<File> compressFile(File file) async {
+    final filePath = file.absolute.path;
+    // Create output file path
+    // eg:- "Volume/VM/abcd_out.jpeg"
+    final lastIndex = filePath.lastIndexOf(new RegExp(r'.jp'));
+    final splitted = filePath.substring(0, (lastIndex));
+    final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      outPath,
+      quality: 50,
+    );
+    print(file.lengthSync());
+    print(result.lengthSync());
+    return result;
   }
 
   checkForms() async {

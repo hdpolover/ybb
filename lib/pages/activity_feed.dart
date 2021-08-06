@@ -36,33 +36,7 @@ class _ActivityFeedState extends State<ActivityFeed>
   void initState() {
     super.initState();
 
-    if (widget.currentUser == null) {
-      getUser();
-    } else {
-      getActivityFeed();
-    }
-  }
-
-  getUser() async {
-    QuerySnapshot snapshot = await activityFeedRef
-        .doc(widget.userId)
-        .collection('feedItems')
-        .orderBy(
-          'timestamp',
-          descending: true,
-        )
-        .limit(50)
-        .get();
-
-    feedItems = [];
-    snapshot.docs.forEach((doc) {
-      ActivityFeedItem item = ActivityFeedItem.fromDocument(doc);
-      feedIds.add(item.feedId);
-
-      feedItems.add(item);
-    });
-
-    return feedItems;
+    getActivityFeed();
   }
 
   getActivityFeed() async {
@@ -162,6 +136,13 @@ class _ActivityFeedState extends State<ActivityFeed>
         "Activity Feed",
         style: appBarTextStyle,
       ),
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back_ios_rounded,
+          color: Colors.white,
+        ),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
       elevation: 0,
       actions: <Widget>[
         ConnectivityWidgetWrapper(
@@ -170,60 +151,120 @@ class _ActivityFeedState extends State<ActivityFeed>
             icon: Icon(Icons.delete, color: Colors.white38),
             onPressed: null,
           ),
-          child: IconButton(
-            icon: Icon(
-              Icons.delete,
-              color: feedItems == null || feedItems.isEmpty
-                  ? Colors.white38
-                  : Colors.white,
-            ),
-            onPressed: feedItems == null || feedItems.isEmpty
-                ? null
-                : () => handleDeleteFeed(context),
+          child: FutureBuilder(
+            future: getActivityFeed(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return IconButton(
+                    icon: Icon(
+                      Icons.delete,
+                      color: Colors.white38,
+                    ),
+                    onPressed: () {});
+              }
+              return IconButton(
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+                onPressed: () => handleDeleteFeed(context),
+              );
+            },
           ),
         ),
       ],
     );
   }
 
-  handleDeleteFeed(BuildContext parentContext) {
-    return showDialog(
-      context: parentContext,
-      builder: (context) {
+  // handleDeleteFeed(BuildContext parentContext) {
+  //   return showDialog(
+  //     context: parentContext,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: Text(
+  //           "Clear Activity Feed",
+  //           style: TextStyle(
+  //             fontFamily: fontName,
+  //           ),
+  //         ),
+  //         content: Text(
+  //           "Are you sure to clear your Activity Feed? This action cannot be undone.",
+  //           style: TextStyle(
+  //             fontFamily: fontName,
+  //           ),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             child: Text(
+  //               "Cancel",
+  //               style: TextStyle(
+  //                 fontFamily: fontName,
+  //               ),
+  //             ),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: Text(
+  //               "Delete",
+  //               style: TextStyle(
+  //                 color: Colors.red,
+  //                 fontFamily: fontName,
+  //               ),
+  //             ),
+  //             onPressed: () {
+  //               deleteFeed();
+
+  //               SnackBar snackBar =
+  //                   SnackBar(content: Text("Activity feed deleted"));
+  //               _scaffoldKey.currentState.showSnackBar(snackBar);
+  //               //ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+  //               Navigator.of(context).pop();
+
+  //               buildNoFeed();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  Future<void> handleDeleteFeed(context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            "Clear Activity Feed",
+            'Clear Activity Feed',
             style: TextStyle(
-              fontFamily: fontName,
+              fontWeight: FontWeight.bold,
+              fontFamily: "OpenSans",
+              letterSpacing: 1,
             ),
           ),
-          content: Text(
-            "Are you sure to clear your Activity Feed? This action cannot be undone.",
-            style: TextStyle(
-              fontFamily: fontName,
+          content: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  'Are you sure to clear your Activity Feed? This action cannot be undone.',
+                  style: TextStyle(
+                    fontFamily: fontName,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
             ),
           ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Cancel",
-                style: TextStyle(
-                  fontFamily: fontName,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                "Delete",
-                style: TextStyle(
-                  color: Colors.red,
-                  fontFamily: fontName,
-                ),
-              ),
-              onPressed: () {
+          actions: <Widget>[
+            FlatButton(
+              color: Colors.red,
+              textColor: Colors.white,
+              child: Text('Confirm'),
+              onPressed: () async {
                 deleteFeed();
 
                 SnackBar snackBar =
@@ -234,6 +275,14 @@ class _ActivityFeedState extends State<ActivityFeed>
                 Navigator.of(context).pop();
 
                 buildNoFeed();
+              },
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
           ],

@@ -12,6 +12,7 @@ import 'package:ybb/helpers/api/summit_participant_details.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/summit_portal/pages/view_participant_detail.dart';
+import 'package:ybb/pages/summit_portal/pages/document_center.dart';
 import 'package:ybb/pages/summit_portal/summit_regist/register_1.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/dialog.dart';
@@ -453,6 +454,34 @@ class _PortalProfileState extends State<PortalProfile>
               },
             ),
           ),
+          sp.status >= 2
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                  child: FlatButton(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Row(
+                        children: [
+                          FaIcon(FontAwesomeIcons.folderOpen),
+                          SizedBox(width: 10),
+                          Text(
+                            "Document Center",
+                            style: TextStyle(fontFamily: fontName),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DocumentCenter(data: data),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : Container(),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
             child: FlatButton(

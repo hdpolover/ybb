@@ -100,7 +100,7 @@ class Dialogs {
       BuildContext context, GlobalKey key, String id) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       barrierColor: Colors.black87,
       builder: (BuildContext context) {
         return FutureBuilder(

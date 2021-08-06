@@ -174,7 +174,7 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
               " / " +
               NumberFormat.simpleCurrency(
                       locale: 'eu', decimalDigits: 0, name: '')
-                  .format(240) +
+                  .format(260) +
               'USD';
         }
 

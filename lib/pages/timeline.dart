@@ -187,13 +187,6 @@ class _TimelineState extends State<Timeline>
   }
 
   getIdFollowing() async {
-    // NewsData newsData = new NewsData();
-
-    // await newsData.getFollowing();
-    // setState(() {
-    //   idFollowing = newsData.followingList;
-    //   followingList = newsData.followingList;
-    // });
     QuerySnapshot snapshot = await followingRef
         .doc(currentUser.id)
         .collection('userFollowing')

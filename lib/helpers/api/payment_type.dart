@@ -24,7 +24,7 @@ class PaymentType {
   factory PaymentType.fromJSON(Map<String, dynamic> data) {
     return PaymentType(
       summitId: int.parse(data['id_summit']),
-      description: data['description'],
+      description: data['pt_desc'],
       startDate: DateTime.parse(data['start_date']),
       endDate: DateTime.parse(data['end_date']),
       paymentTypeId: int.parse(data['id_payment_type']),

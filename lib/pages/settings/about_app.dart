@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/widgets/default_appbar.dart';
@@ -48,7 +49,18 @@ class _AboutAppState extends State<AboutApp> {
             FlatButton(
               textColor: Colors.blue,
               color: Colors.white10,
-              onPressed: () => sendEmail(),
+              onPressed: () {
+                try {
+                  sendEmail();
+                } catch (e) {
+                  Fluttertoast.showToast(
+                    msg:
+                        "An error occured. Make sure you have installed GMail on your device.",
+                    toastLength: Toast.LENGTH_SHORT,
+                    timeInSecForIosWeb: 1,
+                  );
+                }
+              },
               child: Text('Contact Developer',
                   style: TextStyle(
                     fontFamily: fontName,

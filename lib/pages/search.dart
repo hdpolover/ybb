@@ -50,19 +50,15 @@ class _SearchState extends State<Search>
     super.initState();
 
     focusNode = FocusNode();
-    //getPosts();
-    //getAllUserIds();
-
-    getFollowing();
-    if (followingList == null) {
-      followingList = idFollowing;
-    } else {
-      getFollowing();
-    }
 
     recommendationList = idRecommendation;
-    //getUserRecommendation();
-    //checkUserRecoms();
+
+    if (idFollowing == null) {
+      getFollowing();
+    } else {
+      followingList = idFollowing;
+      getPostsForSearchPage();
+    }
   }
 
   @override
@@ -157,8 +153,8 @@ class _SearchState extends State<Search>
   }
 
   buildUsersToFollow() {
-    return StreamBuilder(
-      stream: usersRef.snapshots(),
+    return FutureBuilder(
+      future: usersRef.get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return UserSuggestionShimmer();
@@ -233,25 +229,6 @@ class _SearchState extends State<Search>
           },
         );
 
-        // if (recommendationList.isNotEmpty) {
-        //   for (int i = 0; i < recommendationList.length; i++) {
-        //     for (int j = 0; j < tempUserToFollow.length; j++) {
-        //       if (recommendationList[i] == tempUserToFollow[j].user.id) {
-        //         ind.add(tempUserToFollow[j]);
-        //       }
-        //     }
-        //   }
-
-        //   // for (int i = 0; i < 20; i++) {
-        //   //   userToFollow.add(ind[i]);
-        //   // }
-        //   userToFollow.addAll(tempUserToFollow);
-        // }
-
-        // print("ind" + ind.length.toString());
-        // print("us" + userToFollow.length.toString());
-        // print("temp" + tempUserToFollow.length.toString());
-
         return Container(
           height: MediaQuery.of(context).size.height * 0.3,
           child: ListView.builder(
@@ -267,22 +244,6 @@ class _SearchState extends State<Search>
             },
           ),
         );
-
-        // return Column(
-        //   mainAxisAlignment: MainAxisAlignment.start,
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     userToFollow.length > 0 ? buildSectionPeopleToFollow() : Text(''),
-        //     SingleChildScrollView(
-        //       scrollDirection: Axis.horizontal,
-        //       child: Row(
-        //         mainAxisAlignment: MainAxisAlignment.start,
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: userToFollow,
-        //       ),
-        //     ),
-        //   ],
-        // );
       },
     );
   }
@@ -351,24 +312,6 @@ class _SearchState extends State<Search>
             ],
           ),
         ),
-        // SizedBox(
-        //   width: MediaQuery.of(context).size.width * 0.25,
-        // ),
-        // FlatButton(
-        //   textColor: Colors.blue,
-        //   color: Colors.white10,
-        //   onPressed: () => Navigator.push(
-        //     context,
-        //     MaterialPageRoute(builder: (context) => PeopleSuggestion()),
-        //   ),
-        //   child: Text(
-        //     'See All',
-        //     style: TextStyle(
-        //         fontFamily: fontName,
-        //         color: Colors.blue,
-        //         fontWeight: FontWeight.bold),
-        //   ),
-        // ),
       ],
     );
   }
@@ -377,83 +320,45 @@ class _SearchState extends State<Search>
     if (searchPosts == null) {
       return PostShimmer();
     } else if (searchPosts.isEmpty) {
-      return PostShimmer();
+      return Container(
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+            SvgPicture.asset(
+              'assets/images/no_search.svg',
+              height: MediaQuery.of(context).size.height * 0.2,
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Find people to broaden your network.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+                fontFamily: fontName,
+              ),
+            ),
+          ],
+        ),
+      );
     } else {
-      return Expanded(
-        child: ListView.builder(
-          padding: const EdgeInsets.fromLTRB(20.0, 20, 20, 0),
-          itemCount: searchPosts.length,
-          itemBuilder: (context, index) {
-            return searchPosts[index];
-          },
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: searchPosts,
         ),
       );
     }
   }
 
-  tryali() {
-    return FutureBuilder(
-      future: pos(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return PostShimmer();
-        }
-
-        // List<Post> a = [];
-        // snapshot.data.forEach((x) {
-        //   a.add(x);
-        // });
-
-        //return Text(snapshot.data.length.toString());
-
-        return Flexible(
-            child: Column(
-          children: snapshot.data,
-        ));
-        // return Flexible(
-        //   child: ListView.builder(
-        //     padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-        //     itemCount: snapshot.data.length,
-        //     itemBuilder: (context, index) {
-        //       return snapshot.data[index];
-        //     },
-        //   ),
-        // );
-      },
-    );
-  }
-
-  buildNoContent() {
-    return Container(
-      child: ListView(
-        children: <Widget>[
-          buildSectionPeopleToFollow(),
-          buildUsersToFollow(),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-          //buildPostsForSearchPage(),
-          //tryali(),
-          Container(
-            child: Column(
-              children: [
-                SvgPicture.asset(
-                  'assets/images/no_search.svg',
-                  height: MediaQuery.of(context).size.height * 0.2,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Find people to broaden your network.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontFamily: fontName,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-        ],
-      ),
+  Widget buildNoSearchContent() {
+    return ListView(
+      scrollDirection: Axis.vertical,
+      children: <Widget>[
+        buildSectionPeopleToFollow(),
+        buildUsersToFollow(),
+        SizedBox(height: 20),
+        buildPostsForSearchPage(),
+      ],
     );
   }
 
@@ -482,10 +387,6 @@ class _SearchState extends State<Search>
               ),
             ),
           ),
-          // SizedBox(
-          //   height: MediaQuery.of(context).size.height * 0.15,
-          // ),
-          //buildUsersToFollow(),
         ],
       ),
     );
@@ -535,113 +436,64 @@ class _SearchState extends State<Search>
     );
   }
 
-  // Future getPostsForSearchPage() async {
-  //   List<Post> rawPosts = [];
-  //   List<Post> completePosts = [];
+  getPostsForSearchPage() async {
+    List<Post> rawPosts = [];
+    List<Post> completePosts = [];
 
-  //   await getAllUserIds();
-
-  //   for (int i = 0; i < allUids.length; i++) {
-  //     try {
-  //       QuerySnapshot snapshot = await postsRef
-  //           .doc(allUids[i])
-  //           .collection('userPosts')
-  //           .orderBy('timestamp', descending: true)
-  //           .get();
-
-  //       rawPosts.addAll(
-  //           snapshot.docs.map((doc) => Post.fromDocument(doc)).toList());
-  //     } catch (e) {
-  //       print(e);
-  //     }
-  //   }
-
-  //   Comparator<Post> sortByTimePosted = (a, b) => a.postId.compareTo(b.postId);
-  //   rawPosts.sort(sortByTimePosted);
-
-  //   completePosts = rawPosts.reversed.toList();
-
-  //   List<Post> a = [];
-
-  //   for (int i = 0; i < completePosts.length; i++) {
-  //     for (int j = 0; j < followingList.length; j++) {
-  //       if (completePosts[i].ownerId == followingList[j]) {
-  //         break;
-  //       } else {
-  //         a.add(completePosts[i]);
-  //       }
-  //     }
-  //   }
-
-  //   setState(() {
-  //     searchPosts = a;
-  //   });
-
-  //   return searchPosts;
-
-  //   // setState(() {
-  //   //   searchPosts = rawPosts.reversed.toList();
-  //   // });
-  // }
-
-  getAllUserIds() async {
-    QuerySnapshot snapshot = await usersRef.get();
-
-    allUids = [];
-    snapshot.docs.forEach((element) {
-      setState(() {
-        allUids.add(element['id']);
-      });
-    });
-
-    print(allUids.length.toString());
-  }
-
-  getPosts() async {
-    await getAllUserIds();
+    allUids = await getUserThatHavePostsIds();
 
     for (int i = 0; i < allUids.length; i++) {
-      try {
-        QuerySnapshot doc =
-            await postsRef.doc(allUids[i]).collection("userPosts").get();
-        doc.docs.forEach((element) {
-          Post p = Post.fromDocument(element);
-          print(p.timestamp);
-        });
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
+      QuerySnapshot snapshot =
+          await postsRef.doc(allUids[i]).collection('userPosts').get();
 
-  Future<List<Post>> pos() async {
+      rawPosts
+          .addAll(snapshot.docs.map((doc) => Post.fromDocument(doc)).toList());
+    }
+
+    Comparator<Post> sortByTimePosted = (a, b) => a.postId.compareTo(b.postId);
+    rawPosts.sort(sortByTimePosted);
+
+    completePosts = rawPosts.reversed.toList();
+
     List<Post> temp = [];
-    for (int i = 0; i < allUids.length; i++) {
-      try {
-        QuerySnapshot doc =
-            await postsRef.doc(allUids[i]).collection("userPosts").get();
-        doc.docs.forEach((element) {
-          Post p = Post.fromDocument(element);
-          temp.add(p);
-          print(p.timestamp);
-        });
-      } catch (e) {
-        print(e);
+    List<Post> removePostIndex = [];
+    for (int j = 0; j < followingList.length; j++) {
+      for (int i = 0; i < completePosts.length; i++) {
+        if (followingList[j] == completePosts[i].ownerId) {
+          removePostIndex.add(completePosts[i]);
+        }
       }
     }
+
+    for (int i = 0; i < removePostIndex.length; i++) {
+      completePosts.remove(removePostIndex[i]);
+    }
+
+    if (completePosts.length >= 10) {
+      temp = completePosts.getRange(0, 10).toList();
+    } else if (completePosts.length >= 5) {
+      temp = completePosts.getRange(0, 5).toList();
+    } else {
+      temp = completePosts;
+    }
+
+    print("searchs: " + temp.length.toString());
 
     setState(() {
       searchPosts = temp;
     });
-
-    return Future<List<Post>>.value(searchPosts);
   }
 
-  // d() {
-  //   return StreamBuilder(stream: ,builder: (context, snapshot) {
-  //     return null;
-  //   });
-  // }
+  getUserThatHavePostsIds() async {
+    QuerySnapshot snapshot = await postsRef.get();
+
+    var users = [];
+    setState(() {
+      users = snapshot.docs.map((doc) => doc.id).toList();
+    });
+
+    return users;
+  }
 
   Future<void> getFollowing() async {
     QuerySnapshot snapshot = await followingRef
@@ -652,6 +504,8 @@ class _SearchState extends State<Search>
     setState(() {
       followingList = snapshot.docs.map((doc) => doc.id).toList();
     });
+
+    await getPostsForSearchPage();
   }
 
   Future<void> getUserRecommendation() async {
@@ -673,10 +527,14 @@ class _SearchState extends State<Search>
     tempUserToFollow.clear();
     ind.clear();
 
+    setState(() {
+      searchPosts = null;
+    });
+
     await getFollowing();
     await getUserRecommendation();
 
-    buildNoContent();
+    buildNoSearchContent();
   }
 
   bool get wantKeepAlive => true;
@@ -697,7 +555,7 @@ class _SearchState extends State<Search>
         onRefresh: refreshSearch,
         key: refreshKey,
         child: ConnectivityScreenWrapper(
-          child: isSearchTapped ? buildSearchResults() : buildNoContent(),
+          child: isSearchTapped ? buildSearchResults() : buildNoSearchContent(),
           // child: SingleChildScrollView(
           //   scrollDirection: Axis.vertical,
           //   clipBehavior: Clip.none,

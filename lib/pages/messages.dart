@@ -89,6 +89,7 @@ class _MessagesState extends State<Messages> {
             : finalMessages.length == 0
                 ? buildNoFeed()
                 : ListView.builder(
+                    padding: EdgeInsets.only(top: 10),
                     itemCount: finalMessages.length,
                     itemBuilder: (context, index) {
                       return finalMessages[index];
@@ -107,6 +108,13 @@ class _MessagesState extends State<Messages> {
         style: appBarTextStyle,
       ),
       elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back_ios_rounded,
+          color: Colors.white,
+        ),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
     );
   }
 

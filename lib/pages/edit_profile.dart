@@ -959,6 +959,14 @@ class _EditProfileState extends State<EditProfile> {
       appBar: AppBar(
         elevation: 0,
         title: Text("Edit Profile", style: appBarTextStyle),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           ConnectivityWidgetWrapper(
             stacked: false,

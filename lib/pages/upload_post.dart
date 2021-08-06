@@ -121,7 +121,7 @@ class _UploadPostState extends State<UploadPost>
 
     Im.Image imageFile = Im.decodeImage(_image.readAsBytesSync());
     final compressedImageFile = File('$path/img_$postId.jpg')
-      ..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 70));
+      ..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 50));
 
     setState(() {
       _image = compressedImageFile;
@@ -155,6 +155,12 @@ class _UploadPostState extends State<UploadPost>
 
   createPostInFirestore({String desc, String mediaUrl}) async {
     String id = timePosted.millisecondsSinceEpoch.toString();
+
+    await postsRef.doc(widget.currentUser.id).set(
+      {
+        "id": widget.currentUser.id,
+      },
+    );
 
     await postsRef
         .doc(widget.currentUser.id)
