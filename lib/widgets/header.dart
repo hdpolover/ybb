@@ -19,6 +19,7 @@ AppBar header(context,
         height: 35,
       ),
     ),
+    centerTitle: false,
     backgroundColor: Theme.of(context).primaryColor,
     elevation: 0,
     actions: <Widget>[
