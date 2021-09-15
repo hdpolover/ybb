@@ -45,47 +45,46 @@ class _SPHomeState extends State<SPHome> {
           : () async {
               Dialogs.showLoadingDialog(context, key);
 
-              await SummitParticipant.getParticipant(currentUser.id).then(
-                (value) {
-                  SummitParticipant p = value;
-                  setState(() {});
+              SummitParticipant p =
+                  await SummitParticipant.getParticipant(currentUser.id);
 
-                  if (p != null) {
-                    Navigator.of(context, rootNavigator: true).pop();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PortalMain(participant: p),
-                      ),
-                    );
-                  } else {
-                    // Navigator.of(context, rootNavigator: true).pop();
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => pageTo,
-                    //   ),
-                    // );
-                    if (registStatus == 0) {
-                      Navigator.of(context, rootNavigator: true).pop();
-                      Fluttertoast.showToast(
-                        msg:
-                            "Apologies. Seems like the registration is already closed!",
-                        timeInSecForIosWeb: 1,
-                        toastLength: Toast.LENGTH_LONG,
-                      );
-                    } else {
-                      Navigator.of(context, rootNavigator: true).pop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => pageTo,
-                        ),
-                      );
-                    }
-                  }
-                },
-              );
+              if (p != null) {
+                if (p.status == 0 && registStatus == 0) {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Fluttertoast.showToast(
+                    msg:
+                        "Apologies. Seems like the registration is already closed!",
+                    timeInSecForIosWeb: 1,
+                    toastLength: Toast.LENGTH_LONG,
+                  );
+                } else {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PortalMain(participant: p),
+                    ),
+                  );
+                }
+              } else {
+                if (registStatus == 0) {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Fluttertoast.showToast(
+                    msg:
+                        "Apologies. Seems like the registration is already closed!",
+                    timeInSecForIosWeb: 1,
+                    toastLength: Toast.LENGTH_LONG,
+                  );
+                } else {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => pageTo,
+                    ),
+                  );
+                }
+              }
             },
       child: Container(
         padding: EdgeInsets.fromLTRB(15, 10, 0, 10),
@@ -145,28 +144,6 @@ class _SPHomeState extends State<SPHome> {
                     ),
                   )
                 : Container(),
-            // Container(
-            //   alignment: Alignment.center,
-            //   height: MediaQuery.of(context).size.height * 0.10,
-            //   width: MediaQuery.of(context).size.width * 0.45,
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(6.0),
-            //     color: status == 0 ? Colors.black38 : Colors.black12,
-            //   ),
-            //   padding: EdgeInsets.all(5),
-            //   child: Text(
-            //     summitName,
-            //     style: TextStyle(
-            //       color: status == 0 ? Colors.grey : Colors.white,
-            //       fontSize: 15.0,
-            //       fontWeight: FontWeight.bold,
-            //       fontFamily: "OpenSans",
-            //       letterSpacing: 1,
-            //     ),
-            //     softWrap: true,
-            //     textAlign: TextAlign.center,
-            //   ),
-            // )
           ],
         ),
       ),

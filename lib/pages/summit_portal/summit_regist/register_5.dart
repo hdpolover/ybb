@@ -338,6 +338,13 @@ class _SummitRegister5State extends State<SummitRegister5> {
               onPressed: () async {
                 Dialogs.showLoadingDialog(context, _key);
 
+                int veg = 0;
+                if (vegetarianValue == "Yes") {
+                  veg = 1;
+                } else {
+                  veg = 0;
+                }
+
                 Map<String, dynamic> data = {
                   'id_participant': currentUser.id,
                   'full_name': fullName,
@@ -350,7 +357,7 @@ class _SummitRegister5State extends State<SummitRegister5> {
                   'ig_account': igAccount,
                   'wa_number': waNumber,
                   'institution': institution,
-                  'is_vegetarian': vegetarianValue,
+                  'is_vegetarian': veg,
                   'contact_relation': contactRelation,
                   'talents': talents,
                   'tshirt_size': tshirtSizeValue,

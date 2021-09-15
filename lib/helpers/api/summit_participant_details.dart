@@ -144,7 +144,8 @@ class SummitParticipantDetails {
     imageUploadRequest.fields['ig_account'] = data['ig_account'];
     imageUploadRequest.fields['wa_number'] = data['wa_number'];
     imageUploadRequest.fields['institution'] = data['institution'];
-    imageUploadRequest.fields['is_vegetarian'] = data['is_vegetarian'];
+    imageUploadRequest.fields['is_vegetarian'] =
+        data['is_vegetarian'].toString();
     imageUploadRequest.fields['contact_relation'] = data['contact_relation'];
     imageUploadRequest.fields['talents'] = data['talents'];
     imageUploadRequest.fields['tshirt_size'] = data['tshirt_size'];

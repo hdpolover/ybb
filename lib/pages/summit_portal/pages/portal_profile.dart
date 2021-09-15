@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,6 +18,7 @@ import 'package:ybb/pages/summit_portal/summit_regist/register_1.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/dialog.dart';
 import 'package:ybb/widgets/shimmers/summit_profile_shimmer_layout.dart';
+import 'package:http/http.dart' as http;
 
 class PortalProfile extends StatefulWidget {
   @override
@@ -472,10 +474,12 @@ class _PortalProfileState extends State<PortalProfile>
                       ),
                     ),
                     onPressed: () {
+                      generateLoa();
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DocumentCenter(data: data),
+                          builder: (context) => DocumentCenter(),
                         ),
                       );
                     },
@@ -505,6 +509,21 @@ class _PortalProfileState extends State<PortalProfile>
         ],
       ),
     );
+  }
+
+  generateLoa() async {
+    String url =
+        baseUrl + "/api/doc_management/?id_participant=" + currentUser.id;
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      return jsonData;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
   }
 
   openInstagram() async {

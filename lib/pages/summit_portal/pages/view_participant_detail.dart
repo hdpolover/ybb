@@ -48,7 +48,7 @@ class _ViewParticipantDetailsState extends State<ViewParticipantDetails> {
         ),
         SizedBox(height: 10),
         buildHorizontalField("Full Name", spd.fullName),
-        buildHorizontalField("Gender", spd.gender == "F" ? "Female" : 'Male'),
+        buildHorizontalField("Gender", spd.gender),
         buildHorizontalField("Birth date", spd.birthdate),
         buildHorizontalField("Address", spd.address),
         buildHorizontalField("Nationality", spd.nationality),

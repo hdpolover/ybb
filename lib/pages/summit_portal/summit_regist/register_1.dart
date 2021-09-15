@@ -27,7 +27,6 @@ class _SummitRegister1State extends State<SummitRegister1> {
 
   @override
   void dispose() {
-    super.dispose();
     fullnameController.dispose();
     addressController.dispose();
     occupationController.dispose();
@@ -40,6 +39,7 @@ class _SummitRegister1State extends State<SummitRegister1> {
     nationalityController.dispose();
     contactRelationController.dispose();
     igAccountController.dispose();
+    super.dispose();
   }
 
   List<DropdownMenuItem<String>> _tshirtSizeDropdownItems;
