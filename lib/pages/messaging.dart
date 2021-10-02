@@ -475,7 +475,7 @@ class _MessagingState extends State<Messaging> {
                                 children: [
                                   SizedBox(
                                     width: MediaQuery.of(context).size.width *
-                                        0.24,
+                                        0.22,
                                   ),
                                   Text(
                                     DateFormat('dd MMM kk:mm').format(
