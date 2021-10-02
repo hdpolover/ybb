@@ -6,8 +6,10 @@ import 'package:ybb/helpers/api/payment.dart';
 import 'package:ybb/helpers/api/payment_type.dart';
 import 'package:ybb/helpers/api/summit.dart';
 import 'package:ybb/helpers/api/summit_participant.dart';
+import 'package:ybb/helpers/api/upload_letter.dart';
 import 'package:ybb/pages/home.dart';
 import 'package:ybb/pages/summit_portal/pages/pay.dart';
+import 'package:ybb/pages/summit_portal/pages/upload_al.dart';
 import 'package:ybb/pages/summit_portal/pages/view_payment.dart';
 import 'package:ybb/widgets/default_appbar.dart';
 import 'package:ybb/widgets/shimmers/summit_item_shimmer_layout.dart';
@@ -113,11 +115,27 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
   _PaymentTypeItemState({this.pt, this.ctx});
 
   SummitParticipant sp;
+  bool alStatus = false;
 
   @override
   void initState() {
     super.initState();
     getSummitParticipant();
+    checkAgreementLetter();
+  }
+
+  checkAgreementLetter() async {
+    List<UploadLetter> ul = await UploadLetter.getFileStatus(currentUser.id);
+
+    if (ul.isEmpty) {
+      setState(() {
+        alStatus = false;
+      });
+    } else {
+      setState(() {
+        alStatus = true;
+      });
+    }
   }
 
   getSummitParticipant() async {
@@ -174,8 +192,10 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
               " / " +
               NumberFormat.simpleCurrency(
                       locale: 'eu', decimalDigits: 0, name: '')
-                  .format(260) +
+                  .format(240) +
               'USD';
+        } else {
+          text = "";
         }
 
         return Text(text);
@@ -183,7 +203,8 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
     );
   }
 
-  checkPaymentAvailability(int summitId, SummitParticipant sp) async {
+  checkPaymentAvailability(
+      int summitId, SummitParticipant sp, String type) async {
     if (sp.status == 0) {
       return Fluttertoast.showToast(
           msg: "Please complete the registration form first.",
@@ -195,16 +216,25 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
           toastLength: Toast.LENGTH_SHORT,
           timeInSecForIosWeb: 1);
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Pay(
-            summitId: summitId,
-            type: pt.type,
-            paymentTypeId: pt.paymentTypeId,
+      if (type == "al") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UploadAl(),
           ),
-        ),
-      );
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Pay(
+              summitId: summitId,
+              type: pt.type,
+              paymentTypeId: pt.paymentTypeId,
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -242,10 +272,10 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
               );
   }
 
-  buildStatusChip(int summitId) {
+  buildStatusChip(int summitId, String type) {
     DateTime current = new DateTime.now();
-    bool isAvailable = pt.startDate.isAtSameMomentAs(current) ||
-        pt.startDate.isBefore(current);
+    // bool isAvailable = pt.startDate.isAtSameMomentAs(current) ||
+    //     pt.startDate.isBefore(current);
 
     bool isDue = pt.endDate.isBefore(current);
 
@@ -258,29 +288,39 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
               Expanded(
                 child: GestureDetector(
                   onTap: isDue
-                      ? () {}
-                      : isAvailable
+                      ? null
+                      : type == "al" && alStatus == true
                           ? () {
-                              checkPaymentAvailability(summitId, sp);
+                              Fluttertoast.showToast(
+                                  msg:
+                                      "You have already uploaded the agreement letter.",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  timeInSecForIosWeb: 1);
                             }
-                          : null,
+                          : () {
+                              checkPaymentAvailability(summitId, sp, type);
+                            },
                   child: Container(
                     height: 40,
                     decoration: BoxDecoration(
                       color: isDue
                           ? Colors.grey
-                          : isAvailable
+                          : type == "al" && alStatus == false
                               ? Colors.blue
-                              : Colors.grey,
+                              : type != "al"
+                                  ? Colors.blue
+                                  : Colors.grey,
                       borderRadius: BorderRadius.circular(7.0),
                     ),
                     child: Center(
                       child: Text(
                         isDue
                             ? "Not Available"
-                            : isAvailable
-                                ? "Pay"
-                                : "Not Available",
+                            : type == "al" && alStatus == true
+                                ? "Uploaded"
+                                : type != "al"
+                                    ? "Pay"
+                                    : "Upload",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 15.0,
@@ -385,7 +425,7 @@ class _PaymentTypeItemState extends State<PaymentTypeItem> {
           SizedBox(height: 20),
           buildDueDate(),
           SizedBox(height: 20),
-          buildStatusChip(pt.summitId),
+          buildStatusChip(pt.summitId, pt.type),
           SizedBox(height: 40),
         ],
       ),

@@ -44,6 +44,15 @@ class _PayState extends State<Pay> {
     getPaymentAmount();
   }
 
+  @override
+  void dispose() {
+    accountNameController.dispose();
+    sourceNameController.dispose();
+    paymentDateController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
+
   getPaymentAmount() async {
     List<Summit> s = await Summit.getSummitById(widget.summitId);
 
