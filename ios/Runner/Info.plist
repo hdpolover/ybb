@@ -50,13 +50,13 @@
 		<true/>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>Music isn&apos;t needed for the app to run.</string>
+	<string>Music isn't needed for the app to run.</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Calendar isn&apos;t needed for the app to run. </string>
+	<string>Calendar isn't needed for the app to run. </string>
 	<key>NSCameraUsageDescription</key>
 	<string>Please grant permission for the application to have access to the images that will be uploaded</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Contacts isn&apos;t needed for the app to run.</string>
+	<string>Contacts isn't needed for the app to run.</string>
 	<key>NSInvalidArgumentException</key>
 	<true/>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -64,11 +64,11 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is required to get your current region for better user recommendation. This action is done once only. You can always tap on the button to change it.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Motion isn&apos;t needed for the app to run. </string>
+	<string>Motion isn't needed for the app to run. </string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Please grant permission for the application to have access to the images that will be uploaded</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Speech recognition isn&apos;t needed for the app to run. </string>
+	<string>Speech recognition isn't needed for the app to run. </string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
