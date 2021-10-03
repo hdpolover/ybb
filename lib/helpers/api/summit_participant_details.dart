@@ -37,6 +37,7 @@ class SummitParticipantDetails {
   final String knowProgramFrom;
   final String sourceAccountName;
   final String videoLink;
+  final String refCode;
 
   SummitParticipantDetails({
     this.participantId,
@@ -65,6 +66,7 @@ class SummitParticipantDetails {
     this.subtheme,
     this.talents,
     this.videoLink,
+    this.refCode,
   });
 
   factory SummitParticipantDetails.fromJSON(Map<String, dynamic> data) {
@@ -95,6 +97,7 @@ class SummitParticipantDetails {
       achievements: data['achievements'],
       subtheme: data['subtheme'],
       videoLink: data['video_link'],
+      refCode: data['referral_code'],
     );
   }
 

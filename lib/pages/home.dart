@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sign_button/sign_button.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/curve_painter.dart';
 import 'package:ybb/models/user.dart';
@@ -76,26 +77,6 @@ class _HomeState extends State<Home> {
       print('Error signing in: $err');
     });
   }
-
-  // addNewFields() async {
-  //   QuerySnapshot userIds = await usersRef.get();
-
-  //   List<String> ids = userIds.docs.map((doc) => doc.id).toList();
-  //   print(ids);
-
-  //   // for (int i = 0; i < ids.length; i++) {
-  //   //   await usersRef.doc(ids[i]).update(
-  //   //     {
-  //   //       "mainInterest": "-",
-  //   //       "mainOccupation": "-",
-  //   //       "residence": "-",
-  //   //       "birthdate": "-",
-  //   //       "latitude": "-",
-  //   //       "longitude": "-",
-  //   //     },
-  //   //   );
-  //   // }
-  // }
 
   getUserStatusToApp() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -373,7 +354,10 @@ class _HomeState extends State<Home> {
   }
 
   login() {
-    googleSignIn.signIn();
+    if (Platform.isIOS) {
+    } else {
+      googleSignIn.signIn();
+    }
 
     addUserStatus();
   }
@@ -567,7 +551,12 @@ class _HomeState extends State<Home> {
                       borderRadius: BorderRadius.circular(20.0)),
                   padding: EdgeInsets.all(20),
                   color: Theme.of(context).primaryColor,
-                  onPressed: login,
+                  //onPressed: login,
+                  onPressed: Platform.isIOS
+                      ? () {
+                          buildLoginOptions(context, _keyLoader);
+                        }
+                      : login,
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     child: Center(
@@ -590,148 +579,53 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // Scaffold buildUnAuthScreen() {
-  //   return Scaffold(
-  //     resizeToAvoidBottomInset: false,
-  //     body: CustomPaint(
-  //       painter: CurvePainter(),
-  //       child: Center(
-  //         child: Column(
-  //           children: <Widget>[
-  //             SizedBox(height: 80),
-  //             Container(
-  //               margin: EdgeInsets.only(left: 30),
-  //               alignment: Alignment.centerLeft,
-  //               child: Text(
-  //                 'Welcome Back',
-  //                 style: TextStyle(
-  //                   color: Colors.white,
-  //                   fontFamily: "Montserrat",
-  //                   fontWeight: FontWeight.bold,
-  //                   fontSize: 35,
-  //                 ),
-  //               ),
-  //             ),
-  //             SizedBox(height: 30),
-  //             SvgPicture.asset('assets/images/welcome.svg', height: 130),
-  //             SizedBox(height: 10),
-  //             Padding(
-  //               padding: EdgeInsets.all(25),
-  //               child: Column(
-  //                 children: [
-  //                   TextFormField(
-  //                     keyboardType: TextInputType.emailAddress,
-  //                     controller: _emailController,
-  //                     decoration: InputDecoration(
-  //                       border: OutlineInputBorder(),
-  //                       labelText: "Email",
-  //                     ),
-  //                   ),
-  //                   SizedBox(height: 15),
-  //                   TextFormField(
-  //                     controller: _passwordController,
-  //                     obscureText: !_showPassword,
-  //                     cursorColor: Colors.red,
-  //                     decoration: InputDecoration(
-  //                       labelText: "Password",
-  //                       border: OutlineInputBorder(),
-  //                       suffixIcon: GestureDetector(
-  //                         onTap: () {
-  //                           _togglevisibility();
-  //                         },
-  //                         child: Icon(
-  //                           _showPassword
-  //                               ? Icons.visibility
-  //                               : Icons.visibility_off,
-  //                           color: Colors.blue,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             Padding(
-  //               padding: const EdgeInsets.only(left: 25, right: 25),
-  //               child: ButtonTheme(
-  //                   buttonColor: Theme.of(context).primaryColor,
-  //                   minWidth: MediaQuery.of(context).size.width,
-  //                   height: 50,
-  //                   child: RaisedButton(
-  //                       onPressed: login,
-  //                       child: Text(
-  //                         'Log in',
-  //                         style: TextStyle(color: Colors.white, fontSize: 18),
-  //                       ),
-  //                       shape: RoundedRectangleBorder(
-  //                           borderRadius: BorderRadius.circular(5)))),
-  //             ),
-  //             SizedBox(height: 20),
-  //             Divider(
-  //               indent: 20,
-  //               endIndent: 20,
-  //               thickness: 1,
-  //             ),
-  //             Padding(
-  //               padding: const EdgeInsets.only(left: 25, right: 25, top: 10),
-  //               child: Container(
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.center,
-  //                   children: [
-  //                     Text(
-  //                       "Haven't registered yet?",
-  //                       style: TextStyle(
-  //                         fontSize: 16,
-  //                         color: Colors.black,
-  //                       ),
-  //                     ),
-  //                     GestureDetector(
-  //                       onTap: () => Navigator.push(
-  //                         context,
-  //                         MaterialPageRoute(
-  //                           builder: (context) => SignUp(),
-  //                         ),
-  //                       ),
-  //                       child: Container(
-  //                         child: Text(
-  //                           " Register here",
-  //                           style: TextStyle(
-  //                             fontSize: 16,
-  //                             color: Colors.blue,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //             Container(
-  //               margin: EdgeInsets.only(bottom: 20, top: 20),
-  //               child: Text(
-  //                 "OR",
-  //                 style: TextStyle(
-  //                   color: Colors.black,
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //               ),
-  //             ),
-  //             Padding(
-  //               padding: const EdgeInsets.only(left: 25, right: 25, bottom: 40),
-  //               child: GestureDetector(
-  //                 onTap: login,
-  //                 child: Image(
-  //                   image: AssetImage("assets/images/google_signin_button.png"),
-  //                   height: 50,
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  buildLoginOptions(BuildContext context, GlobalKey key) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black38,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          key: key,
+          elevation: 0,
+          contentPadding: EdgeInsets.all(30),
+          children: <Widget>[
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    "Sign in to start your journey in the Youth Break the Boundaries community.",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: fontName,
+                      fontSize: 17,
+                    ),
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                  SignInButton(
+                    buttonType: ButtonType.google,
+                    buttonSize: ButtonSize.large,
+                    onPressed: () {
+                      print('click');
+                    },
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                  SignInButton(
+                    buttonType: ButtonType.apple,
+                    buttonSize: ButtonSize.large,
+                    onPressed: () {
+                      print('click');
+                    },
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
