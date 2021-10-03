@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_button/sign_button.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:ybb/helpers/constants.dart';
 import 'package:ybb/helpers/curve_painter.dart';
 import 'package:ybb/models/user.dart';
@@ -579,6 +580,24 @@ class _HomeState extends State<Home> {
     );
   }
 
+  loginWithApple() {
+    return SignInWithAppleButton(
+      onPressed: () async {
+        final credential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
+
+        print(credential);
+
+        // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
+        // after they have been validated with Apple (see `Integration` section for more information on how to do this)
+      },
+    );
+  }
+
   buildLoginOptions(BuildContext context, GlobalKey key) async {
     return showDialog<void>(
       context: context,
@@ -594,7 +613,7 @@ class _HomeState extends State<Home> {
               child: Column(
                 children: [
                   Text(
-                    "Sign in to start your journey in the Youth Break the Boundaries community.",
+                    "Create an account to start your journey with the Youth Break the Boundaries community.",
                     style: TextStyle(
                       color: Colors.black,
                       fontFamily: fontName,
@@ -613,8 +632,19 @@ class _HomeState extends State<Home> {
                   SignInButton(
                     buttonType: ButtonType.apple,
                     buttonSize: ButtonSize.large,
-                    onPressed: () {
-                      print('click');
+                    onPressed: () async {
+                      final credential =
+                          await SignInWithApple.getAppleIDCredential(
+                        scopes: [
+                          AppleIDAuthorizationScopes.email,
+                          AppleIDAuthorizationScopes.fullName,
+                        ],
+                      );
+
+                      print(credential);
+
+                      // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
+                      // after they have been validated with Apple (see `Integration` section for more information on how to do this)
                     },
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
