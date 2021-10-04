@@ -55,6 +55,7 @@ class _HomeState extends State<Home> {
   PageController pageController;
   int pageIndex = 0;
   bool isNewUser;
+  String signInMethod;
 
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
@@ -65,24 +66,28 @@ class _HomeState extends State<Home> {
     getUserStatusToApp();
 
     pageController = PageController();
-    // Detects when user signed in
-    googleSignIn.onCurrentUserChanged.listen((account) {
-      handleSignIn(account);
-    }, onError: (err) {
-      print('Error signing in: $err');
-    });
-    // Reauthenticate user when app is opened
-    googleSignIn.signInSilently(suppressErrors: false).then((account) {
-      handleSignIn(account);
-    }).catchError((err) {
-      print('Error signing in: $err');
-    });
+
+    if (signInMethod == 'google') {
+// Detects when user signed in
+      googleSignIn.onCurrentUserChanged.listen((account) {
+        handleSignIn(account);
+      }, onError: (err) {
+        print('Error signing in: $err');
+      });
+      // Reauthenticate user when app is opened
+      googleSignIn.signInSilently(suppressErrors: false).then((account) {
+        handleSignIn(account);
+      }).catchError((err) {
+        print('Error signing in: $err');
+      });
+    } else {}
   }
 
   getUserStatusToApp() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return bool
     bool boolValue = prefs.getBool('isNew');
+    String signInMethod = prefs.getString('signIn');
     setState(() {
       isNewUser = boolValue;
     });
@@ -192,15 +197,35 @@ class _HomeState extends State<Home> {
   createUserInFirestore() async {
     Dialogs.showLoadingDialog(context, _keyLoader);
 
-    GoogleSignInAccount user = googleSignIn.currentUser;
-    GoogleSignInAuthentication googleSignInAuthentication =
-        await user.authentication;
+    var result;
+    if (Platform.isAndroid) {
+      GoogleSignInAccount user = googleSignIn.currentUser;
+      GoogleSignInAuthentication googleSignInAuthentication =
+          await user.authentication;
 
-    AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleSignInAuthentication.idToken,
-        accessToken: googleSignInAuthentication.accessToken);
+      AuthCredential credential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);
 
-    var result = (await _auth.signInWithCredential(credential));
+      result = (await _auth.signInWithCredential(credential));
+    } else {
+      var redirectURL =
+          "https://ybbproject-a6607.firebaseapp.com/__/auth/handler";
+      var clientID = "com.hdpolover.ybbproject";
+      final appleIdCredential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+          webAuthenticationOptions: WebAuthenticationOptions(
+              clientId: clientID, redirectUri: Uri.parse(redirectURL)));
+      final oAuthProvider = OAuthProvider('apple.com');
+      final credential = oAuthProvider.credential(
+        idToken: appleIdCredential.identityToken,
+        accessToken: appleIdCredential.authorizationCode,
+      );
+      result = await _auth.signInWithCredential(credential);
+    }
 
     firebaseUser = result.user;
 
@@ -354,8 +379,20 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
-  login() {
+  login() async {
     if (Platform.isIOS) {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      print(credential);
+
+      // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
+      // after they have been validated with Apple (see `Integration` section for more information on how to do this)
+
     } else {
       googleSignIn.signIn();
     }
@@ -580,24 +617,6 @@ class _HomeState extends State<Home> {
     );
   }
 
-  loginWithApple() {
-    return SignInWithAppleButton(
-      onPressed: () async {
-        final credential = await SignInWithApple.getAppleIDCredential(
-          scopes: [
-            AppleIDAuthorizationScopes.email,
-            AppleIDAuthorizationScopes.fullName,
-          ],
-        );
-
-        print(credential);
-
-        // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
-        // after they have been validated with Apple (see `Integration` section for more information on how to do this)
-      },
-    );
-  }
-
   buildLoginOptions(BuildContext context, GlobalKey key) async {
     return showDialog<void>(
       context: context,
@@ -624,28 +643,13 @@ class _HomeState extends State<Home> {
                   SignInButton(
                     buttonType: ButtonType.google,
                     buttonSize: ButtonSize.large,
-                    onPressed: () {
-                      print('click');
-                    },
+                    onPressed: login,
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   SignInButton(
                     buttonType: ButtonType.apple,
                     buttonSize: ButtonSize.large,
-                    onPressed: () async {
-                      final credential =
-                          await SignInWithApple.getAppleIDCredential(
-                        scopes: [
-                          AppleIDAuthorizationScopes.email,
-                          AppleIDAuthorizationScopes.fullName,
-                        ],
-                      );
-
-                      print(credential);
-
-                      // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
-                      // after they have been validated with Apple (see `Integration` section for more information on how to do this)
-                    },
+                    onPressed: login,
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                 ],
